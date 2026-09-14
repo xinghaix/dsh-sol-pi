@@ -18,6 +18,7 @@
 		"scripts/check-dsh-compat.mjs",
 		"agents-install.md",
 		"README.md",
+		"README.zh-CN.md",
 		"LICENSE",
 		"CONTRIBUTING.md",
 		"SECURITY.md",
@@ -47,7 +48,8 @@
 				"@deepseek-ai/dsh-client-store",
 				"@deepseek-ai/dsh-client-ui-settings",
 				"@deepseek-ai/dsh-client-ui-settings-plugins",
-				"@deepseek-ai/dsh-client-locale"
+				"@deepseek-ai/dsh-client-locale",
+				"@deepseek-ai/dsh-client-ui-model-selection"
 			],
 			"platform": "web",
 			"immediately": true

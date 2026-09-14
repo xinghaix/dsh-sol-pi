@@ -990,10 +990,10 @@ var import_react = require("react");
 if (typeof document !== "undefined" && !document.getElementById("sol-dsh-css")) {
   const s = document.createElement("style");
   s.id = "sol-dsh-css";
-  s.textContent = "/* Match @deepseek-ai/dsh-client-ui-settings-plugins PluginCard + fields + Subagent toggle. */\n\n.solDsh_card {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	border-radius: 16px;\n	list-style: none;\n	transition: border-color 0.16s, background 0.16s;\n}\n\n.solDsh_card:hover {\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_cardOpen {\n	background: var(--dsw-alias-bg-layer-2);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_header {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 12px;\n	align-items: center;\n	gap: 12px;\n	padding: 14px 16px;\n	display: flex;\n}\n\n.solDsh_header:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: -2px;\n}\n\n.solDsh_headText {\n	flex-direction: column;\n	flex: 1;\n	gap: 4px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_name {\n	color: var(--dsw-alias-label-primary);\n	font-size: 15px;\n	font-weight: 600;\n	line-height: 1.4;\n}\n\n.solDsh_description {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_pending {\n	flex: none;\n}\n\n.solDsh_chevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_chevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_body {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	margin: 0 16px;\n	padding-bottom: 8px;\n}\n\n.solDsh_readOnly {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 12px 0 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_footer {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	justify-content: flex-end;\n	align-items: center;\n	gap: 8px;\n	padding: 12px 0 4px;\n	display: flex;\n}\n\n.solDsh_failed {\n	min-width: 0;\n	color: var(--dsw-alias-label-error);\n	flex: 1;\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_discard,\n.solDsh_save {\n	appearance: none;\n	font: inherit;\n	cursor: pointer;\n	border: 1px solid transparent;\n	border-radius: 8px;\n	padding: 5px 14px;\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_discard {\n	border-color: var(--dsw-alias-border-l2);\n	color: var(--dsw-alias-label-secondary);\n	background: 0 0;\n}\n\n.solDsh_discard:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_save {\n	background: var(--dsw-alias-label-primary);\n	color: var(--dsw-alias-bg-layer-3);\n}\n\n.solDsh_discard:disabled,\n.solDsh_save:disabled {\n	opacity: 0.4;\n	cursor: default;\n}\n\n.solDsh_discard:focus-visible,\n.solDsh_save:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 1px;\n}\n\n.solDsh_field {\n	flex-direction: column;\n	gap: 6px;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_head {\n	align-items: center;\n	gap: 8px;\n	display: flex;\n}\n\n.solDsh_label {\n	min-width: 0;\n	color: var(--dsw-alias-label-primary);\n	flex: 1;\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_hint {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_input {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	border-radius: 8px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	width: 100%;\n	box-sizing: border-box;\n}\n\n.solDsh_input:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_input:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n/* Permission-row style trigger; menu chrome comes from primitives.solDsh_Menu */\n.solDsh_selector {\n	appearance: none;\n	width: 100%;\n	box-sizing: border-box;\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	cursor: pointer;\n	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	border-radius: 8px;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: inline-flex;\n}\n\n.solDsh_selector:hover:not(:disabled) {\n	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));\n}\n\n.solDsh_selector:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n.solDsh_selector:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_selectorLabel {\n	min-width: 0;\n	overflow: hidden;\n	text-overflow: ellipsis;\n	white-space: nowrap;\n	flex: 1;\n	text-align: left;\n}\n\n.solDsh_selectorChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_selectorChevronOpen {\n	transform: rotate(180deg);\n}\n\n/* SubagentModelSelectionCard.solDsh_toggleRow */\n.solDsh_toggleRow {\n	color: var(--dsw-alias-label-primary);\n	justify-content: space-between;\n	align-items: flex-start;\n	gap: 16px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: flex;\n}\n\n.solDsh_toggleLabel {\n	flex: 1;\n	min-width: 0;\n	font-weight: 500;\n}\n\n.solDsh_badges {\n	align-items: center;\n	gap: 8px;\n	display: inline-flex;\n	flex: none;\n	padding-top: 1px;\n}\n\n.solDsh_reset {\n	font: inherit;\n	color: var(--dsw-alias-label-secondary);\n	cursor: pointer;\n	background: 0 0;\n	border: none;\n	padding: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_reset:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n}\n\n.solDsh_reset:disabled {\n	cursor: default;\n}\n\n.solDsh_inputInvalid {\n	border-color: var(--dsw-alias-label-error);\n}\n\n.solDsh_invalid {\n	color: var(--dsw-alias-label-error);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n";
+  s.textContent = "/* Match @deepseek-ai/dsh-client-ui-settings-plugins PluginCard + fields + Subagent toggle. */\n\n.solDsh_card {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	border-radius: 16px;\n	list-style: none;\n	transition: border-color 0.16s, background 0.16s;\n}\n\n.solDsh_card:hover {\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_cardOpen {\n	background: var(--dsw-alias-bg-layer-2);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_header {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 12px;\n	align-items: center;\n	gap: 12px;\n	padding: 14px 16px;\n	display: flex;\n}\n\n.solDsh_header:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: -2px;\n}\n\n.solDsh_headText {\n	flex-direction: column;\n	flex: 1;\n	gap: 4px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_name {\n	color: var(--dsw-alias-label-primary);\n	font-size: 15px;\n	font-weight: 600;\n	line-height: 1.4;\n}\n\n.solDsh_description {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_pending {\n	flex: none;\n}\n\n.solDsh_chevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_chevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_body {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	margin: 0 16px;\n	padding-bottom: 8px;\n}\n\n.solDsh_readOnly {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 12px 0 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_footer {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	justify-content: flex-end;\n	align-items: center;\n	gap: 8px;\n	padding: 12px 0 4px;\n	display: flex;\n}\n\n.solDsh_failed {\n	min-width: 0;\n	color: var(--dsw-alias-label-error);\n	flex: 1;\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_discard,\n.solDsh_save {\n	appearance: none;\n	font: inherit;\n	cursor: pointer;\n	border: 1px solid transparent;\n	border-radius: 8px;\n	padding: 5px 14px;\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_discard {\n	border-color: var(--dsw-alias-border-l2);\n	color: var(--dsw-alias-label-secondary);\n	background: 0 0;\n}\n\n.solDsh_discard:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_save {\n	background: var(--dsw-alias-label-primary);\n	color: var(--dsw-alias-bg-layer-3);\n}\n\n.solDsh_discard:disabled,\n.solDsh_save:disabled {\n	opacity: 0.4;\n	cursor: default;\n}\n\n.solDsh_discard:focus-visible,\n.solDsh_save:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 1px;\n}\n\n.solDsh_field {\n	flex-direction: column;\n	gap: 6px;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_head {\n	align-items: center;\n	gap: 8px;\n	display: flex;\n}\n\n.solDsh_label {\n	min-width: 0;\n	color: var(--dsw-alias-label-primary);\n	flex: 1;\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_hint {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_input {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	border-radius: 8px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	width: 100%;\n	box-sizing: border-box;\n}\n\n.solDsh_input:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_input:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n/* Permission-row style trigger; menu chrome comes from primitives.solDsh_Menu */\n.solDsh_selector {\n	appearance: none;\n	width: 100%;\n	box-sizing: border-box;\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	cursor: pointer;\n	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	border-radius: 8px;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: inline-flex;\n}\n\n.solDsh_selector:hover:not(:disabled) {\n	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));\n}\n\n.solDsh_selector:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n.solDsh_selector:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_selectorLabel {\n	min-width: 0;\n	overflow: hidden;\n	text-overflow: ellipsis;\n	white-space: nowrap;\n	flex: 1;\n	text-align: left;\n}\n\n.solDsh_selectorChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_selectorChevronOpen {\n	transform: rotate(180deg);\n}\n\n/* SubagentModelSelectionCard.solDsh_toggleRow */\n.solDsh_toggleRow {\n	color: var(--dsw-alias-label-primary);\n	justify-content: space-between;\n	align-items: flex-start;\n	gap: 16px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: flex;\n}\n\n.solDsh_toggleLabel {\n	flex: 1;\n	min-width: 0;\n	font-weight: 500;\n}\n\n.solDsh_badges {\n	align-items: center;\n	gap: 8px;\n	display: inline-flex;\n	flex: none;\n	padding-top: 1px;\n}\n\n.solDsh_reset {\n	font: inherit;\n	color: var(--dsw-alias-label-secondary);\n	cursor: pointer;\n	background: 0 0;\n	border: none;\n	padding: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_reset:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n}\n\n.solDsh_reset:disabled {\n	cursor: default;\n}\n\n.solDsh_inputInvalid {\n	border-color: var(--dsw-alias-label-error);\n}\n\n.solDsh_invalid {\n	color: var(--dsw-alias-label-error);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_fold {\n	flex-direction: column;\n	gap: 0;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_fold,\n.solDsh_fold + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_foldHeader {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 8px;\n	align-items: center;\n	gap: 8px;\n	padding: 0;\n	display: flex;\n}\n\n.solDsh_foldHeader:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 2px;\n}\n\n.solDsh_foldText {\n	flex-direction: column;\n	flex: 1;\n	gap: 2px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_foldTitle {\n	color: var(--dsw-alias-label-primary);\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_foldSummary {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_foldChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_foldChevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_foldBody {\n	flex-direction: column;\n	gap: 0;\n	margin-top: 8px;\n	display: flex;\n}\n\n.solDsh_stackField {\n	flex-direction: column;\n	gap: 6px;\n	padding: 10px 0 0;\n	display: flex;\n}\n\n.solDsh_stackLabel {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n";
   document.head.appendChild(s);
 }
-var card_default = { "card": "solDsh_card", "cardOpen": "solDsh_cardOpen", "header": "solDsh_header", "headText": "solDsh_headText", "name": "solDsh_name", "description": "solDsh_description", "pending": "solDsh_pending", "chevron": "solDsh_chevron", "chevronOpen": "solDsh_chevronOpen", "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "input": "solDsh_input", "selector": "solDsh_selector", "selectorLabel": "solDsh_selectorLabel", "selectorChevron": "solDsh_selectorChevron", "selectorChevronOpen": "solDsh_selectorChevronOpen", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "badges": "solDsh_badges", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid" };
+var card_default = { "card": "solDsh_card", "cardOpen": "solDsh_cardOpen", "header": "solDsh_header", "headText": "solDsh_headText", "name": "solDsh_name", "description": "solDsh_description", "pending": "solDsh_pending", "chevron": "solDsh_chevron", "chevronOpen": "solDsh_chevronOpen", "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "input": "solDsh_input", "selector": "solDsh_selector", "selectorLabel": "solDsh_selectorLabel", "selectorChevron": "solDsh_selectorChevron", "selectorChevronOpen": "solDsh_selectorChevronOpen", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "badges": "solDsh_badges", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid", "fold": "solDsh_fold", "foldHeader": "solDsh_foldHeader", "foldText": "solDsh_foldText", "foldTitle": "solDsh_foldTitle", "foldSummary": "solDsh_foldSummary", "foldChevron": "solDsh_foldChevron", "foldChevronOpen": "solDsh_foldChevronOpen", "foldBody": "solDsh_foldBody", "stackField": "solDsh_stackField", "stackLabel": "solDsh_stackLabel" };
 
 // src/sol-dsh/client/card.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
@@ -1154,6 +1154,161 @@ function SelectRow(props) {
     props.detail ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, children: props.detail }) : null
   ] });
 }
+var FOLLOW = "__follow__";
+function toMenuId(value) {
+  return value.trim() ? value : FOLLOW;
+}
+function fromMenuId(value) {
+  return value === FOLLOW ? "" : value;
+}
+function StackSelect(props) {
+  const [open, setOpen] = (0, import_react.useState)(false);
+  const selected = props.options.find((option) => option.id === props.value);
+  const triggerLabel = selected?.label ?? (props.value || props.placeholder);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.stackField, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.stackLabel, id: `${props.id}-label`, children: props.label }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      import_dsh_client_ui_primitives.Menu,
+      {
+        open,
+        onClose: () => setOpen(false),
+        items: props.options,
+        selectedId: props.value,
+        align: "start",
+        portal: true,
+        onSelect: (id) => {
+          setOpen(false);
+          props.onChange(id);
+        },
+        anchor: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          "button",
+          {
+            type: "button",
+            id: props.id,
+            className: card_default.selector,
+            "aria-labelledby": `${props.id}-label`,
+            "aria-haspopup": "menu",
+            "aria-expanded": open,
+            disabled: props.disabled,
+            onClick: () => setOpen((value) => !value),
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.selectorLabel, children: triggerLabel }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                import_dsh_client_ui_primitives.IconChevronDownOutline14,
+                {
+                  className: `${card_default.selectorChevron}${open ? ` ${card_default.selectorChevronOpen}` : ""}`
+                }
+              )
+            ]
+          }
+        )
+      }
+    )
+  ] });
+}
+function ReducerRouteFold(props) {
+  const [open, setOpen] = (0, import_react.useState)(false);
+  const follow = !props.provider && !props.model;
+  const summary = follow ? props.t("reducerRouteSummaryFollow") : props.t("reducerRouteSummaryPinned").replace("{provider}", props.provider).replace("{model}", props.model);
+  const providerOptions = [
+    { id: FOLLOW, label: props.t("reducerFollowAgent") },
+    ...props.catalog.map((group2) => ({ id: group2.id, label: group2.name || group2.id }))
+  ];
+  if (props.provider && !providerOptions.some((option) => option.id === props.provider)) {
+    providerOptions.push({ id: props.provider, label: props.provider });
+  }
+  const group = props.catalog.find((entry) => entry.id === props.provider);
+  const modelOptions = [
+    ...group?.models.map((model) => ({ id: model.id, label: model.name || model.id })) ?? []
+  ];
+  if (props.model && !modelOptions.some((option) => option.id === props.model)) {
+    modelOptions.unshift({ id: props.model, label: props.model });
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.fold, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+      "button",
+      {
+        type: "button",
+        className: card_default.foldHeader,
+        "aria-expanded": open,
+        "aria-label": props.t(open ? "reducerRouteCollapse" : "reducerRouteExpand"),
+        onClick: () => {
+          const next = !open;
+          setOpen(next);
+          if (next) props.onOpen();
+        },
+        children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.foldText, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.foldTitle, children: props.t("reducerRoute") }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.foldSummary, children: summary })
+          ] }),
+          props.overridden ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.badges, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.Tag, { tone: "neutral", children: props.overriddenLabel }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              "button",
+              {
+                type: "button",
+                className: card_default.reset,
+                disabled: props.disabled,
+                onClick: (event) => {
+                  event.stopPropagation();
+                  props.onReset();
+                },
+                children: props.resetLabel
+              }
+            )
+          ] }) : null,
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.IconChevronDownOutline14, { className: `${card_default.foldChevron}${open ? ` ${card_default.foldChevronOpen}` : ""}` })
+        ]
+      }
+    ),
+    open ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.foldBody, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, children: props.t("reducerRouteHelp") }),
+      props.catalogStatus === "loading" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, role: "status", children: props.t("reducerCatalogLoading") }) : null,
+      props.catalogStatus === "empty" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, children: props.t("reducerCatalogEmpty") }) : null,
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        StackSelect,
+        {
+          id: "sol-epr-provider",
+          label: props.t("reducerProvider"),
+          value: toMenuId(props.provider),
+          placeholder: props.t("reducerFollowAgent"),
+          options: providerOptions,
+          disabled: props.disabled,
+          onChange: (value) => {
+            const provider = fromMenuId(value);
+            if (!provider) {
+              props.onRoute("", "");
+              return;
+            }
+            const nextGroup = props.catalog.find((entry) => entry.id === provider);
+            const keepModel = props.model && nextGroup?.models.some((model) => model.id === props.model) ? props.model : nextGroup?.models[0]?.id ?? "";
+            props.onRoute(provider, keepModel);
+          }
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        StackSelect,
+        {
+          id: "sol-epr-model",
+          label: props.t("reducerModel"),
+          value: props.provider ? toMenuId(props.model) : FOLLOW,
+          placeholder: props.t("reducerFollowAgent"),
+          options: props.provider && modelOptions.length > 0 ? modelOptions : [{ id: FOLLOW, label: props.t("reducerFollowAgent") }],
+          disabled: props.disabled || !props.provider || modelOptions.length === 0,
+          onChange: (value) => {
+            const model = fromMenuId(value);
+            if (!model) {
+              props.onRoute("", "");
+              return;
+            }
+            props.onRoute(props.provider, model);
+          }
+        }
+      )
+    ] }) : null
+  ] });
+}
 function SolDshCard(props) {
   const [open, setOpen] = (0, import_react.useState)(false);
   const [draft, setDraft] = (0, import_react.useState)(() => cloneConfig(DEFAULT_SOL_DSH_CONFIG));
@@ -1167,7 +1322,27 @@ function SolDshCard(props) {
   const [saving, setSaving] = (0, import_react.useState)(false);
   const [failed, setFailed] = (0, import_react.useState)(false);
   const [error, setError] = (0, import_react.useState)();
+  const [catalog, setCatalog] = (0, import_react.useState)([]);
+  const [catalogStatus, setCatalogStatus] = (0, import_react.useState)("idle");
   const saveStarted = (0, import_react.useRef)(false);
+  const ensureCatalog = () => {
+    if (catalogStatus === "loading" || catalogStatus === "ready" || catalogStatus === "empty") return;
+    if (!props.loadModelCatalog) {
+      setCatalogStatus("empty");
+      return;
+    }
+    setCatalogStatus("loading");
+    void props.loadModelCatalog().then(
+      (groups) => {
+        setCatalog(groups);
+        setCatalogStatus(groups.length > 0 ? "ready" : "empty");
+      },
+      () => {
+        setCatalog([]);
+        setCatalogStatus("empty");
+      }
+    );
+  };
   const syncFromSnapshot = (snapshot) => {
     setLoaded(snapshot.value);
     setDraft(cloneConfig(snapshot.value));
@@ -1182,7 +1357,7 @@ function SolDshCard(props) {
   };
   (0, import_react.useEffect)(() => {
     void props.load().then(syncFromSnapshot);
-  }, [props]);
+  }, []);
   (0, import_react.useEffect)(() => {
     if (saving) {
       saveStarted.current = true;
@@ -1232,6 +1407,27 @@ function SolDshCard(props) {
     setClears((current) => {
       const next = new Set(current);
       next.delete(key);
+      return next;
+    });
+    setFailed(false);
+    setError(void 0);
+  };
+  const editReducerRoute = (provider, model) => {
+    setDraft((current) => {
+      let next = writePath(current, ["evidencePreservingReducer", "reducerProvider"], provider);
+      next = writePath(next, ["evidencePreservingReducer", "reducerModel"], model);
+      return next;
+    });
+    setTexts((current) => {
+      const next = { ...current };
+      delete next["evidencePreservingReducer.reducerProvider"];
+      delete next["evidencePreservingReducer.reducerModel"];
+      return next;
+    });
+    setClears((current) => {
+      const next = new Set(current);
+      next.delete("evidencePreservingReducer.reducerProvider");
+      next.delete("evidencePreservingReducer.reducerModel");
       return next;
     });
     setFailed(false);
@@ -1513,34 +1709,28 @@ function SolDshCard(props) {
         }
       ),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
+        ReducerRouteFold,
         {
-          ...common,
-          id: "sol-epr-provider",
-          label: t("reducerProvider"),
-          hint: t("reducerRouteHelp"),
-          text: textOf(["evidencePreservingReducer", "reducerProvider"], draft.evidencePreservingReducer.reducerProvider),
-          overridden: overridden(["evidencePreservingReducer", "reducerProvider"]),
-          onEdit: (text) => {
-            editText(["evidencePreservingReducer", "reducerProvider"], text);
-            editValue(["evidencePreservingReducer", "reducerProvider"], text);
-          },
-          onReset: () => resetPath(["evidencePreservingReducer", "reducerProvider"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-epr-model",
-          label: t("reducerModel"),
-          text: textOf(["evidencePreservingReducer", "reducerModel"], draft.evidencePreservingReducer.reducerModel),
-          overridden: overridden(["evidencePreservingReducer", "reducerModel"]),
-          onEdit: (text) => {
-            editText(["evidencePreservingReducer", "reducerModel"], text);
-            editValue(["evidencePreservingReducer", "reducerModel"], text);
-          },
-          onReset: () => resetPath(["evidencePreservingReducer", "reducerModel"])
+          t,
+          disabled,
+          provider: draft.evidencePreservingReducer.reducerProvider,
+          model: draft.evidencePreservingReducer.reducerModel,
+          catalog,
+          catalogStatus,
+          overridden: overridden(["evidencePreservingReducer", "reducerProvider"]) || overridden(["evidencePreservingReducer", "reducerModel"]),
+          overriddenLabel: t("overridden"),
+          resetLabel: t("reset"),
+          onOpen: ensureCatalog,
+          onRoute: editReducerRoute,
+          onReset: () => {
+            editReducerRoute("", "");
+            setClears((current) => {
+              const next = new Set(current);
+              next.add("evidencePreservingReducer.reducerProvider");
+              next.add("evidencePreservingReducer.reducerModel");
+              return next;
+            });
+          }
         }
       ),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -1706,9 +1896,19 @@ var zh = {
   maxOutputTokensHelp: "\u56DE\u6267\u672C\u8EAB\u6700\u591A\u5141\u8BB8\u591A\u5C11 token\uFF0C\u907F\u514D\u300C\u538B\u7F29\u7ED3\u679C\u300D\u6BD4\u539F\u6587\u8FD8\u957F\u3002",
   timeoutMs: "\u8D85\u65F6\uFF08\u6BEB\u79D2\uFF09",
   timeoutMsHelp: "\u5F52\u7EA6\u8BF7\u6C42\u6700\u957F\u7B49\u591A\u4E45\uFF1B\u8D85\u65F6\u5219\u4FDD\u7559\u539F\u6587\uFF0C\u4E0D\u963B\u585E\u4E3B\u5BF9\u8BDD\u3002",
-  reducerProvider: "\u5F52\u7EA6\u4F9B\u5E94\u5546",
-  reducerModel: "\u5F52\u7EA6\u6A21\u578B",
-  reducerRouteHelp: "\u90FD\u7559\u7A7A = \u8DDF\u5F53\u524D Agent \u540C\u4E00\u6761\u6A21\u578B\u8DEF\u7531\u3002\u8981\u6307\u5B9A\u4E13\u7528\u6A21\u578B\u65F6\uFF0C\u4F9B\u5E94\u5546\u548C\u6A21\u578B\u540D\u5FC5\u987B\u4E00\u8D77\u586B\u3002",
+  reducerProvider: "\u63D0\u4F9B\u5546",
+  reducerModel: "\u6A21\u578B",
+  reducerRouteHelp: "\u9ED8\u8BA4\u8DDF\u968F\u5F53\u524D Agent\u3002\u5C55\u5F00\u540E\u53EF\u6307\u5B9A\u4E13\u7528\u63D0\u4F9B\u5546\u548C\u6A21\u578B\uFF1B\u4E24\u9879\u9700\u540C\u7A7A\u6216\u540C\u586B\u3002",
+  reducerRoute: "\u5F52\u7EA6\u6A21\u578B",
+  reducerRouteSummaryFollow: "\u8DDF\u968F\u5F53\u524D Agent",
+  reducerRouteSummaryPinned: "\u5DF2\u6307\u5B9A {provider} / {model}",
+  reducerRouteExpand: "\u5C55\u5F00\u5F52\u7EA6\u6A21\u578B",
+  reducerRouteCollapse: "\u6536\u8D77\u5F52\u7EA6\u6A21\u578B",
+  reducerFollowAgent: "\u8DDF\u968F\u5F53\u524D Agent",
+  reducerSelectProvider: "\u9009\u62E9\u63D0\u4F9B\u5546",
+  reducerSelectModel: "\u9009\u62E9\u6A21\u578B",
+  reducerCatalogLoading: "\u6B63\u5728\u52A0\u8F7D\u6A21\u578B\u76EE\u5F55\u2026",
+  reducerCatalogEmpty: "\u6682\u65E0\u53EF\u7528\u6A21\u578B\uFF1B\u4ECD\u53EF\u8DDF\u968F\u5F53\u524D Agent\u3002",
   occ: "\u5728\u7EBF\u4E0A\u4E0B\u6587\u538B\u7F29",
   occHelp: "\u6302\u5728\u5B98\u65B9 ctx.compaction \u4E0A\u7684\u7B56\u7565\uFF0C\u4E0D\u662F\u7B2C\u4E8C\u5957\u538B\u7F29\u5F15\u64CE\u3002\u7528\u6765\u51B3\u5B9A\u4F55\u65F6\u538B\u3001\u538B\u591A\u5C11\u3001\u7559\u591A\u5C11\u8FD1\u671F\u5185\u5BB9\u3002",
   cacheWriteReadRatio: "\u7F13\u5B58\u5199/\u8BFB\u6BD4",
@@ -1765,9 +1965,19 @@ var en = {
   maxOutputTokensHelp: "Max tokens allowed in the receipt itself, so the \u201Csummary\u201D cannot outgrow the log.",
   timeoutMs: "Timeout (ms)",
   timeoutMsHelp: "How long to wait for reduction. On timeout the original log is kept and the main turn is not blocked.",
-  reducerProvider: "Reducer provider",
-  reducerModel: "Reducer model",
-  reducerRouteHelp: "Leave both empty to follow the current agent route. To pin a dedicated model, set provider and model together.",
+  reducerProvider: "Provider",
+  reducerModel: "Model",
+  reducerRouteHelp: "Follows the current agent by default. Expand to pin a provider and model; both must be empty or both set.",
+  reducerRoute: "Reducer model",
+  reducerRouteSummaryFollow: "Follow current agent",
+  reducerRouteSummaryPinned: "Pinned {provider} / {model}",
+  reducerRouteExpand: "Show reducer model",
+  reducerRouteCollapse: "Hide reducer model",
+  reducerFollowAgent: "Follow current agent",
+  reducerSelectProvider: "Select provider",
+  reducerSelectModel: "Select model",
+  reducerCatalogLoading: "Loading model catalog\u2026",
+  reducerCatalogEmpty: "No models available; you can still follow the current agent.",
   occ: "Online context compact",
   occHelp: "A policy on the host ctx.compaction \u2014 not a second engine. Controls when to compact, how far to look, and how much recent context to keep.",
   cacheWriteReadRatio: "Cache write/read ratio",
@@ -1827,9 +2037,78 @@ function whenSettled(scope, timeoutMs = 8e3) {
 function deepEqual2(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
+function normalizeCatalog(snapshot) {
+  const groups = snapshot?.groups;
+  if (!Array.isArray(groups)) return [];
+  const out = [];
+  for (const group of groups) {
+    if (typeof group !== "object" || group === null) continue;
+    const record = group;
+    const id = typeof record.id === "string" ? record.id : "";
+    if (!id) continue;
+    const name = typeof record.name === "string" ? record.name : typeof record.displayName === "string" ? record.displayName : id;
+    const modelsRaw = record.models;
+    const models = [];
+    if (Array.isArray(modelsRaw)) {
+      for (const model of modelsRaw) {
+        if (typeof model !== "object" || model === null) continue;
+        const row = model;
+        const modelId = typeof row.id === "string" ? row.id : "";
+        if (!modelId) continue;
+        models.push({
+          id: modelId,
+          name: typeof row.name === "string" ? row.name : modelId
+        });
+      }
+    }
+    out.push({ id, name, models });
+  }
+  return out;
+}
+async function loadCatalogFromDirectories(directories) {
+  if (!directories) return [];
+  try {
+    if (directories.catalog) {
+      const value = await directories.catalog.load();
+      const fromCatalog = normalizeCatalog(value);
+      if (fromCatalog.length > 0) return fromCatalog;
+      const snap = directories.catalog.store?.getSnapshot();
+      if (snap?.value) {
+        const fromStore = normalizeCatalog(snap.value);
+        if (fromStore.length > 0) return fromStore;
+      }
+    }
+    if (!directories.directoryFor) return [];
+    const directory = directories.directoryFor("");
+    const loaded = await directory.load();
+    const fromLoad = normalizeCatalog(loaded);
+    if (fromLoad.length > 0) return fromLoad;
+    return normalizeCatalog(directory.store?.getSnapshot());
+  } catch {
+    return [];
+  }
+}
 function apply(ctx) {
   ctx.effect?.(() => ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales), "dsh-sol-pi: locale dictionaries");
   if (!ctx.effect) ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales);
+  let directories;
+  const directoriesReady = new Promise((resolve2) => {
+    if (typeof ctx.inject !== "function") {
+      resolve2(void 0);
+      return;
+    }
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve2(directories);
+    };
+    ctx.inject(["modelDirectories"], (scope2) => {
+      directories = scope2.modelDirectories;
+      finish();
+    });
+    setTimeout(finish, 4e3);
+  });
   const t = translator(ctx);
   const scope = ctx.settingsScope.bind({
     namespace: SOL_DSH_SETTINGS_NAMESPACE,
@@ -1847,6 +2126,7 @@ function apply(ctx) {
         locale: SOL_DSH_LOCALE_NS,
         inject: () => ({
           t,
+          loadModelCatalog: async () => loadCatalogFromDirectories(await directoriesReady),
           load: async () => {
             const snap = await whenSettled(scope);
             const base = decodeSection(snap.base) ?? DEFAULT_SOL_DSH_CONFIG;

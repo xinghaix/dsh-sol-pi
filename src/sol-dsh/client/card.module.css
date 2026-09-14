@@ -309,3 +309,87 @@
 	font-size: 12px;
 	line-height: 1.5;
 }
+
+.fold {
+	flex-direction: column;
+	gap: 0;
+	padding: 12px 0;
+	display: flex;
+}
+
+.field + .fold,
+.fold + .field {
+	border-top: 0.5px solid var(--dsw-alias-border-l2);
+}
+
+.foldHeader {
+	appearance: none;
+	width: 100%;
+	font: inherit;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+	background: 0 0;
+	border: 0;
+	border-radius: 8px;
+	align-items: center;
+	gap: 8px;
+	padding: 0;
+	display: flex;
+}
+
+.foldHeader:focus-visible {
+	outline: 2px solid var(--dsw-alias-brand-primary);
+	outline-offset: 2px;
+}
+
+.foldText {
+	flex-direction: column;
+	flex: 1;
+	gap: 2px;
+	min-width: 0;
+	display: flex;
+}
+
+.foldTitle {
+	color: var(--dsw-alias-label-primary);
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.5;
+}
+
+.foldSummary {
+	color: var(--dsw-alias-label-tertiary);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.foldChevron {
+	color: var(--dsw-alias-label-tertiary);
+	flex: none;
+	transition: transform 0.16s;
+}
+
+.foldChevronOpen {
+	transform: rotate(180deg);
+}
+
+.foldBody {
+	flex-direction: column;
+	gap: 0;
+	margin-top: 8px;
+	display: flex;
+}
+
+.stackField {
+	flex-direction: column;
+	gap: 6px;
+	padding: 10px 0 0;
+	display: flex;
+}
+
+.stackLabel {
+	color: var(--dsw-alias-label-tertiary);
+	font-size: 12px;
+	line-height: 1.5;
+}

@@ -20,9 +20,16 @@ export type SolDshSnapshot = {
 	readonly writable: boolean;
 };
 
+export type ModelCatalogProvider = {
+	readonly id: string;
+	readonly name: string;
+	readonly models: readonly { readonly id: string; readonly name: string }[];
+};
+
 export type SolDshCardProps = {
 	readonly t: Translator;
 	readonly load: () => Promise<SolDshSnapshot>;
+	readonly loadModelCatalog?: () => Promise<readonly ModelCatalogProvider[]>;
 	readonly onSave: (
 		patch: SolDshConfig,
 		expectedRevision: number,
@@ -255,6 +262,197 @@ function SelectRow(props: {
 	);
 }
 
+/** Menu-safe sentinel — empty string breaks selectedId in primitives.Menu. */
+const FOLLOW = "__follow__" as const;
+
+function toMenuId(value: string): string {
+	return value.trim() ? value : FOLLOW;
+}
+
+function fromMenuId(value: string): string {
+	return value === FOLLOW ? "" : value;
+}
+
+function StackSelect(props: {
+	id: string;
+	label: string;
+	value: string;
+	placeholder: string;
+	options: readonly { id: string; label: string }[];
+	disabled: boolean;
+	onChange: (value: string) => void;
+}) {
+	const [open, setOpen] = useState(false);
+	const selected = props.options.find((option) => option.id === props.value);
+	const triggerLabel = selected?.label ?? (props.value || props.placeholder);
+
+	return (
+		<div className={styles.stackField}>
+			<span className={styles.stackLabel} id={`${props.id}-label`}>
+				{props.label}
+			</span>
+			<Menu
+				open={open}
+				onClose={() => setOpen(false)}
+				items={props.options}
+				selectedId={props.value}
+				align="start"
+				portal
+				onSelect={(id) => {
+					setOpen(false);
+					props.onChange(id);
+				}}
+				anchor={
+					<button
+						type="button"
+						id={props.id}
+						className={styles.selector}
+						aria-labelledby={`${props.id}-label`}
+						aria-haspopup="menu"
+						aria-expanded={open}
+						disabled={props.disabled}
+						onClick={() => setOpen((value) => !value)}
+					>
+						<span className={styles.selectorLabel}>{triggerLabel}</span>
+						<IconChevronDownOutline14
+							className={`${styles.selectorChevron}${open ? ` ${styles.selectorChevronOpen}` : ""}`}
+						/>
+					</button>
+				}
+			/>
+		</div>
+	);
+}
+
+function ReducerRouteFold(props: {
+	t: Translator;
+	disabled: boolean;
+	provider: string;
+	model: string;
+	catalog: readonly ModelCatalogProvider[];
+	catalogStatus: "idle" | "loading" | "ready" | "empty";
+	overridden: boolean;
+	overriddenLabel: string;
+	resetLabel: string;
+	onRoute: (provider: string, model: string) => void;
+	onReset: () => void;
+	onOpen: () => void;
+}) {
+	const [open, setOpen] = useState(false);
+	const follow = !props.provider && !props.model;
+	const summary = follow
+		? props.t("reducerRouteSummaryFollow")
+		: props.t("reducerRouteSummaryPinned").replace("{provider}", props.provider).replace("{model}", props.model);
+
+	const providerOptions = [
+		{ id: FOLLOW, label: props.t("reducerFollowAgent") },
+		...props.catalog.map((group) => ({ id: group.id, label: group.name || group.id })),
+	];
+	if (props.provider && !providerOptions.some((option) => option.id === props.provider)) {
+		providerOptions.push({ id: props.provider, label: props.provider });
+	}
+
+	const group = props.catalog.find((entry) => entry.id === props.provider);
+	const modelOptions = [
+		...(group?.models.map((model) => ({ id: model.id, label: model.name || model.id })) ?? []),
+	];
+	if (props.model && !modelOptions.some((option) => option.id === props.model)) {
+		modelOptions.unshift({ id: props.model, label: props.model });
+	}
+
+	return (
+		<div className={styles.fold}>
+			<button
+				type="button"
+				className={styles.foldHeader}
+				aria-expanded={open}
+				aria-label={props.t(open ? "reducerRouteCollapse" : "reducerRouteExpand")}
+				onClick={() => {
+					const next = !open;
+					setOpen(next);
+					if (next) props.onOpen();
+				}}
+			>
+				<span className={styles.foldText}>
+					<span className={styles.foldTitle}>{props.t("reducerRoute")}</span>
+					<span className={styles.foldSummary}>{summary}</span>
+				</span>
+				{props.overridden ? (
+					<span className={styles.badges}>
+						<Tag tone="neutral">{props.overriddenLabel}</Tag>
+						<button
+							type="button"
+							className={styles.reset}
+							disabled={props.disabled}
+							onClick={(event) => {
+								event.stopPropagation();
+								props.onReset();
+							}}
+						>
+							{props.resetLabel}
+						</button>
+					</span>
+				) : null}
+				<IconChevronDownOutline14 className={`${styles.foldChevron}${open ? ` ${styles.foldChevronOpen}` : ""}`} />
+			</button>
+			{open ? (
+				<div className={styles.foldBody}>
+					<p className={styles.hint}>{props.t("reducerRouteHelp")}</p>
+					{props.catalogStatus === "loading" ? (
+						<p className={styles.hint} role="status">
+							{props.t("reducerCatalogLoading")}
+						</p>
+					) : null}
+					{props.catalogStatus === "empty" ? (
+						<p className={styles.hint}>{props.t("reducerCatalogEmpty")}</p>
+					) : null}
+					<StackSelect
+						id="sol-epr-provider"
+						label={props.t("reducerProvider")}
+						value={toMenuId(props.provider)}
+						placeholder={props.t("reducerFollowAgent")}
+						options={providerOptions}
+						disabled={props.disabled}
+						onChange={(value) => {
+							const provider = fromMenuId(value);
+							if (!provider) {
+								props.onRoute("", "");
+								return;
+							}
+							const nextGroup = props.catalog.find((entry) => entry.id === provider);
+							const keepModel =
+								props.model && nextGroup?.models.some((model) => model.id === props.model)
+									? props.model
+									: nextGroup?.models[0]?.id ?? "";
+							props.onRoute(provider, keepModel);
+						}}
+					/>
+					<StackSelect
+						id="sol-epr-model"
+						label={props.t("reducerModel")}
+						value={props.provider ? toMenuId(props.model) : FOLLOW}
+						placeholder={props.t("reducerFollowAgent")}
+						options={
+							props.provider && modelOptions.length > 0
+								? modelOptions
+								: [{ id: FOLLOW, label: props.t("reducerFollowAgent") }]
+						}
+						disabled={props.disabled || !props.provider || modelOptions.length === 0}
+						onChange={(value) => {
+							const model = fromMenuId(value);
+							if (!model) {
+								props.onRoute("", "");
+								return;
+							}
+							props.onRoute(props.provider, model);
+						}}
+					/>
+				</div>
+			) : null}
+		</div>
+	);
+}
+
 /**
  * Settings → 插件 → 插件配置 card, chrome aligned with first-party PluginCard.
  */
@@ -271,7 +469,28 @@ export function SolDshCard(props: SolDshCardProps) {
 	const [saving, setSaving] = useState(false);
 	const [failed, setFailed] = useState(false);
 	const [error, setError] = useState<string | undefined>();
+	const [catalog, setCatalog] = useState<readonly ModelCatalogProvider[]>([]);
+	const [catalogStatus, setCatalogStatus] = useState<"idle" | "loading" | "ready" | "empty">("idle");
 	const saveStarted = useRef(false);
+
+	const ensureCatalog = () => {
+		if (catalogStatus === "loading" || catalogStatus === "ready" || catalogStatus === "empty") return;
+		if (!props.loadModelCatalog) {
+			setCatalogStatus("empty");
+			return;
+		}
+		setCatalogStatus("loading");
+		void props.loadModelCatalog().then(
+			(groups) => {
+				setCatalog(groups);
+				setCatalogStatus(groups.length > 0 ? "ready" : "empty");
+			},
+			() => {
+				setCatalog([]);
+				setCatalogStatus("empty");
+			},
+		);
+	};
 
 	const syncFromSnapshot = (snapshot: SolDshSnapshot) => {
 		setLoaded(snapshot.value);
@@ -286,9 +505,12 @@ export function SolDshCard(props: SolDshCardProps) {
 		setError(undefined);
 	};
 
+	// Host slot inject() rebuilds the props object on parent renders. Depending on
+	// `props` here reloads the snapshot and wipes in-progress Menu edits.
 	useEffect(() => {
 		void props.load().then(syncFromSnapshot);
-	}, [props]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only hydrate
+	}, []);
 
 	useEffect(() => {
 		if (saving) {
@@ -344,6 +566,28 @@ export function SolDshCard(props: SolDshCardProps) {
 		setClears((current) => {
 			const next = new Set(current);
 			next.delete(key);
+			return next;
+		});
+		setFailed(false);
+		setError(undefined);
+	};
+
+	const editReducerRoute = (provider: string, model: string) => {
+		setDraft((current) => {
+			let next = writePath(current, ["evidencePreservingReducer", "reducerProvider"], provider);
+			next = writePath(next, ["evidencePreservingReducer", "reducerModel"], model);
+			return next;
+		});
+		setTexts((current) => {
+			const next = { ...current };
+			delete next["evidencePreservingReducer.reducerProvider"];
+			delete next["evidencePreservingReducer.reducerModel"];
+			return next;
+		});
+		setClears((current) => {
+			const next = new Set(current);
+			next.delete("evidencePreservingReducer.reducerProvider");
+			next.delete("evidencePreservingReducer.reducerModel");
 			return next;
 		});
 		setFailed(false);
@@ -612,30 +856,30 @@ export function SolDshCard(props: SolDshCardProps) {
 						onEdit={(text) => editText(["evidencePreservingReducer", "timeoutMs"], text)}
 						onReset={() => resetPath(["evidencePreservingReducer", "timeoutMs"])}
 					/>
-					<ValueRow
-						{...common}
-						id="sol-epr-provider"
-						label={t("reducerProvider")}
-						hint={t("reducerRouteHelp")}
-						text={textOf(["evidencePreservingReducer", "reducerProvider"], draft.evidencePreservingReducer.reducerProvider)}
-						overridden={overridden(["evidencePreservingReducer", "reducerProvider"])}
-						onEdit={(text) => {
-							editText(["evidencePreservingReducer", "reducerProvider"], text);
-							editValue(["evidencePreservingReducer", "reducerProvider"], text);
+					<ReducerRouteFold
+						t={t}
+						disabled={disabled}
+						provider={draft.evidencePreservingReducer.reducerProvider}
+						model={draft.evidencePreservingReducer.reducerModel}
+						catalog={catalog}
+						catalogStatus={catalogStatus}
+						overridden={
+							overridden(["evidencePreservingReducer", "reducerProvider"]) ||
+							overridden(["evidencePreservingReducer", "reducerModel"])
+						}
+						overriddenLabel={t("overridden")}
+						resetLabel={t("reset")}
+						onOpen={ensureCatalog}
+						onRoute={editReducerRoute}
+						onReset={() => {
+							editReducerRoute("", "");
+							setClears((current) => {
+								const next = new Set(current);
+								next.add("evidencePreservingReducer.reducerProvider");
+								next.add("evidencePreservingReducer.reducerModel");
+								return next;
+							});
 						}}
-						onReset={() => resetPath(["evidencePreservingReducer", "reducerProvider"])}
-					/>
-					<ValueRow
-						{...common}
-						id="sol-epr-model"
-						label={t("reducerModel")}
-						text={textOf(["evidencePreservingReducer", "reducerModel"], draft.evidencePreservingReducer.reducerModel)}
-						overridden={overridden(["evidencePreservingReducer", "reducerModel"])}
-						onEdit={(text) => {
-							editText(["evidencePreservingReducer", "reducerModel"], text);
-							editValue(["evidencePreservingReducer", "reducerModel"], text);
-						}}
-						onReset={() => resetPath(["evidencePreservingReducer", "reducerModel"])}
 					/>
 
 					<SwitchRow
