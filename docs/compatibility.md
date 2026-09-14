@@ -59,7 +59,7 @@ The standalone entry passes `cacheWriteReadRatio` from `sol-pi.json` directly in
 |---|---|
 | `sol-pi.json`, all-false defaults | settings namespace `dsh-sol-pi`, install = opt-in |
 | `cacheWriteReadRatio` default 12.5 | default **50** (DeepSeek Flash miss/hit) |
-| `context` projection for ObservationPack | logged `tools/post-execute` replace (immediate dialect) |
+| `context` projection for ObservationPack | logged `tools/post-execute` replace (immediate dialect; dumps only) |
 | `obs_recall` | `read` / `grep` on the stored path or spill locator |
 | `update_plan` | `todo_write` status transitions |
 | `ExtensionContext.compact()` | `ctx.compaction.compactNow` while idle |

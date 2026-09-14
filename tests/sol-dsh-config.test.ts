@@ -5,12 +5,19 @@
 
 import { describe, expect, it } from "vitest";
 import { apply } from "../src/sol-dsh/index.ts";
+import { attachActionFusion, extendParameters, hasThenRunParameter } from "../src/sol-dsh/action-fusion.ts";
 import { DEFAULT_SOL_DSH_CONFIG, resolveSolDshConfig } from "../src/sol-dsh/config.ts";
 import { reductionEligibility } from "../src/sol-dsh/epr.ts";
+import { acceptContent, listenPostExecute, type DshAgent, type ToolDefinition } from "../src/sol-dsh/host.ts";
 import { zh, en } from "../src/sol-dsh/client/locales.ts";
 import { decideCompaction, DEFAULT_COMPACTION_ECONOMICS } from "../src/sol-core/online-context-compact/economics.ts";
-import { createObservationFromText, placeholderFor } from "../src/sol-core/observation-pack/observation.ts";
-import { mkdtempSync } from "node:fs";
+import {
+	createObservationFromText,
+	placeholderFor,
+	shouldReplaceObservationAtBirth,
+} from "../src/sol-core/observation-pack/observation.ts";
+import { packObservation } from "../src/sol-dsh/observation-pack.ts";
+import { mkdtempSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -97,6 +104,53 @@ describe("sol-dsh observation placeholder", () => {
 	});
 });
 
+describe("sol-dsh immediate observation replace policy", () => {
+	it("replaces only command dumps at birth", () => {
+		expect(shouldReplaceObservationAtBirth("bash")).toBe(true);
+		expect(shouldReplaceObservationAtBirth("edit")).toBe(true);
+		expect(shouldReplaceObservationAtBirth("write")).toBe(true);
+		expect(shouldReplaceObservationAtBirth("grep")).toBe(false);
+		expect(shouldReplaceObservationAtBirth("read")).toBe(false);
+		expect(shouldReplaceObservationAtBirth("hindsight_read_knowledge_page")).toBe(false);
+		expect(shouldReplaceObservationAtBirth("skill")).toBe(false);
+	});
+
+	it("packs oversized bash and leaves oversized knowledge pages inline", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "sol-dsh-obs-policy-"));
+		const agent = { session: { id: "session-test", dir } } as DshAgent;
+		const config = DEFAULT_SOL_DSH_CONFIG.observationPack;
+		const huge = "a".repeat(20_000);
+
+		const packed = await packObservation(
+			{ name: "bash", args: {}, id: "call-bash" },
+			{ content: [{ type: "text", text: huge }] },
+			config,
+			agent,
+		);
+		expect(packed?.content?.[0]).toMatchObject({ type: "text" });
+		expect(String((packed?.content?.[0] as { text: string }).text)).toContain("large tool result stored");
+
+		const skipped = await packObservation(
+			{ name: "hindsight_read_knowledge_page", args: {}, id: "call-kp" },
+			{ content: [{ type: "text", text: huge }] },
+			config,
+			agent,
+		);
+		expect(skipped).toBeUndefined();
+
+		const grep = await packObservation(
+			{ name: "grep", args: {}, id: "call-grep" },
+			{ content: [{ type: "text", text: huge }] },
+			config,
+			agent,
+		);
+		expect(grep).toBeUndefined();
+
+		const objects = join(dir, "dsh-sol-pi", "session-test", "observation-pack", "objects");
+		expect(readdirSync(objects)).toHaveLength(1);
+	});
+});
+
 describe("sol-dsh apply", () => {
 	it("registers native listeners without a default export", async () => {
 		const events: string[] = [];
@@ -124,8 +178,16 @@ describe("sol-dsh apply", () => {
 						? { compactIfNeeded: async () => {}, compactNow: async () => {} }
 						: undefined,
 					systemPrompt: deps.includes("systemPrompt")
-						? { section() {} }
+						? {
+								section() {
+									return () => {};
+								},
+								getSectionOrder() {
+									return 800;
+								},
+							}
 						: undefined,
+					agents: deps.includes("agents") ? { list: () => [] } : undefined,
 					spillStore: deps.includes("spillStore")
 						? {
 								saveText: async () => ({ locator: "spill:1", bytes: 0, retrievalHint: "" }),
@@ -163,11 +225,88 @@ describe("sol-dsh apply", () => {
 		apply(ctx as never, {});
 		expect(events).toContain("tools/post-execute");
 		expect(events).toContain("agent/session-start");
+		expect(events).toContain("agent/created");
 		expect(events).toContain("agent/pre-step");
 		const mod = await import("../src/sol-dsh/index.ts");
 		expect("default" in mod).toBe(false);
 		expect(mod.name).toBe("dsh-sol-pi");
 		expect(mod.inject).toEqual(["tools", "llm"]);
+	});
+});
+
+describe("sol-dsh DSH native seams", () => {
+	it("extends edit JSON schema with then_run", () => {
+		const parameters = extendParameters({
+			type: "object",
+			properties: {
+				file_path: { type: "string" },
+				old_string: { type: "string" },
+				new_string: { type: "string" },
+			},
+			required: ["file_path", "old_string", "new_string"],
+		});
+		expect(hasThenRunParameter(parameters)).toBe(true);
+		const properties = parameters.properties as Record<string, { required?: string[] }>;
+		expect(properties.then_run?.required).toEqual(["command"]);
+	});
+
+	it("shadows edit on the agent-scoped registry", () => {
+		const registered: ToolDefinition[] = [];
+		const base: ToolDefinition = {
+			name: "edit",
+			description: "Edit an existing UTF-8 text file by replacing literal text.",
+			parameters: {
+				type: "object",
+				properties: { file_path: { type: "string" } },
+			},
+			output: { schema: { type: "object" }, render: () => [] },
+			async execute() {
+				return { path: "x" };
+			},
+		};
+		const agent = {
+			id: "agent-1",
+			ctx: {
+				tools: {
+					get(name: string) {
+						return name === "edit" ? base : undefined;
+					},
+					register(definition: ToolDefinition) {
+						registered.push(definition);
+						return () => {};
+					},
+					execute: async () => ({ content: [] }),
+				},
+			},
+		} as unknown as DshAgent;
+		attachActionFusion(agent.ctx, agent, () => true);
+		expect(registered).toHaveLength(1);
+		expect(registered[0]?.name).toBe("edit");
+		expect(hasThenRunParameter(registered[0]?.parameters ?? {})).toBe(true);
+		expect(registered[0]?.description).toMatch(/then_run/);
+		expect(registered[0]?.output).toBe(base.output);
+	});
+
+	it("post-execute listeners return { kind: accept, content }", async () => {
+		let captured: ((...args: never[]) => unknown) | undefined;
+		const ctx = {
+			on(_event: string, listener: (...args: never[]) => unknown) {
+				captured = listener;
+				return () => {};
+			},
+			inject() {},
+			tools: { get() {}, register() {}, execute: async () => ({ content: [] }) },
+			llm: { stream: async function* () {} },
+		};
+		listenPostExecute(ctx as never, async (_exec, _result, decision) =>
+			acceptContent(decision, [{ type: "text", text: "packed" }]),
+		);
+		const decision = await (captured as (exec: unknown, result: unknown, next: () => Promise<unknown>) => Promise<unknown>)(
+			{ name: "bash", args: {} },
+			{ content: [{ type: "text", text: "raw" }] },
+			async () => ({ kind: "accept" }),
+		);
+		expect(decision).toEqual({ kind: "accept", content: [{ type: "text", text: "packed" }] });
 	});
 });
 

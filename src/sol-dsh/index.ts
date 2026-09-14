@@ -35,14 +35,19 @@ export function apply(ctx: DshContext, config: SolDshConfig | Record<string, unk
 	registerOnlineContextCompact(ctx, () => source().onlineContextCompact);
 
 	ctx.inject?.(["systemPrompt"], (child) => {
-		child.systemPrompt?.section({
-			id: "dsh-sol-pi",
-			description: "SoL native DSH mechanisms",
-			source: () => {
+		const prompt = child.systemPrompt;
+		if (!prompt?.section) return;
+		const order = prompt.getSectionOrder?.("TOOL_EDIT") ?? 800;
+		prompt.section({
+			name: "dsh-sol-pi",
+			order,
+			text: () => {
 				const current = source();
 				const parts = ["SoL (dsh-sol-pi) is active."];
 				if (current.actionFusion.enabled) {
-					parts.push("edit/write accept optional then_run {command, timeout?} for a fused follow-up bash command.");
+					parts.push(
+						"edit and write accept optional then_run {command, timeout?}. After a successful file mutation, run that bash command in the same observation — do not split a mutation and its immediate test/build/run into two turns.",
+					);
 				}
 				if (current.observationPack.enabled && current.observationPack.mode === "immediate") {
 					parts.push("Large tool results are stored and shown as a preview; retrieve with read/grep on the given path or locator.");

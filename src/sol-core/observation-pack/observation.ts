@@ -13,6 +13,17 @@ export const DEFAULT_THRESHOLD_BYTES = 10 * 1024;
 export const DEFAULT_FULL_SENDS = 2;
 export const DEFAULT_PLACEHOLDER_EXCERPT_BYTES = 1024;
 
+/**
+ * Tools whose oversized results are command dumps, not the payload the model
+ * just asked to read. Immediate DSH replace (no silent projector, fullSends=0)
+ * may hide those dumps at birth. Everything else stays inline until native spill.
+ */
+export const IMMEDIATE_REPLACE_TOOL_NAMES = ["bash", "edit", "write"] as const;
+
+export function shouldReplaceObservationAtBirth(toolName: string): boolean {
+	return (IMMEDIATE_REPLACE_TOOL_NAMES as readonly string[]).includes(toolName);
+}
+
 const CHARS_PER_TOKEN = 4;
 const OBSERVATION_ID_PATTERN = /^obs_[a-f0-9]{24}$/u;
 const READ_OBJECT_FLAGS = constants.O_RDONLY | constants.O_NOFOLLOW;

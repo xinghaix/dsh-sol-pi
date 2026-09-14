@@ -17,8 +17,8 @@ import {
 	type OnlineState,
 } from "../sol-core/online-context-compact/state.ts";
 import type { OnlineContextCompactConfig } from "./config.ts";
-import type { DshAgent, DshContext, ToolExecution, ToolExecutionResult } from "./host.ts";
-import { recordValue } from "./host.ts";
+import type { DshAgent, DshContext } from "./host.ts";
+import { agentFromPayload, executionAgent, listenPostExecute, recordValue } from "./host.ts";
 
 function economicsFrom(config: OnlineContextCompactConfig): CompactionEconomics {
 	return {
@@ -123,23 +123,22 @@ export function registerOnlineContextCompact(ctx: DshContext, configOf: () => On
 	const states = new Map<string, OnlineState>();
 	const keyOf = (agent: DshAgent | undefined) => agent?.id ?? agent?.session?.id ?? "default";
 
-	ctx.on("agent/session-start", ((payload: { agent?: DshAgent }) => {
-		const agent = payload?.agent;
+	ctx.on("agent/session-start", ((payload: unknown) => {
+		const agent = agentFromPayload(payload);
 		if (!agent) return;
 		states.set(keyOf(agent), initialOnlineState());
 	}) as (...args: never[]) => unknown);
 
-	ctx.on("agent/disposed", ((payload: { agent?: DshAgent }) => {
-		states.delete(keyOf(payload?.agent));
+	ctx.on("agent/disposed", ((payload: unknown) => {
+		states.delete(keyOf(agentFromPayload(payload)));
 	}) as (...args: never[]) => unknown);
 
-	ctx.on("tools/post-execute", (async (exec: ToolExecution, _result: ToolExecutionResult, next: () => Promise<ToolExecutionResult>) => {
-		const decided = await next();
-		if (exec.name !== "todo_write" && exec.name !== "update_plan") return decided;
-		if (decided.isError) return decided;
-		const agent = exec.caller as DshAgent | undefined;
+	listenPostExecute(ctx, async (exec, result, decision) => {
+		if (exec.name !== "todo_write" && exec.name !== "update_plan") return decision;
+		if (result.isError || decision.kind === "block") return decision;
+		const agent = executionAgent(exec);
 		const plan = todosToPlan(exec.args);
-		if (!plan) return decided;
+		if (!plan) return decision;
 		const current = states.get(keyOf(agent)) ?? initialOnlineState();
 		const transition = analyzePlanTransition(current.plan, plan);
 		const completed = transition.completedSteps.at(-1);
@@ -160,19 +159,29 @@ export function registerOnlineContextCompact(ctx: DshContext, configOf: () => On
 					: undefined,
 			),
 		);
-		return decided;
-	}) as (...args: never[]) => unknown);
+		return decision;
+	}, false);
 
 	const attachCompactionHooks = (runtime: DshContext): void => {
-		runtime.on("agent/pre-step", (async (payload: { agent?: DshAgent }) => {
-			const config = configOf();
-			if (!config.enabled) return;
-			const agent = payload?.agent;
-			if (!agent) return;
-			const key = keyOf(agent);
-			const current = recordProviderRequest(states.get(key) ?? initialOnlineState(), measureTokens(runtime, agent));
-			states.set(key, await maybeCompact(runtime, agent, current, config));
-		}) as (...args: never[]) => unknown);
+		runtime.on(
+			"agent/pre-step",
+			((payload: unknown, next: () => Promise<unknown>) => {
+				return (async () => {
+					try {
+						const config = configOf();
+						const agent = agentFromPayload(payload);
+						if (config.enabled && agent) {
+							const key = keyOf(agent);
+							const current = recordProviderRequest(states.get(key) ?? initialOnlineState(), measureTokens(runtime, agent));
+							states.set(key, await maybeCompact(runtime, agent, current, config));
+						}
+					} catch {
+						/* fail-open — never block the step */
+					}
+					return next();
+				})();
+			}) as (...args: never[]) => unknown,
+		);
 	};
 
 	if (typeof ctx.inject === "function") {

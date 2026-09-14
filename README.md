@@ -154,7 +154,7 @@ npm run build:dsh      # dist/sol-dsh/{index,client}.js
 
 ## Pi adapter (optional)
 
-This checkout still includes the original Pi extension under `src/sol-pi/`. On Pi, missing `sol-pi.json` leaves every mechanism **off** (opposite of DSH). Install and config for that path: upstream [NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi), [docs/configuration.md](docs/configuration.md), and [agents-install.md](agents-install.md).
+This checkout still includes the original Pi extension under `src/sol-pi/`. On Pi, missing `sol-pi.json` leaves every mechanism **off** (opposite of DSH). Follow the [agent installation and configuration protocol](agents-install.md) (`scripts/check-sol-pi-config.mjs --require-all-enabled`). Install and config for that path: upstream [NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi) and [docs/configuration.md](docs/configuration.md).
 
 ## Project status
 

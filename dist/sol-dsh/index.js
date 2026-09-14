@@ -98,6 +98,47 @@ function textOf(content) {
 function recordValue(value, key) {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? value[key] : void 0;
 }
+function agentFromPayload(payload) {
+  if (typeof payload !== "object" || payload === null) return void 0;
+  const agent = payload.agent;
+  return agent && typeof agent === "object" && "ctx" in agent ? agent : void 0;
+}
+function executionAgent(exec) {
+  if (exec.agent && typeof exec.agent === "object") return exec.agent;
+  const caller = exec.caller;
+  if (caller && typeof caller === "object" && "ctx" in caller) return caller;
+  return void 0;
+}
+function contentFromDecision(decision, result) {
+  if (decision.kind !== "accept") return void 0;
+  if ("value" in decision && decision.value !== void 0 && decision.content === void 0) return void 0;
+  if (decision.content) return decision.content;
+  return result.content ? [...result.content] : void 0;
+}
+function acceptContent(decision, content) {
+  if (decision.kind === "block") return decision;
+  return {
+    kind: "accept",
+    content,
+    ...decision.additionalContexts ? { additionalContexts: decision.additionalContexts } : {}
+  };
+}
+function listenPostExecute(ctx, listener, prepend = true) {
+  ctx.on(
+    "tools/post-execute",
+    ((exec, result, next) => {
+      return (async () => {
+        const decision = await next();
+        try {
+          return await listener(exec, result, decision);
+        } catch {
+          return decision;
+        }
+      })();
+    }),
+    { prepend }
+  );
+}
 
 // src/sol-dsh/runtime-root.ts
 import { homedir as homedir2 } from "node:os";
@@ -137,6 +178,7 @@ var THEN_RUN_SCHEMA = {
   required: ["command"]
 };
 var FUSED_TOOLS = ["edit", "write"];
+var THEN_RUN_LEAD = "After a successful mutation, pass optional then_run {command, timeout?} to run one bash command in the SAME observation (test/build/run/check). Do not split that follow-up into a later bash turn.";
 function thenRunFromArgs(args) {
   const thenRun = recordValue(args, "then_run");
   const command = recordValue(thenRun, "command");
@@ -168,26 +210,33 @@ function extendParameters(parameters) {
   }
   return { ...parameters, then_run: THEN_RUN_SCHEMA };
 }
+function hasThenRunParameter(parameters) {
+  if (!parameters) return false;
+  const properties = parameters.properties && typeof parameters.properties === "object" && !Array.isArray(parameters.properties) ? parameters.properties : parameters;
+  return Boolean(properties.then_run);
+}
 async function runBash(ctx, thenRun, exec) {
   const args = { command: thenRun.command };
   if (thenRun.timeout !== void 0) args.timeout = thenRun.timeout;
   return ctx.tools.execute({
     name: "bash",
     args,
-    caller: exec.caller,
+    caller: exec.caller ?? exec.agent,
     signal: exec.signal
   });
 }
 function wrapTool(ctx, agent, name2, base) {
   const extras = /* @__PURE__ */ new Map();
-  const extraKey = (exec) => exec.token ?? exec.id ?? `${name2}:${JSON.stringify(exec.args)}`;
+  const extraKey = (exec) => exec.token ?? exec.id ?? exec.callId ?? `${name2}:${JSON.stringify(exec.args)}`;
+  const description = base.description.includes("then_run") ? base.description : `${THEN_RUN_LEAD}
+
+${base.description}`;
   return {
     ...base,
     name: name2,
-    description: `${base.description}
-
-Optional then_run: after a successful mutation, run one bash command and return its output in the same observation.`,
+    description,
     parameters: extendParameters(base.parameters ?? {}),
+    output: base.output,
     isConcurrencySafe: () => false,
     async execute(args, exec) {
       const thenRun = thenRunFromArgs(args);
@@ -231,24 +280,42 @@ Optional then_run: after a successful mutation, run one bash command and return 
     }
   };
 }
-function registerActionFusion(ctx, enabled = () => true) {
-  ctx.on("agent/session-start", ((payload) => {
-    if (!enabled()) return;
-    const agent = payload?.agent;
-    if (!agent?.ctx?.tools) return;
-    for (const name2 of FUSED_TOOLS) {
-      const base = ctx.tools.get(name2);
-      if (!base) continue;
-      agent.ctx.tools.register(wrapTool(ctx, agent, name2, base));
+function resolveBase(ctx, agent, name2) {
+  return agent.ctx.tools.get(name2, agent) ?? agent.ctx.tools.get(name2) ?? ctx.tools.get(name2, agent) ?? ctx.tools.get(name2);
+}
+function attachActionFusion(ctx, agent, enabled) {
+  if (!enabled()) return;
+  const tools = agent.ctx?.tools;
+  if (!tools?.register) return;
+  for (const name2 of FUSED_TOOLS) {
+    const base = resolveBase(ctx, agent, name2);
+    if (!base) continue;
+    if (hasThenRunParameter(base.parameters)) continue;
+    try {
+      tools.register(wrapTool(ctx, agent, name2, base));
+    } catch (error) {
+      ctx.logger?.warn?.(
+        `dsh-sol-pi: could not shadow ${name2} with then_run on agent ${agent.id ?? "?"}: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
-  }));
+  }
+}
+function registerActionFusion(ctx, enabled = () => true) {
+  const onAgent = (payload) => {
+    const agent = agentFromPayload(payload);
+    if (agent) attachActionFusion(ctx, agent, enabled);
+  };
+  ctx.on("agent/session-start", onAgent);
+  ctx.on("agent/created", onAgent);
   if (typeof ctx.inject === "function") {
-    ctx.inject(["systemPrompt"], (child) => {
-      child.systemPrompt?.section({
-        id: "sol-dsh-action-fusion",
-        description: "SoL action fusion then_run",
-        source: () => "edit and write accept optional then_run { command, timeout? }. After a successful file mutation, the command runs in the same observation. Do not split a mutation and its immediate test/build/run into two turns."
-      });
+    ctx.inject(["agents"], (child) => {
+      try {
+        for (const agent of child.agents?.list?.() ?? []) attachActionFusion(ctx, agent, enabled);
+      } catch (error) {
+        ctx.logger?.warn?.(
+          `dsh-sol-pi: could not wrap live agents: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
     });
   }
 }
@@ -675,21 +742,21 @@ ${receipt}` };
   return { ...result, content: next };
 }
 function registerEvidencePreservingReducer(ctx, configOf) {
-  ctx.on(
-    "tools/post-execute",
-    (async (exec, _result, next) => {
-      const decided = await next();
-      const config = configOf();
-      if (!config.enabled) return decided;
-      try {
-        const reduced = await reduceDiagnosticResult(ctx, exec, decided, config, exec.caller);
-        return reduced ?? decided;
-      } catch {
-        return decided;
-      }
-    }),
-    true
-  );
+  listenPostExecute(ctx, async (exec, result, decision) => {
+    const config = configOf();
+    if (!config.enabled) return decision;
+    if (decision.kind !== "accept") return decision;
+    const content = contentFromDecision(decision, result);
+    const reduced = await reduceDiagnosticResult(
+      ctx,
+      exec,
+      { ...result, content: content ?? result.content },
+      config,
+      executionAgent(exec)
+    );
+    if (!reduced?.content) return decision;
+    return acceptContent(decision, [...reduced.content]);
+  });
 }
 
 // src/sol-core/online-context-compact/economics.ts
@@ -973,20 +1040,19 @@ function registerOnlineContextCompact(ctx, configOf) {
   const states = /* @__PURE__ */ new Map();
   const keyOf = (agent) => agent?.id ?? agent?.session?.id ?? "default";
   ctx.on("agent/session-start", ((payload) => {
-    const agent = payload?.agent;
+    const agent = agentFromPayload(payload);
     if (!agent) return;
     states.set(keyOf(agent), initialOnlineState());
   }));
   ctx.on("agent/disposed", ((payload) => {
-    states.delete(keyOf(payload?.agent));
+    states.delete(keyOf(agentFromPayload(payload)));
   }));
-  ctx.on("tools/post-execute", (async (exec, _result, next) => {
-    const decided = await next();
-    if (exec.name !== "todo_write" && exec.name !== "update_plan") return decided;
-    if (decided.isError) return decided;
-    const agent = exec.caller;
+  listenPostExecute(ctx, async (exec, result, decision) => {
+    if (exec.name !== "todo_write" && exec.name !== "update_plan") return decision;
+    if (result.isError || decision.kind === "block") return decision;
+    const agent = executionAgent(exec);
     const plan = todosToPlan(exec.args);
-    if (!plan) return decided;
+    if (!plan) return decision;
     const current = states.get(keyOf(agent)) ?? initialOnlineState();
     const transition = analyzePlanTransition(current.plan, plan);
     const completed = transition.completedSteps.at(-1);
@@ -1005,18 +1071,27 @@ function registerOnlineContextCompact(ctx, configOf) {
         } : void 0
       )
     );
-    return decided;
-  }));
+    return decision;
+  }, false);
   const attachCompactionHooks = (runtime) => {
-    runtime.on("agent/pre-step", (async (payload) => {
-      const config = configOf();
-      if (!config.enabled) return;
-      const agent = payload?.agent;
-      if (!agent) return;
-      const key = keyOf(agent);
-      const current = recordProviderRequest(states.get(key) ?? initialOnlineState(), measureTokens(runtime, agent));
-      states.set(key, await maybeCompact(runtime, agent, current, config));
-    }));
+    runtime.on(
+      "agent/pre-step",
+      ((payload, next) => {
+        return (async () => {
+          try {
+            const config = configOf();
+            const agent = agentFromPayload(payload);
+            if (config.enabled && agent) {
+              const key = keyOf(agent);
+              const current = recordProviderRequest(states.get(key) ?? initialOnlineState(), measureTokens(runtime, agent));
+              states.set(key, await maybeCompact(runtime, agent, current, config));
+            }
+          } catch {
+          }
+          return next();
+        })();
+      })
+    );
   };
   if (typeof ctx.inject === "function") {
     ctx.inject(["compaction"], (child) => attachCompactionHooks(child));
@@ -1029,6 +1104,10 @@ import { constants } from "node:fs";
 import { lstat, mkdir as mkdir2, open } from "node:fs/promises";
 import { dirname as dirname2, join as join3 } from "node:path";
 var DEFAULT_THRESHOLD_BYTES = 10 * 1024;
+var IMMEDIATE_REPLACE_TOOL_NAMES = ["bash", "edit", "write"];
+function shouldReplaceObservationAtBirth(toolName) {
+  return IMMEDIATE_REPLACE_TOOL_NAMES.includes(toolName);
+}
 var CHARS_PER_TOKEN = 4;
 var READ_OBJECT_FLAGS = constants.O_RDONLY | constants.O_NOFOLLOW;
 var CREATE_OBJECT_FLAGS = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW;
@@ -1151,9 +1230,12 @@ async function packObservation(exec, result, config, agent, spill) {
   if (result.isError) return void 0;
   const text = textOf(result.content);
   if (!text) return void 0;
+  if (config.mode === "immediate" && !shouldReplaceObservationAtBirth(exec.name)) {
+    return void 0;
+  }
   const observation = createObservationFromText(
     exec.name,
-    String(exec.id ?? exec.token ?? `${exec.name}:${text.length}`),
+    String(exec.id ?? exec.callId ?? exec.token ?? `${exec.name}:${text.length}`),
     text,
     solDshRuntimeRoot(agent),
     config.thresholdBytes
@@ -1192,27 +1274,16 @@ function registerObservationPack(ctx, configOf) {
       });
     });
   }
-  ctx.on(
-    "tools/post-execute",
-    (async (exec, _result, next) => {
-      const decided = await next();
-      const config = configOf();
-      if (!config.enabled) return decided;
-      try {
-        const packed = await packObservation(
-          exec,
-          decided,
-          config,
-          exec.caller,
-          spill
-        );
-        return packed ?? decided;
-      } catch {
-        return decided;
-      }
-    }),
-    true
-  );
+  listenPostExecute(ctx, async (exec, result, decision) => {
+    const config = configOf();
+    if (!config.enabled) return decision;
+    if (decision.kind !== "accept" || exec.parent !== void 0) return decision;
+    const content = contentFromDecision(decision, result);
+    if (!content) return decision;
+    const packed = await packObservation(exec, { ...result, content }, config, executionAgent(exec), spill);
+    if (!packed?.content) return decision;
+    return acceptContent(decision, [...packed.content]);
+  });
 }
 
 // src/sol-dsh/settings.ts
@@ -1262,14 +1333,19 @@ function apply(ctx, config = {}) {
   registerActionFusion(ctx, () => source().actionFusion.enabled);
   registerOnlineContextCompact(ctx, () => source().onlineContextCompact);
   ctx.inject?.(["systemPrompt"], (child) => {
-    child.systemPrompt?.section({
-      id: "dsh-sol-pi",
-      description: "SoL native DSH mechanisms",
-      source: () => {
+    const prompt = child.systemPrompt;
+    if (!prompt?.section) return;
+    const order = prompt.getSectionOrder?.("TOOL_EDIT") ?? 800;
+    prompt.section({
+      name: "dsh-sol-pi",
+      order,
+      text: () => {
         const current = source();
         const parts = ["SoL (dsh-sol-pi) is active."];
         if (current.actionFusion.enabled) {
-          parts.push("edit/write accept optional then_run {command, timeout?} for a fused follow-up bash command.");
+          parts.push(
+            "edit and write accept optional then_run {command, timeout?}. After a successful file mutation, run that bash command in the same observation \u2014 do not split a mutation and its immediate test/build/run into two turns."
+          );
         }
         if (current.observationPack.enabled && current.observationPack.mode === "immediate") {
           parts.push("Large tool results are stored and shown as a preview; retrieve with read/grep on the given path or locator.");

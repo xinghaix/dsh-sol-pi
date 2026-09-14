@@ -7,10 +7,17 @@ import {
 	createObservationFromText,
 	ensureStored,
 	placeholderFor,
+	shouldReplaceObservationAtBirth,
 } from "../sol-core/observation-pack/observation.ts";
 import type { ObservationPackConfig } from "./config.ts";
 import type { ContentBlock, DshAgent, DshContext, ToolExecution, ToolExecutionResult } from "./host.ts";
-import { textOf } from "./host.ts";
+import {
+	acceptContent,
+	contentFromDecision,
+	executionAgent,
+	listenPostExecute,
+	textOf,
+} from "./host.ts";
 import { solDshRuntimeRoot } from "./runtime-root.ts";
 
 function retrieveHint(path: string, locator: string | undefined): string {
@@ -28,9 +35,14 @@ export async function packObservation(
 	if (result.isError) return undefined;
 	const text = textOf(result.content);
 	if (!text) return undefined;
+	// Immediate dialect cannot give FULL_SENDS of the original. Do not replace
+	// read/grep/knowledge results the model still needs this turn.
+	if (config.mode === "immediate" && !shouldReplaceObservationAtBirth(exec.name)) {
+		return undefined;
+	}
 	const observation = createObservationFromText(
 		exec.name,
-		String(exec.id ?? exec.token ?? `${exec.name}:${text.length}`),
+		String(exec.id ?? exec.callId ?? exec.token ?? `${exec.name}:${text.length}`),
 		text,
 		solDshRuntimeRoot(agent),
 		config.thresholdBytes,
@@ -63,7 +75,6 @@ export async function packObservation(
 }
 
 export function registerObservationPack(ctx: DshContext, configOf: () => ObservationPackConfig): void {
-	// spillStore is optional — capture via nested inject; never touch ctx.spillStore on the root fiber.
 	let spill: DshContext["spillStore"];
 	if (typeof ctx.inject === "function") {
 		ctx.inject(["spillStore"], (child) => {
@@ -74,25 +85,14 @@ export function registerObservationPack(ctx: DshContext, configOf: () => Observa
 		});
 	}
 
-	ctx.on(
-		"tools/post-execute",
-		(async (exec: ToolExecution, _result: ToolExecutionResult, next: () => Promise<ToolExecutionResult>) => {
-			const decided = await next();
-			const config = configOf();
-			if (!config.enabled) return decided;
-			try {
-				const packed = await packObservation(
-					exec,
-					decided,
-					config,
-					exec.caller as DshAgent | undefined,
-					spill,
-				);
-				return packed ?? decided;
-			} catch {
-				return decided;
-			}
-		}) as (...args: never[]) => unknown,
-		true,
-	);
+	listenPostExecute(ctx, async (exec, result, decision) => {
+		const config = configOf();
+		if (!config.enabled) return decision;
+		if (decision.kind !== "accept" || exec.parent !== undefined) return decision;
+		const content = contentFromDecision(decision, result);
+		if (!content) return decision;
+		const packed = await packObservation(exec, { ...result, content }, config, executionAgent(exec), spill);
+		if (!packed?.content) return decision;
+		return acceptContent(decision, [...packed.content]);
+	});
 }

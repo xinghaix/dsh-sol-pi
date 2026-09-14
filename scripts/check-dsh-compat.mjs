@@ -27,6 +27,8 @@ must(/export function apply\(/.test(index), "src/sol-dsh/index.ts must export ap
 must(/export \{ Config \}/.test(index), "src/sol-dsh/index.ts must export Config");
 must(!/export default/.test(index), "src/sol-dsh/index.ts must not use export default (Cordis unwrapExports drops inject)");
 must(!/purpose:\s*['"]sol-/.test(index), "auxiliary LLM calls must not invent a purpose outside compaction | session-title");
+must(/name:\s*"dsh-sol-pi"/.test(index), "systemPrompt.section must use DSH PromptSection { name, order, text }");
+must(!/source:\s*\(\)\s*=>/.test(index), "systemPrompt.section must not use Pi-style id/source");
 
 const epr = read("src/sol-dsh/epr.ts");
 must(!/purpose:/.test(epr), "EPR nested calls must leave purpose unset");
@@ -37,6 +39,11 @@ must(/compactNow/.test(occ), "OCC must call ctx.compaction.compactNow");
 
 const pack = read("src/sol-dsh/observation-pack.ts");
 must(!/obs_recall/.test(pack), "DSH ObservationPack must not invent obs_recall");
+must(read("src/sol-dsh/host.ts").includes("PostToolDecision"), "host must type tools/post-execute as PostToolDecision");
+must(read("src/sol-dsh/observation-pack.ts").includes("listenPostExecute"), "ObservationPack must use the DSH post-execute decision helper");
+must(read("src/sol-dsh/epr.ts").includes("listenPostExecute"), "EPR must use the DSH post-execute decision helper");
+must(read("src/sol-dsh/action-fusion.ts").includes("agent/created"), "Action Fusion must wrap agents on created as well as session-start");
+must(read("src/sol-dsh/occ.ts").includes("return next()"), "OCC agent/pre-step must delegate next() so the waterfall does not stall");
 
 const patch = read("src/sol-dsh/cordis.patch.yml");
 must(/id: dsh-sol-pi/.test(patch), "cordis.patch.yml must insert id dsh-sol-pi");

@@ -12,10 +12,10 @@ Configuration contract: [dsh-configuration.md](dsh-configuration.md). Research: 
 |---|---|
 | Host plugin | Shipped. Named exports `name` / `inject` / `apply` / `Config`. No `export default`. |
 | Settings card | Shipped. **Settings → 插件 → 插件配置**. zh + en, follows **通用设置 → 语言**. No SoL language field. |
-| Action Fusion | Per-agent scoped `edit`/`write` with optional `then_run`. Does not disable `tool-fs`. |
-| ObservationPack | Default **immediate** spill dialect. Retrieval is `read` / `grep`. No `obs_recall`. `delayed` only archives (DSH has no silent projection hook). |
-| Evidence-Preserving Reducer | `tools/post-execute` + `ctx.llm.stream` with `purpose` unset. Empty reducer route = current agent model. Fail-open. |
-| Online Context Compact | Policy on `ctx.compaction` (`todo_write` boundaries + `compactNow`). No second engine. Default `cacheWriteReadRatio` **50** (DeepSeek Flash miss/hit). |
+| Action Fusion | Shadows agent-scoped `edit`/`write` with optional `then_run` (session-start, created, and already-live agents). DSH has no first-party `then_run`. |
+| ObservationPack | `tools/post-execute` returns `{ kind: "accept", content }`. Immediate dialect replaces only command dumps (`bash`, fused `edit`/`write`). Retrieval is `read` / `grep`. No `obs_recall`. |
+| Evidence-Preserving Reducer | Same post-execute decision shape + `ctx.llm.stream` with `purpose` unset. Fail-open. |
+| Online Context Compact | Policy on `ctx.compaction` (`todo_write` + `compactNow`). `agent/pre-step` always calls `next()`. |
 | Tests | `npm test` and `npm run check:dsh` cover config, locales, packaging, and the plugin export shape. |
 | Upstream Pi | Unmodified. Do not fork Pi or DSH. |
 
@@ -79,7 +79,7 @@ dsh plugin --profile web remove dsh-sol-pi
 Installing the plugin enables:
 
 - Action Fusion **on**
-- ObservationPack **on**, `mode: immediate`, `fullSends: 0`
+- ObservationPack **on**, `mode: immediate`, `fullSends: 0` (replaces `bash` / fused `edit`/`write` dumps only)
 - Evidence-Preserving Reducer **on**, reducer = current agent route
 - Online Context Compact **on**, `cacheWriteReadRatio: 50`
 
@@ -95,6 +95,15 @@ Override in **Settings → 插件**, or in the profile / `$DSH_HOME/cordis.patch
 ```
 
 Do not put API keys, URLs, or a language field in this namespace.
+
+## Native seams (why install is not enough by itself)
+
+DSH does not ship `then_run`. The plugin must **put it on the model-facing `edit`/`write` schema** via a scoped `tools.register` shadow, and must speak DSH contracts:
+
+- `systemPrompt.section({ name, order, text })` — not Pi-style `{ id, source }`
+- `tools/post-execute` returns `{ kind: "accept", content }` — not a raw tool result
+- Fusion attaches on `agent/session-start`, `agent/created`, and `ctx.agents.list()` so a plugin loaded into an already-running `dsh web` still wraps live sessions
+- After install, **restart `dsh web`** and confirm a new request’s `edit` schema includes `then_run`. The model still has to pass the field; the description and system section tell it to fuse test/build/run instead of a second `bash` turn.
 
 ## Security
 

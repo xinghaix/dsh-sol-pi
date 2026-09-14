@@ -22,7 +22,14 @@ import {
 } from "../sol-core/action-fusion/then-run.ts";
 import type { EvidencePreservingReducerConfig } from "./config.ts";
 import type { ContentBlock, DshAgent, DshContext, ToolExecution, ToolExecutionResult } from "./host.ts";
-import { recordValue, textOf } from "./host.ts";
+import {
+	acceptContent,
+	contentFromDecision,
+	executionAgent,
+	listenPostExecute,
+	recordValue,
+	textOf,
+} from "./host.ts";
 import { solDshRuntimeRoot } from "./runtime-root.ts";
 
 export type ReductionSkipReason =
@@ -164,21 +171,21 @@ export function registerEvidencePreservingReducer(
 	ctx: DshContext,
 	configOf: () => EvidencePreservingReducerConfig,
 ): void {
-	ctx.on(
-		"tools/post-execute",
-		(async (exec: ToolExecution, _result: ToolExecutionResult, next: () => Promise<ToolExecutionResult>) => {
-			const decided = await next();
-			const config = configOf();
-			if (!config.enabled) return decided;
-			try {
-				const reduced = await reduceDiagnosticResult(ctx, exec, decided, config, exec.caller as DshAgent | undefined);
-				return reduced ?? decided;
-			} catch {
-				return decided;
-			}
-		}) as (...args: never[]) => unknown,
-		true,
-	);
+	listenPostExecute(ctx, async (exec, result, decision) => {
+		const config = configOf();
+		if (!config.enabled) return decision;
+		if (decision.kind !== "accept") return decision;
+		const content = contentFromDecision(decision, result);
+		const reduced = await reduceDiagnosticResult(
+			ctx,
+			exec,
+			{ ...result, content: content ?? result.content },
+			config,
+			executionAgent(exec),
+		);
+		if (!reduced?.content) return decision;
+		return acceptContent(decision, [...reduced.content]);
+	});
 }
 
 

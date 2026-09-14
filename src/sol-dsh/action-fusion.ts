@@ -13,7 +13,7 @@ import {
 	type ThenRunInput,
 } from "../sol-core/action-fusion/then-run.ts";
 import type { ContentBlock, DshAgent, DshContext, ToolDefinition, ToolExecution, ToolExecutionResult } from "./host.ts";
-import { recordValue, textOf } from "./host.ts";
+import { agentFromPayload, recordValue, textOf } from "./host.ts";
 import { sessionCwd } from "./runtime-root.ts";
 
 const THEN_RUN_SCHEMA = {
@@ -30,7 +30,10 @@ const THEN_RUN_SCHEMA = {
 
 const FUSED_TOOLS = ["edit", "write"] as const;
 
-function thenRunFromArgs(args: unknown): ThenRunInput | undefined {
+const THEN_RUN_LEAD =
+	"After a successful mutation, pass optional then_run {command, timeout?} to run one bash command in the SAME observation (test/build/run/check). Do not split that follow-up into a later bash turn.";
+
+export function thenRunFromArgs(args: unknown): ThenRunInput | undefined {
 	const thenRun = recordValue(args, "then_run");
 	const command = recordValue(thenRun, "command");
 	if (typeof command !== "string" || command.length === 0) return undefined;
@@ -52,7 +55,7 @@ function withoutThenRun(args: unknown): unknown {
 	return rest;
 }
 
-function extendParameters(parameters: Record<string, unknown>): Record<string, unknown> {
+export function extendParameters(parameters: Record<string, unknown>): Record<string, unknown> {
 	const properties =
 		parameters.properties && typeof parameters.properties === "object" && !Array.isArray(parameters.properties)
 			? (parameters.properties as Record<string, unknown>)
@@ -68,6 +71,15 @@ function extendParameters(parameters: Record<string, unknown>): Record<string, u
 	return { ...parameters, then_run: THEN_RUN_SCHEMA };
 }
 
+export function hasThenRunParameter(parameters: Record<string, unknown> | undefined): boolean {
+	if (!parameters) return false;
+	const properties =
+		parameters.properties && typeof parameters.properties === "object" && !Array.isArray(parameters.properties)
+			? (parameters.properties as Record<string, unknown>)
+			: parameters;
+	return Boolean(properties.then_run);
+}
+
 async function runBash(
 	ctx: DshContext,
 	thenRun: ThenRunInput,
@@ -78,19 +90,21 @@ async function runBash(
 	return ctx.tools.execute({
 		name: "bash",
 		args,
-		caller: exec.caller,
+		caller: exec.caller ?? exec.agent,
 		signal: exec.signal,
 	});
 }
 
 function wrapTool(ctx: DshContext, agent: DshAgent, name: (typeof FUSED_TOOLS)[number], base: ToolDefinition): ToolDefinition {
 	const extras = new Map<string | symbol, string>();
-	const extraKey = (exec: ToolExecution) => exec.token ?? exec.id ?? `${name}:${JSON.stringify(exec.args)}`;
+	const extraKey = (exec: ToolExecution) => exec.token ?? exec.id ?? exec.callId ?? `${name}:${JSON.stringify(exec.args)}`;
+	const description = base.description.includes("then_run") ? base.description : `${THEN_RUN_LEAD}\n\n${base.description}`;
 	return {
 		...base,
 		name,
-		description: `${base.description}\n\nOptional then_run: after a successful mutation, run one bash command and return its output in the same observation.`,
+		description,
 		parameters: extendParameters(base.parameters ?? {}),
+		output: base.output,
 		isConcurrencySafe: () => false,
 		async execute(args: unknown, exec: ToolExecution) {
 			const thenRun = thenRunFromArgs(args);
@@ -135,26 +149,46 @@ function wrapTool(ctx: DshContext, agent: DshAgent, name: (typeof FUSED_TOOLS)[n
 	};
 }
 
-export function registerActionFusion(ctx: DshContext, enabled: () => boolean = () => true): void {
-	ctx.on("agent/session-start", ((payload: { agent?: DshAgent }) => {
-		if (!enabled()) return;
-		const agent = payload?.agent;
-		if (!agent?.ctx?.tools) return;
-		for (const name of FUSED_TOOLS) {
-			const base = ctx.tools.get(name);
-			if (!base) continue;
-			agent.ctx.tools.register(wrapTool(ctx, agent, name, base));
+function resolveBase(ctx: DshContext, agent: DshAgent, name: (typeof FUSED_TOOLS)[number]): ToolDefinition | undefined {
+	return agent.ctx.tools.get(name, agent) ?? agent.ctx.tools.get(name) ?? ctx.tools.get(name, agent) ?? ctx.tools.get(name);
+}
+
+export function attachActionFusion(ctx: DshContext, agent: DshAgent, enabled: () => boolean): void {
+	if (!enabled()) return;
+	const tools = agent.ctx?.tools;
+	if (!tools?.register) return;
+	for (const name of FUSED_TOOLS) {
+		const base = resolveBase(ctx, agent, name);
+		if (!base) continue;
+		if (hasThenRunParameter(base.parameters)) continue;
+		try {
+			tools.register(wrapTool(ctx, agent, name, base));
+		} catch (error) {
+			ctx.logger?.warn?.(
+				`dsh-sol-pi: could not shadow ${name} with then_run on agent ${agent.id ?? "?"}: ${error instanceof Error ? error.message : String(error)}`,
+			);
 		}
-	}) as (...args: never[]) => unknown);
+	}
+}
+
+export function registerActionFusion(ctx: DshContext, enabled: () => boolean = () => true): void {
+	const onAgent = (payload: unknown) => {
+		const agent = agentFromPayload(payload);
+		if (agent) attachActionFusion(ctx, agent, enabled);
+	};
+
+	ctx.on("agent/session-start", onAgent as (...args: never[]) => unknown);
+	ctx.on("agent/created", onAgent as (...args: never[]) => unknown);
 
 	if (typeof ctx.inject === "function") {
-		ctx.inject(["systemPrompt"], (child) => {
-			child.systemPrompt?.section({
-				id: "sol-dsh-action-fusion",
-				description: "SoL action fusion then_run",
-				source: () =>
-					"edit and write accept optional then_run { command, timeout? }. After a successful file mutation, the command runs in the same observation. Do not split a mutation and its immediate test/build/run into two turns.",
-			});
+		ctx.inject(["agents"], (child) => {
+			try {
+				for (const agent of child.agents?.list?.() ?? []) attachActionFusion(ctx, agent, enabled);
+			} catch (error) {
+				ctx.logger?.warn?.(
+					`dsh-sol-pi: could not wrap live agents: ${error instanceof Error ? error.message : String(error)}`,
+				);
+			}
 		});
 	}
 }
