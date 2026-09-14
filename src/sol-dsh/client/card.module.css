@@ -1,0 +1,132 @@
+.card {
+	border: 1px solid var(--dsw-alias-border, #d0d5dd);
+	border-radius: 12px;
+	background: var(--dsw-alias-surface, #fff);
+	color: var(--dsw-alias-text, #101828);
+	overflow: hidden;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 16px 18px;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.titles {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 1;
+}
+
+.titles strong {
+	font-size: 15px;
+}
+
+.titles span {
+	font-size: 13px;
+	color: var(--dsw-alias-text-secondary, #667085);
+}
+
+.pill {
+	font-size: 12px;
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: var(--dsw-alias-warning-bg, #fff6e5);
+	color: var(--dsw-alias-warning, #b54708);
+}
+
+.chevron,
+.chevronOpen {
+	transition: transform 120ms ease;
+}
+
+.chevronOpen {
+	transform: rotate(180deg);
+}
+
+.body {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 0 18px 18px;
+	border-top: 1px solid var(--dsw-alias-border, #eaecf0);
+}
+
+.fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.fieldset legend {
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.help,
+.notice {
+	margin: 0;
+	font-size: 12px;
+	color: var(--dsw-alias-text-secondary, #667085);
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	font-size: 13px;
+}
+
+.row input[type="number"],
+.row input[type="text"],
+.row input:not([type]),
+.row select {
+	min-width: 160px;
+	padding: 6px 8px;
+	border: 1px solid var(--dsw-alias-border, #d0d5dd);
+	border-radius: 8px;
+	background: var(--dsw-alias-input, #fff);
+	color: inherit;
+}
+
+.error {
+	margin: 0;
+	color: var(--dsw-alias-danger, #d92d20);
+	font-size: 13px;
+}
+
+.footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.footer button {
+	padding: 6px 12px;
+	border-radius: 8px;
+	border: 1px solid var(--dsw-alias-border, #d0d5dd);
+	background: var(--dsw-alias-surface, #fff);
+	color: inherit;
+}
+
+.footer button[type="submit"] {
+	background: var(--dsw-alias-primary, #155eef);
+	border-color: var(--dsw-alias-primary, #155eef);
+	color: #fff;
+}
+
+.footer button:disabled {
+	opacity: 0.5;
+}

@@ -51,6 +51,22 @@ Online Context Compact reads `ExtensionContext.getContextUsage()` for both the c
 
 The standalone entry passes `cacheWriteReadRatio` from `sol-pi.json` directly into Online Context Compact's economic check. It does not inspect model price metadata. Changing models during a session does not change the ratio; users who want a different decision policy update the configuration and start a new session.
 
+## DeepSeek Harness
+
+`sol-dsh` is a separate Cordis adapter, not a Pi host. It does not import Pi `ExtensionAPI`. Shared algorithms live in `src/sol-core/`.
+
+| Pi | DSH |
+|---|---|
+| `sol-pi.json`, all-false defaults | settings namespace `sol-dsh`, install = opt-in |
+| `cacheWriteReadRatio` default 12.5 | default **50** (DeepSeek Flash miss/hit) |
+| `context` projection for ObservationPack | logged `tools/post-execute` replace (immediate dialect) |
+| `obs_recall` | `read` / `grep` on the stored path or spill locator |
+| `update_plan` | `todo_write` status transitions |
+| `ExtensionContext.compact()` | `ctx.compaction.compactNow` while idle |
+| reducer `openai-codex` / `gpt-5.6-luna` | empty route = current agent model; `purpose` unset |
+
+Do not fork or vendor DSH. Pin a DSH release the same way Pi is pinned to 0.84.2. User-facing install: [dsh.md](dsh.md).
+
 ## Interactive TUI
 
 The lightning savings treatment uses Pi 0.84.2's public `renderCall`,

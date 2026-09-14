@@ -12,7 +12,7 @@
 </p>
 
 > [!NOTE]
-> This repository contains the open-source version of SoL-Pi, a standalone extension for [Pi](https://github.com/earendil-works/pi). It is not an official distribution of Pi.
+> Upstream SoL-Pi is a standalone extension for [Pi](https://github.com/earendil-works/pi), maintained by NVIDIA ([NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi)). This public checkout adds a **native DeepSeek Harness plugin**. It is not an official distribution of Pi or of DeepSeek Harness.
 
 ## 💡 TL;DR
 
@@ -20,7 +20,7 @@
 
 SoL-Pi is a standalone extension for Pi that packages four reusable efficiency mechanisms discovered through scaled auto-research loops. It reduces repeated model turns, context replay, oversized observations, and unnecessary long-log reading while preserving the work and evidence an agent needs to finish a task.
 
-SoL-Pi installs on top of an unmodified Pi release. Every mechanism is opt-in and disabled by default.
+On Pi, SoL installs on an unmodified release and every mechanism is opt-in (disabled by default). On DeepSeek Harness, installing the `sol-dsh` bundle **is** the opt-in and omitted keys take the DSH best profile.
 
 ## Introduction
 
@@ -45,6 +45,20 @@ The mechanisms share four rules:
 - **Explicit opt-in.** A missing configuration leaves every mechanism disabled.
 - **Preserve evidence.** Original observations remain available locally, and reducer failures leave the original result unchanged.
 - **Use Pi's runtime choices.** Authentication, provider URLs, the main model, and shell behavior remain under Pi's control.
+
+## DeepSeek Harness (native)
+
+The same four mechanisms ship as a **native Cordis plugin** (`sol-dsh`), not a Pi shim. Algorithms live in `src/sol-core/`. The adapter uses `ctx.tools`, `ctx.llm.stream` (`purpose` unset), and `ctx.compaction`.
+
+Full install, status, and security notes: **[docs/dsh.md](docs/dsh.md)**. Config contract: [docs/dsh-configuration.md](docs/dsh-configuration.md).
+
+```bash
+dsh plugin --profile web add github:xinghaix/SoL-Pi --allow-build sol-pi
+dsh --profile web --dump-config    # must show id: sol-dsh
+dsh web
+```
+
+Then **Settings → 插件**. Language follows **Settings → 通用设置 → 语言** (zh / en). No SoL language setting. Omitted config = all four on, ObservationPack immediate, `cacheWriteReadRatio` 50.
 
 ## Technical Details and Core Insights
 
@@ -124,10 +138,12 @@ Evidence-Preserving Reducer may send eligible diagnostic-log content to its conf
 
 | Document | Purpose |
 |---|---|
-| [Configuration](docs/configuration.md) | Config search order, schema, defaults, and trust behavior |
-| [Compatibility](docs/compatibility.md) | Supported Pi APIs and standalone integration details |
+| [DSH install and status](docs/dsh.md) | Native DeepSeek Harness plugin: install, defaults, current state |
+| [DSH configuration](docs/dsh-configuration.md) | DSH settings schema, best profile, UI and locale rules |
+| [Configuration](docs/configuration.md) | Pi `sol-pi.json` search order, schema, defaults, and trust behavior |
+| [Compatibility](docs/compatibility.md) | Supported Pi APIs, DSH adapter seams, standalone integration |
 | [Security](SECURITY.md) | Local storage, remote reduction, and sensitive behavior |
-| [Agent installation](agents-install.md) | Reproducible installation and all-enabled validation procedure |
+| [Agent installation](agents-install.md) | Reproducible Pi installation and all-enabled validation procedure |
 
 ## Development
 
@@ -144,9 +160,16 @@ node scripts/check-pi-compat.mjs
 
 ## Project Status
 
-SoL-Pi is developed and maintained by NVIDIA as a standalone extension for Pi.
+Upstream SoL-Pi is developed and maintained by NVIDIA as a standalone Pi extension.
 
-We welcome tested, Pi-compatible extension PRs that improve token efficiency and reduce token cost. Our team will help benchmark contributions, publish results on a regular reporting cycle, and credit authors of accepted PRs as Contributors. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+This public repository ([xinghaix/SoL-Pi](https://github.com/xinghaix/SoL-Pi)) keeps that Pi path and adds a native DSH host:
+
+- **Pi:** opt-in via `sol-pi.json`, defaults all **false**, tested on 0.84.2.
+- **DSH:** Cordis bundle `sol-dsh`, install = opt-in, Web settings card, tested on 0.1.5-rc.2. See [docs/dsh.md](docs/dsh.md).
+
+DSH v1 limitations: ObservationPack `delayed` only archives (no silent projection hook); the Web card needs `npm run build:dsh` or `--allow-build sol-pi`; OCC uses `todo_write` rather than Pi’s `update_plan`.
+
+We welcome tested, host-compatible PRs that improve token efficiency and reduce token cost. NVIDIA’s upstream contribution process is in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Acknowledgements
 

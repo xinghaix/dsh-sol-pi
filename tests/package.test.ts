@@ -17,8 +17,10 @@ function packedFiles(): string[] {
 		encoding: "utf8",
 	});
 	if (result.status !== 0) throw new Error(result.stderr || result.stdout);
-	const report = JSON.parse(result.stdout) as PackReport[];
-	return report[0]?.files.map((file) => file.path) ?? [];
+	const jsonText = result.stdout.trim().replace(/^[\s\S]*?(?=\[|{)/, "");
+	const parsed = JSON.parse(jsonText) as PackReport[] | Record<string, PackReport>;
+	const report = Array.isArray(parsed) ? parsed[0] : parsed["sol-pi"] ?? Object.values(parsed)[0];
+	return report?.files.map((file) => file.path) ?? [];
 }
 
 describe("published package", () => {
@@ -40,7 +42,12 @@ describe("published package", () => {
 	it("ships Online Context Compact from the standalone source tree", () => {
 		const files = packedFiles();
 		expect(files).toContain("src/sol-pi/extensions/online-context-compact/index.ts");
+		expect(files).toContain("src/sol-dsh/index.ts");
+		expect(files).toContain("src/sol-core/online-context-compact/economics.ts");
 		expect(files).toContain("scripts/check-sol-pi-config.mjs");
+		expect(files).toContain("scripts/check-dsh-compat.mjs");
+		expect(files).toContain("docs/dsh.md");
+		expect(files).toContain("docs/dsh-configuration.md");
 		expect(files).toContain("agents-install.md");
 		expect(files).not.toContain("AGENTS.md");
 		expect(files).not.toContain("CLAUDE.md");

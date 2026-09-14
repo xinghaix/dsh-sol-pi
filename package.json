@@ -1,15 +1,21 @@
 {
 	"name": "sol-pi",
 	"version": "0.1.0",
-	"description": "Standalone context and tool-efficiency extensions for Pi",
+	"description": "Standalone context and tool-efficiency extensions for Pi, with a native DeepSeek Harness plugin",
 	"type": "module",
 	"private": true,
 	"files": [
 		"src/sol-pi",
+		"src/sol-core",
+		"src/sol-dsh",
+		"dist/sol-dsh",
 		"assets",
 		"docs/compatibility.md",
 		"docs/configuration.md",
+		"docs/dsh.md",
+		"docs/dsh-configuration.md",
 		"scripts/check-sol-pi-config.mjs",
+		"scripts/check-dsh-compat.mjs",
 		"agents-install.md",
 		"README.md",
 		"LICENSE",
@@ -21,11 +27,35 @@
 	"scripts": {
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
-		"check": "npm run typecheck && npm test && npm pack --dry-run"
+		"check:dsh": "node scripts/check-dsh-compat.mjs",
+		"build:dsh": "node scripts/build-sol-dsh.mjs && node scripts/build-sol-dsh-client.mjs",
+		"prepack": "npm run build:dsh",
+		"check": "npm run typecheck && npm test && npm run check:dsh && npm pack --dry-run"
+	},
+	"main": "./src/sol-dsh/index.ts",
+	"exports": {
+		".": "./src/sol-dsh/index.ts",
+		"./client": "./dist/sol-dsh/client.js",
+		"./package.json": "./package.json"
+	},
+	"dsh": {
+		"bundle": {
+			"patch": "./src/sol-dsh/cordis.patch.yml"
+		},
+		"client": {
+			"inject": [
+				"@deepseek-ai/dsh-client-store",
+				"@deepseek-ai/dsh-client-ui-settings-plugins",
+				"@deepseek-ai/dsh-client-locale"
+			],
+			"platform": "web"
+		}
 	},
 	"keywords": [
 		"pi-package",
 		"pi-extension",
+		"dsh",
+		"dsh-plugin",
 		"context-management"
 	],
 	"pi": {
@@ -46,6 +76,7 @@
 		"@earendil-works/pi-coding-agent": "0.84.2",
 		"@earendil-works/pi-tui": "0.84.2",
 		"@types/node": "24.12.4",
+		"esbuild": "^0.28.2",
 		"typebox": "1.3.7",
 		"typescript": "5.9.3",
 		"vitest": "4.1.9"
@@ -58,5 +89,15 @@
 		"postcss": "8.5.26",
 		"protobufjs": "7.6.5"
 	},
-	"license": "MIT"
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/xinghaix/SoL-Pi.git"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"@deepseek-ai/schemastery": "^3.18.2"
+	},
+	"allowScripts": {
+		"esbuild@0.28.2": true
+	}
 }
