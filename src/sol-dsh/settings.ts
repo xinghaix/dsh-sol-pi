@@ -9,7 +9,7 @@ import type { DshContext } from "./host.ts";
 export type ConfigSource = () => SolDshConfig;
 
 /**
- * Register the `sol-dsh` settings namespace when a settings service exists.
+ * Register the `dsh-sol-pi` settings namespace when a settings service exists.
  * The plugin-row config is the composition base. Missing service = entry only.
  */
 export function installSolDshSettings(ctx: DshContext, entry: SolDshConfig, onLive: (config: SolDshConfig) => void): ConfigSource {

@@ -11,7 +11,7 @@ import { registerOnlineContextCompact } from "./occ.ts";
 import { registerObservationPack } from "./observation-pack.ts";
 import { installSolDshSettings } from "./settings.ts";
 
-export const name = "sol-dsh";
+export const name = "dsh-sol-pi";
 
 /** Required services. Optional ones (settings, compaction, spill, prompts) attach via inject. */
 export const inject = ["tools", "llm"];
@@ -36,11 +36,11 @@ export function apply(ctx: DshContext, config: SolDshConfig | Record<string, unk
 
 	ctx.inject?.(["systemPrompt"], (child) => {
 		child.systemPrompt?.section({
-			id: "sol-dsh",
+			id: "dsh-sol-pi",
 			description: "SoL native DSH mechanisms",
 			source: () => {
 				const current = source();
-				const parts = ["SoL (sol-dsh) is active."];
+				const parts = ["SoL (dsh-sol-pi) is active."];
 				if (current.actionFusion.enabled) {
 					parts.push("edit/write accept optional then_run {command, timeout?} for a fused follow-up bash command.");
 				}

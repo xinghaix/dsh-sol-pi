@@ -125,7 +125,7 @@ describe("sol-dsh apply", () => {
 		expect(events).toContain("agent/pre-step");
 		const mod = await import("../src/sol-dsh/index.ts");
 		expect("default" in mod).toBe(false);
-		expect(mod.name).toBe("sol-dsh");
+		expect(mod.name).toBe("dsh-sol-pi");
 		expect(mod.inject).toEqual(["tools", "llm"]);
 	});
 });

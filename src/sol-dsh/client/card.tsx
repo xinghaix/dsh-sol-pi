@@ -79,7 +79,7 @@ export function SolDshCard(props: SolDshCardProps) {
 	};
 
 	return (
-		<section className={styles.card} data-plugin="sol-dsh">
+		<section className={styles.card} data-plugin="dsh-sol-pi">
 			<button
 				type="button"
 				className={styles.header}

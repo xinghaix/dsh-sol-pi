@@ -1,4 +1,4 @@
-# Native DeepSeek Harness plugin (`sol-dsh`)
+# Native DeepSeek Harness plugin (`dsh-sol-pi`)
 
 This checkout adds a **native Cordis plugin** for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). It is not a Pi ExtensionAPI shim. Algorithms live in `src/sol-core/`; the DSH adapter is `src/sol-dsh/`.
 
@@ -30,8 +30,8 @@ Requirements: Node.js 22.19+, a working `dsh` CLI, profile `web` (or another pro
 `dsh plugin add` is pnpm add in the profile directory. Git installs run `prepack`/`prepare`, so allow this package’s build scripts:
 
 ```bash
-dsh plugin --profile web add github:xinghaix/sol-dsh --allow-build sol-dsh
-dsh --profile web --dump-config    # composed tree must include a sol-dsh row
+dsh plugin --profile web add github:xinghaix/dsh-sol-pi --allow-build dsh-sol-pi
+dsh --profile web --dump-config    # composed tree must include a dsh-sol-pi row
 dsh web                            # or: dsh --profile web
 ```
 
@@ -40,8 +40,8 @@ Then open **Settings → 插件**. The SoL card uses the same expandable chrome 
 ### From a local checkout
 
 ```bash
-git clone https://github.com/xinghaix/sol-dsh.git
-cd SoL-Pi
+git clone https://github.com/xinghaix/dsh-sol-pi.git
+cd dsh-sol-pi
 npm ci --ignore-scripts
 npm run build:dsh                  # host + Web client CJS factory
 dsh plugin --profile web add "$(pwd)"
@@ -54,8 +54,8 @@ dsh web
 ### Other profiles
 
 ```bash
-dsh plugin --profile tui add github:xinghaix/sol-dsh --allow-build sol-dsh
-dsh plugin --profile headless add github:xinghaix/sol-dsh --allow-build sol-dsh
+dsh plugin --profile tui add github:xinghaix/dsh-sol-pi --allow-build dsh-sol-pi
+dsh plugin --profile headless add github:xinghaix/dsh-sol-pi --allow-build dsh-sol-pi
 ```
 
 The settings card is `dsh.client.platform: web`. TUI/headless get the Host mechanisms only.
@@ -63,15 +63,15 @@ The settings card is `dsh.client.platform: web`. TUI/headless get the Host mecha
 ### Confirm
 
 ```bash
-dsh --profile web --dump-config | grep -n sol-dsh
+dsh --profile web --dump-config | grep -n dsh-sol-pi
 ```
 
-You should see the bundle layer and a plugin row `id: sol-dsh`. Restart `dsh web` after add.
+You should see the bundle layer and a plugin row `id: dsh-sol-pi`. Restart `dsh web` after add.
 
 ### Remove
 
 ```bash
-dsh plugin --profile web remove sol-dsh
+dsh plugin --profile web remove dsh-sol-pi
 ```
 
 ## What you get with no extra config
@@ -86,7 +86,7 @@ Installing the plugin enables:
 Override in **Settings → 插件**, or in the profile / `$DSH_HOME/cordis.patch.yml`:
 
 ```yaml
-- id: sol-dsh
+- id: dsh-sol-pi
   config:
     onlineContextCompact:
       cacheWriteReadRatio: 30    # DeepSeek V4 Pro miss/hit

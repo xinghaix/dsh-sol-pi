@@ -1,5 +1,5 @@
 {
-	"name": "sol-dsh",
+	"name": "dsh-sol-pi",
 	"version": "0.1.0",
 	"description": "Native DeepSeek Harness plugin for SoL context and tool-efficiency mechanisms (Pi adapter included)",
 	"type": "module",
@@ -91,7 +91,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/xinghaix/sol-dsh.git"
+		"url": "https://github.com/xinghaix/dsh-sol-pi.git"
 	},
 	"license": "MIT",
 	"dependencies": {

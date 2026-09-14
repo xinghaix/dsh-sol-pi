@@ -16,7 +16,7 @@ function sessionDir(agent: DshAgent | undefined): string {
 			if (typeof value === "string" && value.length > 0) return value;
 		}
 	}
-	return join(homedir(), ".dsh", "sol-dsh");
+	return join(homedir(), ".dsh", "dsh-sol-pi");
 }
 
 function sessionId(agent: DshAgent | undefined): string {
@@ -26,7 +26,7 @@ function sessionId(agent: DshAgent | undefined): string {
 
 /** Session-derived SoL runtime root. Never a user-configured path. */
 export function solDshRuntimeRoot(agent: DshAgent | undefined): string {
-	return join(sessionDir(agent), "sol-dsh", sessionId(agent));
+	return join(sessionDir(agent), "dsh-sol-pi", sessionId(agent));
 }
 
 export function sessionCwd(agent: DshAgent | undefined, fallback = process.cwd()): string {

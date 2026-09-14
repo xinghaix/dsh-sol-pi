@@ -21,7 +21,7 @@ function must(condition, message) {
 }
 
 const index = read("src/sol-dsh/index.ts");
-must(/export const name = "sol-dsh"/.test(index), "src/sol-dsh/index.ts must export name = \"sol-dsh\"");
+must(/export const name = "dsh-sol-pi"/.test(index), "src/sol-dsh/index.ts must export name = \"dsh-sol-pi\"");
 must(/export const inject = /.test(index), "src/sol-dsh/index.ts must export inject");
 must(/export function apply\(/.test(index), "src/sol-dsh/index.ts must export apply");
 must(/export \{ Config \}/.test(index), "src/sol-dsh/index.ts must export Config");
@@ -39,11 +39,11 @@ const pack = read("src/sol-dsh/observation-pack.ts");
 must(!/obs_recall/.test(pack), "DSH ObservationPack must not invent obs_recall");
 
 const patch = read("src/sol-dsh/cordis.patch.yml");
-must(/id: sol-dsh/.test(patch), "cordis.patch.yml must insert id sol-dsh");
-must(/name: sol-dsh/.test(patch), "cordis.patch.yml row name must match the npm package sol-dsh");
+must(/id: dsh-sol-pi/.test(patch), "cordis.patch.yml must insert id dsh-sol-pi");
+must(/name: dsh-sol-pi/.test(patch), "cordis.patch.yml row name must match the npm package dsh-sol-pi");
 
 const pkg = JSON.parse(read("package.json"));
-must(pkg.name === "sol-dsh", "package.json name must be sol-dsh");
+must(pkg.name === "dsh-sol-pi", "package.json name must be dsh-sol-pi");
 must(pkg.dsh?.bundle?.patch === "./src/sol-dsh/cordis.patch.yml", "package.json dsh.bundle.patch must point at the native patch");
 must(pkg.dsh?.client?.platform === "web", "package.json dsh.client.platform must be web");
 must(pkg.exports?.["./client"], "package.json must export ./client for the settings card");

@@ -5,7 +5,7 @@
 
 import Schema from "@deepseek-ai/schemastery";
 
-export const SOL_DSH_SETTINGS_NAMESPACE = "sol-dsh" as const;
+export const SOL_DSH_SETTINGS_NAMESPACE = "dsh-sol-pi" as const;
 
 const FORBIDDEN_KEYS = new Set([
 	"apikey",
@@ -157,17 +157,17 @@ export const Config = Schema.object({
 
 function assertPlainObject(value: unknown, label: string): asserts value is Record<string, unknown> {
 	if (value === null || typeof value !== "object" || Array.isArray(value)) {
-		throw new TypeError(`sol-dsh: ${label} must be a plain object`);
+		throw new TypeError(`dsh-sol-pi: ${label} must be a plain object`);
 	}
 }
 
 function rejectForbiddenAndUnknown(record: Record<string, unknown>, allowed: ReadonlySet<string>, label: string): void {
 	for (const key of Object.keys(record)) {
 		if (FORBIDDEN_KEYS.has(key.toLowerCase())) {
-			throw new Error(`sol-dsh: forbidden config key "${key}"`);
+			throw new Error(`dsh-sol-pi: forbidden config key "${key}"`);
 		}
 		if (!allowed.has(key)) {
-			throw new Error(`sol-dsh: unknown config key "${label}${key}"`);
+			throw new Error(`dsh-sol-pi: unknown config key "${label}${key}"`);
 		}
 	}
 }
@@ -199,15 +199,15 @@ export function resolveSolDshConfig(raw: unknown = {}): SolDshConfig {
 
 	const config = Config(raw) as SolDshConfig;
 	if (config.observationPack.mode === "immediate" && config.observationPack.fullSends > 0) {
-		throw new Error("sol-dsh: observationPack.mode immediate requires fullSends = 0");
+		throw new Error("dsh-sol-pi: observationPack.mode immediate requires fullSends = 0");
 	}
 	const provider = config.evidencePreservingReducer.reducerProvider.trim();
 	const model = config.evidencePreservingReducer.reducerModel.trim();
 	if ((provider === "") !== (model === "")) {
-		throw new Error("sol-dsh: reducerProvider and reducerModel must both be empty or both be set");
+		throw new Error("dsh-sol-pi: reducerProvider and reducerModel must both be empty or both be set");
 	}
 	if (!Number.isFinite(config.onlineContextCompact.cacheWriteReadRatio)) {
-		throw new Error("sol-dsh: cacheWriteReadRatio must be finite");
+		throw new Error("dsh-sol-pi: cacheWriteReadRatio must be finite");
 	}
 	return {
 		...config,

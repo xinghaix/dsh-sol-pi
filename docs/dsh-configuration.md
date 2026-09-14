@@ -1,8 +1,8 @@
-# DSH configuration (`sol-dsh` bundle)
+# DSH configuration (`dsh-sol-pi` bundle)
 
 Install steps: [dsh.md](dsh.md).
 
-Native DeepSeek Harness contract. **Do not shape this after Pi.** No `sol-pi.json`, no Pi TUI copy, no Pi event names, no separate language switch. The DSH adapter is a Cordis plugin + settings namespace + Web settings card. The npm package, Cordis plugin id, and settings namespace are all `sol-dsh`.
+Native DeepSeek Harness contract. **Do not shape this after Pi.** No `sol-pi.json`, no Pi TUI copy, no Pi event names, no separate language switch. The DSH adapter is a Cordis plugin + settings namespace + Web settings card. The npm package, Cordis plugin id, and settings namespace are all `dsh-sol-pi`. Source lives in `src/sol-dsh/`.
 
 - Installing the bundle with `dsh plugin --profile <name> add …` **is** the opt-in.
 - After install, omitted fields take **SoL’s DSH best defaults** (Schemastery `.default()`).
@@ -20,14 +20,14 @@ Cordis fills defaults from the exported `Config` schema ([plugin configuration](
 ```yaml
 # src/sol-dsh/cordis.patch.yml — ship this
 - insert:
-    - id: sol-dsh
-      name: sol-dsh
+    - id: dsh-sol-pi
+      name: dsh-sol-pi
 ```
 
 Partial user override (profile `cordis.patch.yml` or `$DSH_HOME/cordis.patch.yml`):
 
 ```yaml
-- id: sol-dsh
+- id: dsh-sol-pi
   config:
     onlineContextCompact:
       cacheWriteReadRatio: 30   # DeepSeek V4 Pro miss/hit; other nested fields keep schema defaults
@@ -37,11 +37,11 @@ A DSH patch replaces the row’s `config` **object** as a whole, then Schemaster
 
 HMR: changing the patch reloads the plugin; registrations unwind.
 
-Runtime edits go through `ctx.settings.installSection` so the Web card and the Host plugin share one namespace (join key, e.g. `sol-dsh`). Composition `base` = schema best defaults (+ any patch). User layer = settings card overrides. `unset` returns a field to the composed default.
+Runtime edits go through `ctx.settings.installSection` so the Web card and the Host plugin share one namespace (join key `dsh-sol-pi`). Composition `base` = schema best defaults (+ any patch). User layer = settings card overrides. `unset` returns a field to the composed default.
 
 ## Settings UI (must look and behave like dshweb)
 
-The card lives only in **设置 → 插件 → 插件配置**, keyed as `settings.plugin.item` / namespace `sol-dsh`. It must not invent a sidebar item, a second Settings app, or a Pi-like JSON editor.
+The card lives only in **设置 → 插件 → 插件配置**, keyed as `settings.plugin.item` / namespace `dsh-sol-pi`. It must not invent a sidebar item, a second Settings app, or a Pi-like JSON editor.
 
 Follow first-party plugin cards (`dsh-client-ui-settings-plugins`):
 
@@ -177,26 +177,26 @@ No extra metrics in v1. `enabled` is the only switch. Timeout of `then_run` stay
 
 ```yaml
 # Cheaper compaction on DeepSeek V4 Pro (miss/hit = 30)
-- id: sol-dsh
+- id: dsh-sol-pi
   config:
     onlineContextCompact:
       cacheWriteReadRatio: 30
 
 # Pi-like delayed packing (pays a cache miss after two full sends)
-- id: sol-dsh
+- id: dsh-sol-pi
   config:
     observationPack:
       mode: delayed
       fullSends: 2
 
 # Logs must stay local
-- id: sol-dsh
+- id: dsh-sol-pi
   config:
     evidencePreservingReducer:
       enabled: false
 
 # Provider with no prefix cache (ratio 1 ⇒ incremental cost 0)
-- id: sol-dsh
+- id: dsh-sol-pi
   config:
     onlineContextCompact:
       cacheWriteReadRatio: 1
@@ -208,7 +208,7 @@ Do not put these in SoL config: API keys, provider URLs, main model, sandbox mod
 
 ## Pi vs DSH (DSH is not a Pi port)
 
-| | Pi | DSH (`sol-dsh`) |
+| | Pi | DSH (`dsh-sol-pi`) |
 |---|---|---|
 | Config file | `sol-pi.json` | settings namespace + optional patch; **no JSON sidecar** |
 | Missing keys | all mechanisms **false** | best profile **on** |

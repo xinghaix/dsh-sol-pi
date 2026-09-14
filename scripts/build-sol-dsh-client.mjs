@@ -71,7 +71,7 @@ await build({
 });
 
 const artifact = readFileSync(outfile, "utf8");
-const wrapped = `window.__ModuleLoader__.load({ id: "sol-dsh", factory: function (require) {\nconst module = { exports: {} };\nconst exports = module.exports;\n${artifact}\nreturn module.exports;\n} });\n`;
+const wrapped = `window.__ModuleLoader__.load({ id: "dsh-sol-pi", factory: function (require) {\nconst module = { exports: {} };\nconst exports = module.exports;\n${artifact}\nreturn module.exports;\n} });\n`;
 if (wrapped.includes("import.meta") || /^\s*import\s/m.test(artifact) || /^\s*export\s/m.test(artifact)) {
 	throw new Error("client bundle must not contain ESM import/export or import.meta");
 }
