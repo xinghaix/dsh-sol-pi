@@ -912,8 +912,9 @@ function measureTokens(ctx, agent) {
   try {
     const session = agent.session;
     const messages = session?.messages ?? session?.log;
-    if (ctx.tokenMeter && messages !== void 0) {
-      const measured = ctx.tokenMeter.measure(messages);
+    const meter = typeof ctx.get === "function" ? ctx.get("tokenMeter") : void 0;
+    if (meter && messages !== void 0) {
+      const measured = meter.measure(messages);
       if (typeof measured === "number" && Number.isFinite(measured)) return measured;
     }
     const tokens = session?.contextTokens ?? session?.tokenCount;
@@ -934,7 +935,8 @@ function keepRecentTokens(config, windowTokens) {
   return Math.floor(windowTokens * 0.16);
 }
 async function maybeCompact(ctx, agent, state, config) {
-  if (!ctx.compaction) return state;
+  const compaction = ctx.compaction;
+  if (!compaction) return state;
   const contextTokens = measureTokens(ctx, agent);
   const windowTokens = contextWindow(agent);
   const archiveTokens = Math.max(0, contextTokens - keepRecentTokens(config, windowTokens));
@@ -958,7 +960,7 @@ async function maybeCompact(ctx, agent, state, config) {
   if (!decision.compact) return state;
   try {
     if (typeof agent.whenIdle === "function") await agent.whenIdle();
-    await ctx.compaction.compactNow(agent, void 0);
+    await compaction.compactNow(agent, void 0);
     return recordCompaction(state, {
       debtTokens: decision.writeTokens * Math.max(0, config.cacheWriteReadRatio - 1) / Math.max(1, decision.archiveTokens),
       repaymentTokens: Math.max(0, decision.archiveTokens - decision.memoTokens)
@@ -1005,15 +1007,20 @@ function registerOnlineContextCompact(ctx, configOf) {
     );
     return decided;
   }));
-  ctx.on("agent/pre-step", (async (payload) => {
-    const config = configOf();
-    if (!config.enabled) return;
-    const agent = payload?.agent;
-    if (!agent) return;
-    const key = keyOf(agent);
-    const current = recordProviderRequest(states.get(key) ?? initialOnlineState(), measureTokens(ctx, agent));
-    states.set(key, await maybeCompact(ctx, agent, current, config));
-  }));
+  const attachCompactionHooks = (runtime) => {
+    runtime.on("agent/pre-step", (async (payload) => {
+      const config = configOf();
+      if (!config.enabled) return;
+      const agent = payload?.agent;
+      if (!agent) return;
+      const key = keyOf(agent);
+      const current = recordProviderRequest(states.get(key) ?? initialOnlineState(), measureTokens(runtime, agent));
+      states.set(key, await maybeCompact(runtime, agent, current, config));
+    }));
+  };
+  if (typeof ctx.inject === "function") {
+    ctx.inject(["compaction"], (child) => attachCompactionHooks(child));
+  }
 }
 
 // src/sol-core/observation-pack/observation.ts
@@ -1176,6 +1183,15 @@ async function packObservation(exec, result, config, agent, spill) {
   };
 }
 function registerObservationPack(ctx, configOf) {
+  let spill;
+  if (typeof ctx.inject === "function") {
+    ctx.inject(["spillStore"], (child) => {
+      spill = child.spillStore;
+      child.effect?.(() => () => {
+        spill = void 0;
+      });
+    });
+  }
   ctx.on(
     "tools/post-execute",
     (async (exec, _result, next) => {
@@ -1188,7 +1204,7 @@ function registerObservationPack(ctx, configOf) {
           decided,
           config,
           exec.caller,
-          ctx.spillStore
+          spill
         );
         return packed ?? decided;
       } catch {

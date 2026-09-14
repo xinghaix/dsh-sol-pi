@@ -63,6 +63,17 @@ export async function packObservation(
 }
 
 export function registerObservationPack(ctx: DshContext, configOf: () => ObservationPackConfig): void {
+	// spillStore is optional — capture via nested inject; never touch ctx.spillStore on the root fiber.
+	let spill: DshContext["spillStore"];
+	if (typeof ctx.inject === "function") {
+		ctx.inject(["spillStore"], (child) => {
+			spill = child.spillStore;
+			child.effect?.(() => () => {
+				spill = undefined;
+			});
+		});
+	}
+
 	ctx.on(
 		"tools/post-execute",
 		(async (exec: ToolExecution, _result: ToolExecutionResult, next: () => Promise<ToolExecutionResult>) => {
@@ -75,7 +86,7 @@ export function registerObservationPack(ctx: DshContext, configOf: () => Observa
 					decided,
 					config,
 					exec.caller as DshAgent | undefined,
-					ctx.spillStore,
+					spill,
 				);
 				return packed ?? decided;
 			} catch {

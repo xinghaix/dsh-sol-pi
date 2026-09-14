@@ -8,6 +8,10 @@ export const SOL_DSH_LOCALE_NS = "settings.solDsh" as const;
 export const zh = {
 	title: "SoL",
 	description: "上下文与工具效率：动作融合、ObservationPack、证据保留归约、在线压缩。",
+	expand: "展开",
+	overridden: "已覆盖",
+	invalidNumber: "请输入有效数字",
+	collapse: "收起",
 	unsaved: "未保存",
 	save: "保存",
 	discard: "丢弃",
@@ -51,6 +55,10 @@ export const zh = {
 export const en = {
 	title: "SoL",
 	description: "Context and tool efficiency: action fusion, ObservationPack, evidence-preserving reduction, online compaction.",
+	expand: "Expand",
+	overridden: "Overridden",
+	invalidNumber: "Enter a valid number",
+	collapse: "Collapse",
 	unsaved: "Unsaved",
 	save: "Save",
 	discard: "Discard",

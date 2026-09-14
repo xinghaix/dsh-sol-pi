@@ -29,7 +29,6 @@ __export(index_exports, {
   inject: () => inject
 });
 module.exports = __toCommonJS(index_exports);
-var import_react2 = require("react");
 
 // node_modules/@deepseek-ai/cosmokit/lib/index.js
 function isNullable(value) {
@@ -984,16 +983,370 @@ function resolveSolDshConfig(raw = {}) {
 var DEFAULT_SOL_DSH_CONFIG = resolveSolDshConfig({});
 
 // src/sol-dsh/client/card.tsx
+var import_dsh_client_ui_primitives = require("@deepseek-ai/dsh-client-ui-primitives");
 var import_react = require("react");
 
 // sol-dsh-css:/Users/xing/Projects/github/SoL-Pi/src/sol-dsh/client/card.module.css
 if (typeof document !== "undefined" && !document.getElementById("sol-dsh-css")) {
   const s = document.createElement("style");
   s.id = "sol-dsh-css";
-  s.textContent = '.solDsh_card {\n	border: 1px solid var(--dsw-alias-border, #d0d5dd);\n	border-radius: 12px;\n	background: var(--dsw-alias-surface, #fff);\n	color: var(--dsw-alias-text, #101828);\n	overflow: hidden;\n}\n\n.solDsh_header {\n	display: flex;\n	align-items: center;\n	gap: 12px;\n	width: 100%;\n	padding: 16px 18px;\n	border: 0;\n	background: transparent;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n}\n\n.solDsh_titles {\n	display: flex;\n	flex-direction: column;\n	gap: 4px;\n	flex: 1;\n}\n\n.solDsh_titles strong {\n	font-size: 15px;\n}\n\n.solDsh_titles span {\n	font-size: 13px;\n	color: var(--dsw-alias-text-secondary, #667085);\n}\n\n.solDsh_pill {\n	font-size: 12px;\n	padding: 2px 8px;\n	border-radius: 999px;\n	background: var(--dsw-alias-warning-bg, #fff6e5);\n	color: var(--dsw-alias-warning, #b54708);\n}\n\n.solDsh_chevron,\n.solDsh_chevronOpen {\n	transition: transform 120ms ease;\n}\n\n.solDsh_chevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_body {\n	display: flex;\n	flex-direction: column;\n	gap: 16px;\n	padding: 0 18px 18px;\n	border-top: 1px solid var(--dsw-alias-border, #eaecf0);\n}\n\n.solDsh_fieldset {\n	border: 0;\n	margin: 0;\n	padding: 0;\n	display: flex;\n	flex-direction: column;\n	gap: 8px;\n}\n\n.solDsh_fieldset legend {\n	font-weight: 600;\n	margin-bottom: 4px;\n}\n\n.solDsh_help,\n.solDsh_notice {\n	margin: 0;\n	font-size: 12px;\n	color: var(--dsw-alias-text-secondary, #667085);\n}\n\n.solDsh_row {\n	display: flex;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	font-size: 13px;\n}\n\n.solDsh_row input[type="number"],\n.solDsh_row input[type="text"],\n.solDsh_row input:not([type]),\n.solDsh_row select {\n	min-width: 160px;\n	padding: 6px 8px;\n	border: 1px solid var(--dsw-alias-border, #d0d5dd);\n	border-radius: 8px;\n	background: var(--dsw-alias-input, #fff);\n	color: inherit;\n}\n\n.solDsh_error {\n	margin: 0;\n	color: var(--dsw-alias-danger, #d92d20);\n	font-size: 13px;\n}\n\n.solDsh_footer {\n	display: flex;\n	justify-content: flex-end;\n	gap: 8px;\n}\n\n.solDsh_footer button {\n	padding: 6px 12px;\n	border-radius: 8px;\n	border: 1px solid var(--dsw-alias-border, #d0d5dd);\n	background: var(--dsw-alias-surface, #fff);\n	color: inherit;\n}\n\n.solDsh_footer button[type="submit"] {\n	background: var(--dsw-alias-primary, #155eef);\n	border-color: var(--dsw-alias-primary, #155eef);\n	color: #fff;\n}\n\n.solDsh_footer button:disabled {\n	opacity: 0.5;\n}\n';
+  s.textContent = `/* Match @deepseek-ai/dsh-client-ui-settings-plugins PluginCard + fields chrome. */
+
+.solDsh_card {
+	border: 0.5px solid var(--dsw-alias-border-l4);
+	background: var(--dsw-alias-bg-layer-3);
+	border-radius: 16px;
+	list-style: none;
+	transition: border-color 0.16s, background 0.16s;
+}
+
+.solDsh_card:hover {
+	border-color: var(--dsw-alias-label-dimmed);
+}
+
+.solDsh_cardOpen {
+	background: var(--dsw-alias-bg-layer-2);
+	border-color: var(--dsw-alias-label-dimmed);
+}
+
+.solDsh_header {
+	appearance: none;
+	width: 100%;
+	font: inherit;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+	background: 0 0;
+	border: 0;
+	border-radius: 12px;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 16px;
+	display: flex;
+}
+
+.solDsh_header:focus-visible {
+	outline: 2px solid var(--dsw-alias-brand-primary);
+	outline-offset: -2px;
+}
+
+.solDsh_headText {
+	flex-direction: column;
+	flex: 1;
+	gap: 4px;
+	min-width: 0;
+	display: flex;
+}
+
+.solDsh_name {
+	color: var(--dsw-alias-label-primary);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.solDsh_description {
+	color: var(--dsw-alias-label-tertiary);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.solDsh_pending {
+	flex: none;
+}
+
+.solDsh_chevron {
+	color: var(--dsw-alias-label-tertiary);
+	flex: none;
+	width: 14px;
+	height: 14px;
+	transition: transform 0.16s;
+}
+
+.solDsh_chevronOpen {
+	transform: rotate(180deg);
+}
+
+.solDsh_body {
+	border-top: 0.5px solid var(--dsw-alias-border-l2);
+	margin: 0 16px;
+	padding-bottom: 8px;
+}
+
+.solDsh_readOnly {
+	color: var(--dsw-alias-label-tertiary);
+	margin: 12px 0 0;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.solDsh_footer {
+	border-top: 0.5px solid var(--dsw-alias-border-l2);
+	justify-content: flex-end;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 0 4px;
+	display: flex;
+}
+
+.solDsh_failed {
+	min-width: 0;
+	color: var(--dsw-alias-label-error);
+	flex: 1;
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.solDsh_discard,
+.solDsh_save {
+	appearance: none;
+	font: inherit;
+	cursor: pointer;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	padding: 5px 14px;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.solDsh_discard {
+	border-color: var(--dsw-alias-border-l2);
+	color: var(--dsw-alias-label-secondary);
+	background: 0 0;
+}
+
+.solDsh_discard:hover:not(:disabled) {
+	color: var(--dsw-alias-label-primary);
+	border-color: var(--dsw-alias-label-dimmed);
+}
+
+.solDsh_save {
+	background: var(--dsw-alias-label-primary);
+	color: var(--dsw-alias-bg-layer-3);
+}
+
+.solDsh_discard:disabled,
+.solDsh_save:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.solDsh_discard:focus-visible,
+.solDsh_save:focus-visible {
+	outline: 2px solid var(--dsw-alias-brand-primary);
+	outline-offset: 1px;
+}
+
+.solDsh_field {
+	flex-direction: column;
+	gap: 6px;
+	padding: 12px 0;
+	display: flex;
+}
+
+.solDsh_field + .solDsh_field {
+	border-top: 0.5px solid var(--dsw-alias-border-l2);
+}
+
+.solDsh_head {
+	align-items: center;
+	gap: 8px;
+	display: flex;
+}
+
+.solDsh_label {
+	min-width: 0;
+	color: var(--dsw-alias-label-primary);
+	flex: 1;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.5;
+}
+
+.solDsh_hint {
+	color: var(--dsw-alias-label-tertiary);
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.solDsh_input,
+.solDsh_select {
+	border: 0.5px solid var(--dsw-alias-border-l4);
+	background: var(--dsw-alias-bg-layer-3);
+	height: 34px;
+	font: inherit;
+	color: var(--dsw-alias-label-primary);
+	border-radius: 8px;
+	padding: 0 12px;
+	font-size: 13px;
+	line-height: 1.5;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.solDsh_select {
+	appearance: none;
+	cursor: pointer;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.solDsh_w3.solDsh_org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2381858C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-position: right 12px center;
+	background-repeat: no-repeat;
+	background-size: 12px 12px;
+	padding-right: 32px;
+	max-width: 100%;
+}
+
+.solDsh_input:focus-visible,
+.solDsh_select:focus-visible {
+	border-color: var(--dsw-alias-brand-primary);
+	outline: none;
+}
+
+.solDsh_input:disabled,
+.solDsh_select:disabled {
+	color: var(--dsw-alias-label-tertiary);
+	cursor: default;
+}
+
+.solDsh_toggleRow {
+	align-items: center;
+	gap: 12px;
+	display: flex;
+}
+
+.solDsh_toggleLabel {
+	min-width: 0;
+	color: var(--dsw-alias-label-primary);
+	flex: 1;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.5;
+}
+
+.solDsh_group {
+	padding: 14px 0 4px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.solDsh_group + .solDsh_field {
+	border-top: none;
+	padding-top: 8px;
+}
+
+.solDsh_groupTitle {
+	color: var(--dsw-alias-label-primary);
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+.solDsh_groupHint {
+	color: var(--dsw-alias-label-tertiary);
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.solDsh_nativeSwitch {
+	width: 40px;
+	height: 24px;
+	appearance: none;
+	background: var(--dsw-alias-border-l2);
+	border-radius: 999px;
+	position: relative;
+	cursor: pointer;
+	flex: none;
+	border: 0;
+	padding: 0;
+	transition: background 0.16s;
+}
+
+.solDsh_nativeSwitch::after {
+	content: "";
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--dsw-alias-bg-layer-3);
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	transition: transform 0.16s;
+	box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+}
+
+.solDsh_nativeSwitch:checked {
+	background: var(--dsw-alias-brand-primary);
+}
+
+.solDsh_nativeSwitch:checked::after {
+	transform: translateX(16px);
+}
+
+.solDsh_nativeSwitch:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.solDsh_nativeSwitch:focus-visible {
+	outline: 2px solid var(--dsw-alias-brand-primary);
+	outline-offset: 2px;
+}
+
+.solDsh_unsavedFallback {
+	white-space: nowrap;
+	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));
+	color: var(--dsw-alias-label-secondary);
+	border-radius: 999px;
+	flex: none;
+	padding: 1px 8px;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 17px;
+}
+
+.solDsh_badges {
+	align-items: center;
+	gap: 8px;
+	display: inline-flex;
+}
+
+.solDsh_reset {
+	font: inherit;
+	color: var(--dsw-alias-label-secondary);
+	cursor: pointer;
+	background: 0 0;
+	border: none;
+	padding: 0;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.solDsh_reset:hover:not(:disabled) {
+	color: var(--dsw-alias-label-primary);
+}
+
+.solDsh_reset:disabled {
+	cursor: default;
+}
+
+.solDsh_inputInvalid {
+	border-color: var(--dsw-alias-label-error);
+}
+
+.solDsh_invalid {
+	color: var(--dsw-alias-label-error);
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.5;
+}
+`;
   document.head.appendChild(s);
 }
-var card_default = { "card": "solDsh_card", "header": "solDsh_header", "titles": "solDsh_titles", "pill": "solDsh_pill", "chevronOpen": "solDsh_chevronOpen", "body": "solDsh_body", "fieldset": "solDsh_fieldset", "notice": "solDsh_notice", "row": "solDsh_row", "error": "solDsh_error", "footer": "solDsh_footer" };
+var card_default = { "card": "solDsh_card", "cardOpen": "solDsh_cardOpen", "header": "solDsh_header", "headText": "solDsh_headText", "name": "solDsh_name", "description": "solDsh_description", "pending": "solDsh_pending", "chevron": "solDsh_chevron", "chevronOpen": "solDsh_chevronOpen", "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "select": "solDsh_select", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "group": "solDsh_group", "groupTitle": "solDsh_groupTitle", "groupHint": "solDsh_groupHint", "nativeSwitch": "solDsh_nativeSwitch", "unsavedFallback": "solDsh_unsavedFallback", "badges": "solDsh_badges", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid" };
 
 // src/sol-dsh/client/card.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
@@ -1003,315 +1356,628 @@ function cloneConfig(value) {
 function sameConfig(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
+function readPath(source, path) {
+  let current = source;
+  for (const key of path) {
+    if (typeof current !== "object" || current === null || Array.isArray(current)) return void 0;
+    current = current[key];
+  }
+  return current;
+}
+function hasPath(user, path) {
+  let current = user;
+  for (const key of path) {
+    if (typeof current !== "object" || current === null || Array.isArray(current)) return false;
+    if (!Object.prototype.hasOwnProperty.call(current, key)) return false;
+    current = current[key];
+  }
+  return true;
+}
+function writePath(target, path, value) {
+  const next = cloneConfig(target);
+  let cursor = next;
+  for (let i = 0; i < path.length - 1; i += 1) {
+    const key = path[i];
+    const child = cursor[key];
+    const copy = typeof child === "object" && child !== null && !Array.isArray(child) ? { ...child } : {};
+    cursor[key] = copy;
+    cursor = copy;
+  }
+  cursor[path[path.length - 1]] = value;
+  return next;
+}
+function pathKey(path) {
+  return path.join(".");
+}
+function Group(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.group, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.groupTitle, children: props.title }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.groupHint, children: props.hint })
+  ] });
+}
+function FieldHead(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.head, children: [
+    props.id ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: card_default.label, htmlFor: props.id, children: props.label }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.label, children: props.label }),
+    props.overridden ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.badges, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.Tag, { tone: "neutral", children: props.overriddenLabel }),
+      props.onReset ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.reset, disabled: props.disabled, onClick: props.onReset, children: props.resetLabel }) : null
+    ] }) : null
+  ] });
+}
+function SwitchRow(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: card_default.field, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.toggleRow, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: card_default.headText, style: { flex: 1, minWidth: 0 }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      FieldHead,
+      {
+        label: props.label,
+        overridden: props.overridden,
+        disabled: props.disabled,
+        overriddenLabel: props.overriddenLabel,
+        resetLabel: props.resetLabel,
+        onReset: props.onReset
+      }
+    ) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      import_dsh_client_ui_primitives.Switch,
+      {
+        checked: props.checked,
+        label: props.label,
+        disabled: props.disabled,
+        onChange: props.onChange
+      }
+    )
+  ] }) });
+}
+function ValueRow(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.field, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      FieldHead,
+      {
+        id: props.id,
+        label: props.label,
+        overridden: props.overridden,
+        disabled: props.disabled,
+        overriddenLabel: props.overriddenLabel,
+        resetLabel: props.resetLabel,
+        onReset: props.onReset
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "input",
+      {
+        id: props.id,
+        className: props.invalid ? card_default.inputInvalid : card_default.input,
+        type: "text",
+        inputMode: props.numeric ? "numeric" : void 0,
+        "aria-invalid": props.invalid || void 0,
+        value: props.text,
+        disabled: props.disabled,
+        onChange: (event) => props.onEdit(event.target.value)
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: props.invalid ? card_default.invalid : card_default.hint, children: props.invalid ? props.invalidLabel : props.hint })
+  ] });
+}
+function SelectRow(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.field, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      FieldHead,
+      {
+        id: props.id,
+        label: props.label,
+        overridden: props.overridden,
+        disabled: props.disabled,
+        overriddenLabel: props.overriddenLabel,
+        resetLabel: props.resetLabel,
+        onReset: props.onReset
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "select",
+      {
+        id: props.id,
+        className: card_default.select,
+        value: props.value,
+        disabled: props.disabled,
+        onChange: (event) => props.onChange(event.target.value),
+        children: props.children
+      }
+    )
+  ] });
+}
 function SolDshCard(props) {
   const [open, setOpen] = (0, import_react.useState)(false);
   const [draft, setDraft] = (0, import_react.useState)(() => cloneConfig(DEFAULT_SOL_DSH_CONFIG));
   const [loaded, setLoaded] = (0, import_react.useState)(DEFAULT_SOL_DSH_CONFIG);
+  const [base, setBase] = (0, import_react.useState)(DEFAULT_SOL_DSH_CONFIG);
+  const [user, setUser] = (0, import_react.useState)();
+  const [texts, setTexts] = (0, import_react.useState)({});
+  const [clears, setClears] = (0, import_react.useState)(() => /* @__PURE__ */ new Set());
   const [revision, setRevision] = (0, import_react.useState)(0);
   const [writable, setWritable] = (0, import_react.useState)(false);
   const [saving, setSaving] = (0, import_react.useState)(false);
+  const [failed, setFailed] = (0, import_react.useState)(false);
   const [error, setError] = (0, import_react.useState)();
-  (0, import_react.useEffect)(() => {
-    void props.load().then((snapshot) => {
-      setLoaded(snapshot.value);
-      setDraft(cloneConfig(snapshot.value));
-      setRevision(snapshot.revision);
-      setWritable(snapshot.writable);
-    });
-  }, [props]);
-  const dirty = (0, import_react.useMemo)(() => !sameConfig(draft, loaded), [draft, loaded]);
-  const t = props.t;
-  const saveDisabled = !dirty || saving || !writable;
-  const discardDisabled = !dirty || saving;
-  const patch = (key, inner) => {
-    setDraft((current) => ({ ...current, [key]: { ...current[key], ...inner } }));
+  const saveStarted = (0, import_react.useRef)(false);
+  const syncFromSnapshot = (snapshot) => {
+    setLoaded(snapshot.value);
+    setDraft(cloneConfig(snapshot.value));
+    setBase(snapshot.base);
+    setUser(snapshot.user);
+    setRevision(snapshot.revision);
+    setWritable(snapshot.writable);
+    setTexts({});
+    setClears(/* @__PURE__ */ new Set());
+    setFailed(false);
+    setError(void 0);
   };
-  const onSave = async (event) => {
-    event.preventDefault();
+  (0, import_react.useEffect)(() => {
+    void props.load().then(syncFromSnapshot);
+  }, [props]);
+  (0, import_react.useEffect)(() => {
+    if (saving) {
+      saveStarted.current = true;
+      return;
+    }
+    if (!saveStarted.current) return;
+    saveStarted.current = false;
+    if (!sameConfig(draft, loaded) || clears.size > 0) return;
+    if (!failed) setOpen(false);
+  }, [saving, draft, loaded, clears, failed]);
+  const dirty = (0, import_react.useMemo)(() => !sameConfig(draft, loaded) || clears.size > 0, [draft, loaded, clears]);
+  const t = props.t;
+  const disabled = !writable || saving;
+  const textOf = (path, fallback) => {
+    const key = pathKey(path);
+    return Object.prototype.hasOwnProperty.call(texts, key) ? texts[key] : String(fallback);
+  };
+  const overridden = (path) => {
+    const key = pathKey(path);
+    if (clears.has(key)) return false;
+    if (Object.prototype.hasOwnProperty.call(texts, key)) return true;
+    const draftValue = readPath(draft, path);
+    const loadedValue = readPath(loaded, path);
+    if (JSON.stringify(draftValue) !== JSON.stringify(loadedValue)) return true;
+    return hasPath(user, path);
+  };
+  const editText = (path, text) => {
+    const key = pathKey(path);
+    setTexts((current) => ({ ...current, [key]: text }));
+    setClears((current) => {
+      const next = new Set(current);
+      next.delete(key);
+      return next;
+    });
+    setFailed(false);
+    setError(void 0);
+  };
+  const editValue = (path, value) => {
+    const key = pathKey(path);
+    setDraft((current) => writePath(current, path, value));
+    setTexts((current) => {
+      if (!Object.prototype.hasOwnProperty.call(current, key)) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+    setClears((current) => {
+      const next = new Set(current);
+      next.delete(key);
+      return next;
+    });
+    setFailed(false);
+    setError(void 0);
+  };
+  const resetPath = (path) => {
+    const key = pathKey(path);
+    const composition = readPath(base, path);
+    setDraft((current) => writePath(current, path, composition));
+    setTexts((current) => {
+      if (!Object.prototype.hasOwnProperty.call(current, key)) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+    setClears((current) => new Set(current).add(key));
+    setFailed(false);
+    setError(void 0);
+  };
+  const parseNumericDrafts = () => {
+    let next = draft;
+    const numericPaths = [
+      [["observationPack", "thresholdBytes"], draft.observationPack.thresholdBytes],
+      [["observationPack", "fullSends"], draft.observationPack.fullSends],
+      [["observationPack", "placeholderExcerptBytes"], draft.observationPack.placeholderExcerptBytes],
+      [["evidencePreservingReducer", "minBytes"], draft.evidencePreservingReducer.minBytes],
+      [["evidencePreservingReducer", "maxChars"], draft.evidencePreservingReducer.maxChars],
+      [["evidencePreservingReducer", "maxOutputTokens"], draft.evidencePreservingReducer.maxOutputTokens],
+      [["evidencePreservingReducer", "timeoutMs"], draft.evidencePreservingReducer.timeoutMs],
+      [["onlineContextCompact", "cacheWriteReadRatio"], draft.onlineContextCompact.cacheWriteReadRatio],
+      [["onlineContextCompact", "keepRecentTokens"], draft.onlineContextCompact.keepRecentTokens],
+      [["onlineContextCompact", "nativeSummaryTokenEstimate"], draft.onlineContextCompact.nativeSummaryTokenEstimate],
+      [["onlineContextCompact", "windowReserveTokens"], draft.onlineContextCompact.windowReserveTokens],
+      [["onlineContextCompact", "firstCompactionRequestScale"], draft.onlineContextCompact.firstCompactionRequestScale],
+      [["onlineContextCompact", "subsequentCompactionMargin"], draft.onlineContextCompact.subsequentCompactionMargin]
+    ];
+    for (const [path, fallback] of numericPaths) {
+      const key = pathKey(path);
+      if (!Object.prototype.hasOwnProperty.call(texts, key)) continue;
+      const raw = texts[key];
+      const n = Number(raw);
+      if (!Number.isFinite(n) || n < 0) return { ok: false };
+      next = writePath(next, path, n);
+    }
+    return { ok: true, value: next };
+  };
+  const invalidNumeric = (path) => {
+    const key = pathKey(path);
+    if (!Object.prototype.hasOwnProperty.call(texts, key)) return false;
+    const n = Number(texts[key]);
+    return !Number.isFinite(n) || n < 0;
+  };
+  const anyInvalid = (0, import_react.useMemo)(() => {
+    return Object.keys(texts).some((key) => {
+      if (key.includes("reducerProvider") || key.includes("reducerModel")) return false;
+      const n = Number(texts[key]);
+      return !Number.isFinite(n) || n < 0;
+    });
+  }, [texts]);
+  const saveDisabled = !dirty || saving || !writable || anyInvalid;
+  const discardDisabled = !dirty || saving;
+  const onDiscard = () => {
+    setDraft(cloneConfig(loaded));
+    setTexts({});
+    setClears(/* @__PURE__ */ new Set());
+    setFailed(false);
+    setError(void 0);
+  };
+  const onSave = async () => {
     if (saveDisabled) return;
+    const parsed = parseNumericDrafts();
+    if (!parsed.ok) return;
     setSaving(true);
+    setFailed(false);
     setError(void 0);
     try {
-      const resolved = resolveSolDshConfig(draft);
-      await props.onSave(resolved, revision);
-      setLoaded(resolved);
-      setDraft(cloneConfig(resolved));
-      setRevision(revision + 1);
-      setOpen(false);
+      const resolved = resolveSolDshConfig(parsed.value);
+      await props.onSave(resolved, revision, base, user);
+      const snapshot = await props.load();
+      syncFromSnapshot(snapshot);
     } catch (failure) {
+      setFailed(true);
       setError(failure instanceof Error ? failure.message : t("saveFailed"));
     } finally {
       setSaving(false);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: card_default.card, "data-plugin": "dsh-sol-pi", children: [
+  const title = t("title");
+  const common = {
+    disabled,
+    overriddenLabel: t("overridden"),
+    resetLabel: t("reset"),
+    invalidLabel: t("invalidNumber")
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { className: `${card_default.card}${open ? ` ${card_default.cardOpen}` : ""}`, "data-plugin": "dsh-sol-pi", children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
       "button",
       {
         type: "button",
         className: card_default.header,
         "aria-expanded": open,
-        "aria-label": t("title"),
+        "aria-label": `${t(open ? "collapse" : "expand")}: ${title}`,
         onClick: () => setOpen((value) => !value),
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.titles, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: t("title") }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("description") })
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.headText, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.name, children: title }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.description, children: t("description") })
           ] }),
-          dirty ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.pill, children: t("unsaved") }) : null,
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: open ? card_default.chevronOpen : card_default.chevron, "aria-hidden": true, children: "\u25BE" })
+          dirty ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.Tag, { tone: "neutral", className: card_default.pending, children: t("unsaved") }) : null,
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.IconChevronDownOutline14, { className: `${card_default.chevron}${open ? ` ${card_default.chevronOpen}` : ""}` })
         ]
       }
     ),
-    open ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", { className: card_default.body, onSubmit: onSave, children: [
-      !writable ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.notice, children: t("readonly") }) : null,
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("fieldset", { className: card_default.fieldset, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("legend", { children: t("actionFusion") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.help, children: t("actionFusionHelp") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: card_default.row, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("enabled") }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "input",
-            {
-              type: "checkbox",
-              checked: draft.actionFusion.enabled,
-              onChange: (event) => patch("actionFusion", { enabled: event.target.checked })
+    open ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.body, children: [
+      !writable ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.readOnly, role: "status", children: t("readonly") }) : null,
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Group, { title: t("actionFusion"), hint: t("actionFusionHelp") }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        SwitchRow,
+        {
+          ...common,
+          label: t("enabled"),
+          checked: draft.actionFusion.enabled,
+          overridden: overridden(["actionFusion", "enabled"]),
+          onChange: (checked) => editValue(["actionFusion", "enabled"], checked),
+          onReset: () => resetPath(["actionFusion", "enabled"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Group, { title: t("observationPack"), hint: t("observationPackHelp") }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        SwitchRow,
+        {
+          ...common,
+          label: t("enabled"),
+          checked: draft.observationPack.enabled,
+          overridden: overridden(["observationPack", "enabled"]),
+          onChange: (checked) => editValue(["observationPack", "enabled"], checked),
+          onReset: () => resetPath(["observationPack", "enabled"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+        SelectRow,
+        {
+          ...common,
+          id: "sol-obs-mode",
+          label: t("mode"),
+          value: draft.observationPack.mode,
+          overridden: overridden(["observationPack", "mode"]),
+          onChange: (value) => {
+            editValue(["observationPack", "mode"], value === "delayed" ? "delayed" : "immediate");
+            if (value === "delayed" && draft.observationPack.fullSends < 2) {
+              editValue(["observationPack", "fullSends"], 2);
             }
-          )
-        ] })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("fieldset", { className: card_default.fieldset, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("legend", { children: t("observationPack") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.help, children: t("observationPackHelp") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: card_default.row, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("enabled") }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "input",
-            {
-              type: "checkbox",
-              checked: draft.observationPack.enabled,
-              onChange: (event) => patch("observationPack", { enabled: event.target.checked })
-            }
-          )
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: card_default.row, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("mode") }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-            "select",
-            {
-              value: draft.observationPack.mode,
-              onChange: (event) => patch("observationPack", {
-                mode: event.target.value === "delayed" ? "delayed" : "immediate",
-                fullSends: event.target.value === "delayed" ? Math.max(draft.observationPack.fullSends, 2) : 0
-              }),
-              children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "immediate", children: t("modeImmediate") }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "delayed", children: t("modeDelayed") })
-              ]
-            }
-          )
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("thresholdBytes"),
-            value: draft.observationPack.thresholdBytes,
-            onChange: (value) => patch("observationPack", { thresholdBytes: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("fullSends"),
-            value: draft.observationPack.fullSends,
-            onChange: (value) => patch("observationPack", { fullSends: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("placeholderExcerptBytes"),
-            value: draft.observationPack.placeholderExcerptBytes,
-            onChange: (value) => patch("observationPack", { placeholderExcerptBytes: value })
-          }
-        )
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("fieldset", { className: card_default.fieldset, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("legend", { children: t("epr") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.help, children: t("eprHelp") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: card_default.row, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("enabled") }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "input",
-            {
-              type: "checkbox",
-              checked: draft.evidencePreservingReducer.enabled,
-              onChange: (event) => patch("evidencePreservingReducer", { enabled: event.target.checked })
-            }
-          )
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("minBytes"),
-            value: draft.evidencePreservingReducer.minBytes,
-            onChange: (value) => patch("evidencePreservingReducer", { minBytes: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("maxChars"),
-            value: draft.evidencePreservingReducer.maxChars,
-            onChange: (value) => patch("evidencePreservingReducer", { maxChars: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("maxOutputTokens"),
-            value: draft.evidencePreservingReducer.maxOutputTokens,
-            onChange: (value) => patch("evidencePreservingReducer", { maxOutputTokens: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("timeoutMs"),
-            value: draft.evidencePreservingReducer.timeoutMs,
-            onChange: (value) => patch("evidencePreservingReducer", { timeoutMs: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: card_default.row, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("reducerProvider") }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "input",
-            {
-              value: draft.evidencePreservingReducer.reducerProvider,
-              onChange: (event) => patch("evidencePreservingReducer", { reducerProvider: event.target.value })
-            }
-          )
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: card_default.row, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("reducerModel") }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "input",
-            {
-              value: draft.evidencePreservingReducer.reducerModel,
-              onChange: (event) => patch("evidencePreservingReducer", { reducerModel: event.target.value })
-            }
-          )
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.help, children: t("reducerRouteHelp") })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("fieldset", { className: card_default.fieldset, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("legend", { children: t("occ") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.help, children: t("occHelp") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: card_default.row, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t("enabled") }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "input",
-            {
-              type: "checkbox",
-              checked: draft.onlineContextCompact.enabled,
-              onChange: (event) => patch("onlineContextCompact", { enabled: event.target.checked })
-            }
-          )
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("cacheWriteReadRatio"),
-            value: draft.onlineContextCompact.cacheWriteReadRatio,
-            step: 0.1,
-            onChange: (value) => patch("onlineContextCompact", { cacheWriteReadRatio: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.help, children: t("cacheWriteReadRatioHelp") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("keepRecentTokens"),
-            value: draft.onlineContextCompact.keepRecentTokens,
-            onChange: (value) => patch("onlineContextCompact", { keepRecentTokens: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.help, children: t("keepRecentTokensHelp") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("nativeSummaryTokenEstimate"),
-            value: draft.onlineContextCompact.nativeSummaryTokenEstimate,
-            onChange: (value) => patch("onlineContextCompact", { nativeSummaryTokenEstimate: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("windowReserveTokens"),
-            value: draft.onlineContextCompact.windowReserveTokens,
-            onChange: (value) => patch("onlineContextCompact", { windowReserveTokens: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("firstCompactionRequestScale"),
-            value: draft.onlineContextCompact.firstCompactionRequestScale,
-            step: 0.1,
-            onChange: (value) => patch("onlineContextCompact", { firstCompactionRequestScale: value })
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          NumberRow,
-          {
-            label: t("subsequentCompactionMargin"),
-            value: draft.onlineContextCompact.subsequentCompactionMargin,
-            step: 0.1,
-            onChange: (value) => patch("onlineContextCompact", { subsequentCompactionMargin: value })
-          }
-        )
-      ] }),
-      error ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.error, children: error }) : null,
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", { className: card_default.footer, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          "button",
-          {
-            type: "button",
-            disabled: discardDisabled,
-            onClick: () => {
-              setDraft(cloneConfig(loaded));
-              setError(void 0);
-            },
-            children: t("discard")
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          "button",
-          {
-            type: "button",
-            disabled: saving,
-            onClick: () => setDraft(cloneConfig(DEFAULT_SOL_DSH_CONFIG)),
-            children: t("reset")
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "submit", disabled: saveDisabled, children: saving ? t("saving") : t("save") })
+            if (value === "immediate") editValue(["observationPack", "fullSends"], 0);
+          },
+          onReset: () => resetPath(["observationPack", "mode"]),
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "immediate", children: t("modeImmediate") }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "delayed", children: t("modeDelayed") })
+          ]
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-obs-threshold",
+          label: t("thresholdBytes"),
+          numeric: true,
+          text: textOf(["observationPack", "thresholdBytes"], draft.observationPack.thresholdBytes),
+          invalid: invalidNumeric(["observationPack", "thresholdBytes"]),
+          overridden: overridden(["observationPack", "thresholdBytes"]),
+          onEdit: (text) => editText(["observationPack", "thresholdBytes"], text),
+          onReset: () => resetPath(["observationPack", "thresholdBytes"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-obs-fullsends",
+          label: t("fullSends"),
+          numeric: true,
+          text: textOf(["observationPack", "fullSends"], draft.observationPack.fullSends),
+          invalid: invalidNumeric(["observationPack", "fullSends"]),
+          overridden: overridden(["observationPack", "fullSends"]),
+          onEdit: (text) => editText(["observationPack", "fullSends"], text),
+          onReset: () => resetPath(["observationPack", "fullSends"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-obs-excerpt",
+          label: t("placeholderExcerptBytes"),
+          numeric: true,
+          text: textOf(["observationPack", "placeholderExcerptBytes"], draft.observationPack.placeholderExcerptBytes),
+          invalid: invalidNumeric(["observationPack", "placeholderExcerptBytes"]),
+          overridden: overridden(["observationPack", "placeholderExcerptBytes"]),
+          onEdit: (text) => editText(["observationPack", "placeholderExcerptBytes"], text),
+          onReset: () => resetPath(["observationPack", "placeholderExcerptBytes"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Group, { title: t("epr"), hint: t("eprHelp") }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        SwitchRow,
+        {
+          ...common,
+          label: t("enabled"),
+          checked: draft.evidencePreservingReducer.enabled,
+          overridden: overridden(["evidencePreservingReducer", "enabled"]),
+          onChange: (checked) => editValue(["evidencePreservingReducer", "enabled"], checked),
+          onReset: () => resetPath(["evidencePreservingReducer", "enabled"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-epr-min",
+          label: t("minBytes"),
+          numeric: true,
+          text: textOf(["evidencePreservingReducer", "minBytes"], draft.evidencePreservingReducer.minBytes),
+          invalid: invalidNumeric(["evidencePreservingReducer", "minBytes"]),
+          overridden: overridden(["evidencePreservingReducer", "minBytes"]),
+          onEdit: (text) => editText(["evidencePreservingReducer", "minBytes"], text),
+          onReset: () => resetPath(["evidencePreservingReducer", "minBytes"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-epr-maxchars",
+          label: t("maxChars"),
+          numeric: true,
+          text: textOf(["evidencePreservingReducer", "maxChars"], draft.evidencePreservingReducer.maxChars),
+          invalid: invalidNumeric(["evidencePreservingReducer", "maxChars"]),
+          overridden: overridden(["evidencePreservingReducer", "maxChars"]),
+          onEdit: (text) => editText(["evidencePreservingReducer", "maxChars"], text),
+          onReset: () => resetPath(["evidencePreservingReducer", "maxChars"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-epr-out",
+          label: t("maxOutputTokens"),
+          numeric: true,
+          text: textOf(["evidencePreservingReducer", "maxOutputTokens"], draft.evidencePreservingReducer.maxOutputTokens),
+          invalid: invalidNumeric(["evidencePreservingReducer", "maxOutputTokens"]),
+          overridden: overridden(["evidencePreservingReducer", "maxOutputTokens"]),
+          onEdit: (text) => editText(["evidencePreservingReducer", "maxOutputTokens"], text),
+          onReset: () => resetPath(["evidencePreservingReducer", "maxOutputTokens"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-epr-timeout",
+          label: t("timeoutMs"),
+          numeric: true,
+          text: textOf(["evidencePreservingReducer", "timeoutMs"], draft.evidencePreservingReducer.timeoutMs),
+          invalid: invalidNumeric(["evidencePreservingReducer", "timeoutMs"]),
+          overridden: overridden(["evidencePreservingReducer", "timeoutMs"]),
+          onEdit: (text) => editText(["evidencePreservingReducer", "timeoutMs"], text),
+          onReset: () => resetPath(["evidencePreservingReducer", "timeoutMs"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-epr-provider",
+          label: t("reducerProvider"),
+          hint: t("reducerRouteHelp"),
+          text: textOf(["evidencePreservingReducer", "reducerProvider"], draft.evidencePreservingReducer.reducerProvider),
+          overridden: overridden(["evidencePreservingReducer", "reducerProvider"]),
+          onEdit: (text) => {
+            editText(["evidencePreservingReducer", "reducerProvider"], text);
+            editValue(["evidencePreservingReducer", "reducerProvider"], text);
+          },
+          onReset: () => resetPath(["evidencePreservingReducer", "reducerProvider"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-epr-model",
+          label: t("reducerModel"),
+          text: textOf(["evidencePreservingReducer", "reducerModel"], draft.evidencePreservingReducer.reducerModel),
+          overridden: overridden(["evidencePreservingReducer", "reducerModel"]),
+          onEdit: (text) => {
+            editText(["evidencePreservingReducer", "reducerModel"], text);
+            editValue(["evidencePreservingReducer", "reducerModel"], text);
+          },
+          onReset: () => resetPath(["evidencePreservingReducer", "reducerModel"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Group, { title: t("occ"), hint: t("occHelp") }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        SwitchRow,
+        {
+          ...common,
+          label: t("enabled"),
+          checked: draft.onlineContextCompact.enabled,
+          overridden: overridden(["onlineContextCompact", "enabled"]),
+          onChange: (checked) => editValue(["onlineContextCompact", "enabled"], checked),
+          onReset: () => resetPath(["onlineContextCompact", "enabled"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-occ-ratio",
+          label: t("cacheWriteReadRatio"),
+          hint: t("cacheWriteReadRatioHelp"),
+          numeric: true,
+          text: textOf(["onlineContextCompact", "cacheWriteReadRatio"], draft.onlineContextCompact.cacheWriteReadRatio),
+          invalid: invalidNumeric(["onlineContextCompact", "cacheWriteReadRatio"]),
+          overridden: overridden(["onlineContextCompact", "cacheWriteReadRatio"]),
+          onEdit: (text) => editText(["onlineContextCompact", "cacheWriteReadRatio"], text),
+          onReset: () => resetPath(["onlineContextCompact", "cacheWriteReadRatio"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-occ-keep",
+          label: t("keepRecentTokens"),
+          hint: t("keepRecentTokensHelp"),
+          numeric: true,
+          text: textOf(["onlineContextCompact", "keepRecentTokens"], draft.onlineContextCompact.keepRecentTokens),
+          invalid: invalidNumeric(["onlineContextCompact", "keepRecentTokens"]),
+          overridden: overridden(["onlineContextCompact", "keepRecentTokens"]),
+          onEdit: (text) => editText(["onlineContextCompact", "keepRecentTokens"], text),
+          onReset: () => resetPath(["onlineContextCompact", "keepRecentTokens"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-occ-summary",
+          label: t("nativeSummaryTokenEstimate"),
+          numeric: true,
+          text: textOf(
+            ["onlineContextCompact", "nativeSummaryTokenEstimate"],
+            draft.onlineContextCompact.nativeSummaryTokenEstimate
+          ),
+          invalid: invalidNumeric(["onlineContextCompact", "nativeSummaryTokenEstimate"]),
+          overridden: overridden(["onlineContextCompact", "nativeSummaryTokenEstimate"]),
+          onEdit: (text) => editText(["onlineContextCompact", "nativeSummaryTokenEstimate"], text),
+          onReset: () => resetPath(["onlineContextCompact", "nativeSummaryTokenEstimate"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-occ-reserve",
+          label: t("windowReserveTokens"),
+          numeric: true,
+          text: textOf(["onlineContextCompact", "windowReserveTokens"], draft.onlineContextCompact.windowReserveTokens),
+          invalid: invalidNumeric(["onlineContextCompact", "windowReserveTokens"]),
+          overridden: overridden(["onlineContextCompact", "windowReserveTokens"]),
+          onEdit: (text) => editText(["onlineContextCompact", "windowReserveTokens"], text),
+          onReset: () => resetPath(["onlineContextCompact", "windowReserveTokens"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-occ-first",
+          label: t("firstCompactionRequestScale"),
+          numeric: true,
+          text: textOf(
+            ["onlineContextCompact", "firstCompactionRequestScale"],
+            draft.onlineContextCompact.firstCompactionRequestScale
+          ),
+          invalid: invalidNumeric(["onlineContextCompact", "firstCompactionRequestScale"]),
+          overridden: overridden(["onlineContextCompact", "firstCompactionRequestScale"]),
+          onEdit: (text) => editText(["onlineContextCompact", "firstCompactionRequestScale"], text),
+          onReset: () => resetPath(["onlineContextCompact", "firstCompactionRequestScale"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        ValueRow,
+        {
+          ...common,
+          id: "sol-occ-margin",
+          label: t("subsequentCompactionMargin"),
+          numeric: true,
+          text: textOf(
+            ["onlineContextCompact", "subsequentCompactionMargin"],
+            draft.onlineContextCompact.subsequentCompactionMargin
+          ),
+          invalid: invalidNumeric(["onlineContextCompact", "subsequentCompactionMargin"]),
+          overridden: overridden(["onlineContextCompact", "subsequentCompactionMargin"]),
+          onEdit: (text) => editText(["onlineContextCompact", "subsequentCompactionMargin"], text),
+          onReset: () => resetPath(["onlineContextCompact", "subsequentCompactionMargin"])
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.footer, children: [
+        failed || error ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.failed, role: "status", children: error ?? t("saveFailed") }) : null,
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.discard, disabled: discardDisabled, onClick: onDiscard, children: t("discard") }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.save, disabled: saveDisabled, onClick: () => void onSave(), children: t(saving ? "saving" : "save") })
       ] })
     ] }) : null
-  ] });
-}
-function NumberRow(props) {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: card_default.row, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: props.label }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-      "input",
-      {
-        type: "number",
-        step: props.step ?? 1,
-        value: props.value,
-        onChange: (event) => props.onChange(Number(event.target.value))
-      }
-    )
   ] });
 }
 
@@ -1320,6 +1986,10 @@ var SOL_DSH_LOCALE_NS = "settings.solDsh";
 var zh = {
   title: "SoL",
   description: "\u4E0A\u4E0B\u6587\u4E0E\u5DE5\u5177\u6548\u7387\uFF1A\u52A8\u4F5C\u878D\u5408\u3001ObservationPack\u3001\u8BC1\u636E\u4FDD\u7559\u5F52\u7EA6\u3001\u5728\u7EBF\u538B\u7F29\u3002",
+  expand: "\u5C55\u5F00",
+  overridden: "\u5DF2\u8986\u76D6",
+  invalidNumber: "\u8BF7\u8F93\u5165\u6709\u6548\u6570\u5B57",
+  collapse: "\u6536\u8D77",
   unsaved: "\u672A\u4FDD\u5B58",
   save: "\u4FDD\u5B58",
   discard: "\u4E22\u5F03",
@@ -1362,6 +2032,10 @@ var zh = {
 var en = {
   title: "SoL",
   description: "Context and tool efficiency: action fusion, ObservationPack, evidence-preserving reduction, online compaction.",
+  expand: "Expand",
+  overridden: "Overridden",
+  invalidNumber: "Enter a valid number",
+  collapse: "Collapse",
   unsaved: "Unsaved",
   save: "Save",
   discard: "Discard",
@@ -1409,53 +2083,95 @@ if (zhKeys.join("\0") !== enKeys.join("\0")) {
 var solDshLocales = { zh, en };
 
 // src/sol-dsh/client/index.ts
-var inject = ["slots", "locale"];
+var inject = ["slots", "locale", "settingsScope"];
 function translator(ctx) {
-  const bound = ctx.locale?.bind?.(SOL_DSH_LOCALE_NS);
+  const bound = ctx.locale.bind?.(SOL_DSH_LOCALE_NS);
   if (bound) return (key) => bound(key);
-  return (key) => ctx.locale?.t?.(SOL_DSH_LOCALE_NS, key) ?? solDshLocales.en[key];
+  return (key) => ctx.locale.t?.(SOL_DSH_LOCALE_NS, key) ?? solDshLocales.en[key];
 }
-async function readConfig(remote) {
+function decodeSection(section) {
   try {
-    if (remote?.get) {
-      const snapshot = await remote.get(SOL_DSH_SETTINGS_NAMESPACE);
-      if (snapshot && typeof snapshot === "object" && "value" in snapshot) {
-        const record = snapshot;
-        return {
-          value: resolveSolDshConfig(record.value),
-          revision: record.revision ?? 0,
-          writable: true
-        };
-      }
-      return { value: resolveSolDshConfig(snapshot), revision: 0, writable: true };
-    }
-    const described = await remote?.describe?.();
-    const row = described?.find((item) => item.namespace === SOL_DSH_SETTINGS_NAMESPACE);
-    if (row) {
-      return {
-        value: resolveSolDshConfig(row.value),
-        revision: row.revision ?? 0,
-        writable: true
-      };
-    }
+    return resolveSolDshConfig(section);
   } catch {
+    return void 0;
   }
-  return { value: DEFAULT_SOL_DSH_CONFIG, revision: 0, writable: false };
 }
-function apply(ctx) {
-  ctx.locale?.register(SOL_DSH_LOCALE_NS, solDshLocales);
-  ctx.slots?.inject("settings.plugin.item", { key: SOL_DSH_SETTINGS_NAMESPACE }, (frame) => {
-    const remote = frame.get?.("remote.settings") ?? frame.get?.("settings");
-    const t = translator(frame);
-    return (0, import_react2.createElement)(SolDshCard, {
-      t,
-      load: () => readConfig(remote),
-      onSave: async (patch, expectedRevision) => {
-        if (!remote?.update) throw new Error(t("readonly"));
-        await remote.update(SOL_DSH_SETTINGS_NAMESPACE, patch, expectedRevision);
-      }
+function asUserLayer(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value) ? value : void 0;
+}
+function whenSettled(scope, timeoutMs = 8e3) {
+  const first = scope.getSnapshot();
+  if (first.status !== "loading") return Promise.resolve(first);
+  return new Promise((resolve2) => {
+    const timer = setTimeout(() => {
+      off();
+      resolve2(scope.getSnapshot());
+    }, timeoutMs);
+    const off = scope.subscribe(() => {
+      const next = scope.getSnapshot();
+      if (next.status === "loading") return;
+      clearTimeout(timer);
+      off();
+      resolve2(next);
     });
   });
+}
+function deepEqual2(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+function apply(ctx) {
+  ctx.effect?.(() => ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales), "dsh-sol-pi: locale dictionaries");
+  if (!ctx.effect) ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales);
+  const t = translator(ctx);
+  const scope = ctx.settingsScope.bind({
+    namespace: SOL_DSH_SETTINGS_NAMESPACE,
+    decode: decodeSection
+  });
+  ctx.effect?.(() => () => {
+    void scope.dispose?.();
+  }, "dsh-sol-pi: settings scope");
+  ctx.slots.inject(
+    "settings.plugin.item",
+    () => ctx.slots.register(
+      {
+        name: "settings.plugin.item",
+        key: SOL_DSH_SETTINGS_NAMESPACE,
+        locale: SOL_DSH_LOCALE_NS,
+        inject: () => ({
+          t,
+          load: async () => {
+            const snap = await whenSettled(scope);
+            const base = decodeSection(snap.base) ?? DEFAULT_SOL_DSH_CONFIG;
+            return {
+              value: snap.value ?? base,
+              base,
+              user: asUserLayer(snap.user),
+              revision: snap.revision ?? 0,
+              writable: snap.writable && snap.status !== "unavailable"
+            };
+          },
+          onSave: async (patch, expectedRevision, base, user) => {
+            const snap = scope.getSnapshot();
+            if (!snap.writable || snap.status === "unavailable") throw new Error(t("readonly"));
+            const ops = [];
+            for (const key of Object.keys(patch)) {
+              const next = patch[key];
+              const composition = base[key];
+              if (deepEqual2(next, composition)) {
+                if (user && Object.prototype.hasOwnProperty.call(user, key)) {
+                  ops.push({ op: "unset", path: [key] });
+                }
+              } else {
+                ops.push({ op: "set", path: [key], value: next });
+              }
+            }
+            if (ops.length > 0) await scope.mutate(ops, expectedRevision);
+          }
+        })
+      },
+      SolDshCard
+    )
+  );
 }
 
 return module.exports;

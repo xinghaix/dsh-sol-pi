@@ -100,12 +100,53 @@ describe("sol-dsh observation placeholder", () => {
 describe("sol-dsh apply", () => {
 	it("registers native listeners without a default export", async () => {
 		const events: string[] = [];
-		const ctx = {
+		const ctx: {
+			on(event: string, _listener: (...args: never[]) => unknown): () => void;
+			inject(deps: readonly string[], callback: (child: never) => void): void;
+			tools: {
+				get(): undefined;
+				register(): () => void;
+				execute: () => Promise<{ content: never[] }>;
+			};
+			llm: { stream: () => AsyncGenerator };
+		} = {
 			on(event: string, _listener: (...args: never[]) => unknown) {
 				events.push(event);
 				return () => {};
 			},
-			inject() {},
+			inject(deps: readonly string[], callback: (child: never) => void) {
+				const child = {
+					on(event: string, _listener: (...args: never[]) => unknown) {
+						events.push(event);
+						return () => {};
+					},
+					compaction: deps.includes("compaction")
+						? { compactIfNeeded: async () => {}, compactNow: async () => {} }
+						: undefined,
+					systemPrompt: deps.includes("systemPrompt")
+						? { section() {} }
+						: undefined,
+					spillStore: deps.includes("spillStore")
+						? {
+								saveText: async () => ({ locator: "spill:1", bytes: 0, retrievalHint: "" }),
+							}
+						: undefined,
+					effect() {},
+					tools: {
+						get() {
+							return undefined;
+						},
+						register() {
+							return () => {};
+						},
+						execute: async () => ({ content: [] }),
+					},
+					llm: {
+						stream: async function* () {},
+					},
+				};
+				callback(child as never);
+			},
 			tools: {
 				get() {
 					return undefined;
@@ -119,7 +160,7 @@ describe("sol-dsh apply", () => {
 				stream: async function* () {},
 			},
 		};
-		apply(ctx, {});
+		apply(ctx as never, {});
 		expect(events).toContain("tools/post-execute");
 		expect(events).toContain("agent/session-start");
 		expect(events).toContain("agent/pre-step");

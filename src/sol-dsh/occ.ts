@@ -48,14 +48,17 @@ function measureTokens(ctx: DshContext, agent: DshAgent): number {
 	try {
 		const session = agent.session as Record<string, unknown> | undefined;
 		const messages = session?.messages ?? session?.log;
-		if (ctx.tokenMeter && messages !== undefined) {
-			const measured = ctx.tokenMeter.measure(messages);
+		const meter = (typeof ctx.get === "function" ? ctx.get("tokenMeter") : undefined) as
+			| DshContext["tokenMeter"]
+			| undefined;
+		if (meter && messages !== undefined) {
+			const measured = meter.measure(messages);
 			if (typeof measured === "number" && Number.isFinite(measured)) return measured;
 		}
 		const tokens = session?.contextTokens ?? session?.tokenCount;
 		if (typeof tokens === "number" && Number.isFinite(tokens)) return tokens;
 	} catch {
-		/* fail-open */
+		/* fail-open — undeclared injectables throw on property access */
 	}
 	return 0;
 }
@@ -79,7 +82,9 @@ async function maybeCompact(
 	state: OnlineState,
 	config: OnlineContextCompactConfig,
 ): Promise<OnlineState> {
-	if (!ctx.compaction) return state;
+	// Caller must run under ctx.inject(["compaction"], …); property access without inject throws.
+	const compaction = ctx.compaction;
+	if (!compaction) return state;
 	const contextTokens = measureTokens(ctx, agent);
 	const windowTokens = contextWindow(agent);
 	const archiveTokens = Math.max(0, contextTokens - keepRecentTokens(config, windowTokens));
@@ -104,7 +109,7 @@ async function maybeCompact(
 	if (!decision.compact) return state;
 	try {
 		if (typeof agent.whenIdle === "function") await agent.whenIdle();
-		await ctx.compaction.compactNow(agent, undefined);
+		await compaction.compactNow(agent, undefined);
 		return recordCompaction(state, {
 			debtTokens: (decision.writeTokens * Math.max(0, config.cacheWriteReadRatio - 1)) / Math.max(1, decision.archiveTokens),
 			repaymentTokens: Math.max(0, decision.archiveTokens - decision.memoTokens),
@@ -158,13 +163,19 @@ export function registerOnlineContextCompact(ctx: DshContext, configOf: () => On
 		return decided;
 	}) as (...args: never[]) => unknown);
 
-	ctx.on("agent/pre-step", (async (payload: { agent?: DshAgent }) => {
-		const config = configOf();
-		if (!config.enabled) return;
-		const agent = payload?.agent;
-		if (!agent) return;
-		const key = keyOf(agent);
-		const current = recordProviderRequest(states.get(key) ?? initialOnlineState(), measureTokens(ctx, agent));
-		states.set(key, await maybeCompact(ctx, agent, current, config));
-	}) as (...args: never[]) => unknown);
+	const attachCompactionHooks = (runtime: DshContext): void => {
+		runtime.on("agent/pre-step", (async (payload: { agent?: DshAgent }) => {
+			const config = configOf();
+			if (!config.enabled) return;
+			const agent = payload?.agent;
+			if (!agent) return;
+			const key = keyOf(agent);
+			const current = recordProviderRequest(states.get(key) ?? initialOnlineState(), measureTokens(runtime, agent));
+			states.set(key, await maybeCompact(runtime, agent, current, config));
+		}) as (...args: never[]) => unknown);
+	};
+
+	if (typeof ctx.inject === "function") {
+		ctx.inject(["compaction"], (child) => attachCompactionHooks(child));
+	}
 }
