@@ -12,7 +12,7 @@
 </p>
 
 > [!NOTE]
-> Upstream SoL-Pi is a standalone extension for [Pi](https://github.com/earendil-works/pi), maintained by NVIDIA ([NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi)). This public checkout adds a **native DeepSeek Harness plugin**. It is not an official distribution of Pi or of DeepSeek Harness.
+> Upstream SoL-Pi is a standalone extension for [Pi](https://github.com/earendil-works/pi), maintained by NVIDIA ([NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi)). This public repo is **`sol-dsh`**: native DeepSeek Harness plugin plus the Pi adapter. It is not an official distribution of Pi or of DeepSeek Harness.
 
 ## 💡 TL;DR
 
@@ -53,7 +53,7 @@ The same four mechanisms ship as a **native Cordis plugin** (`sol-dsh`), not a P
 Full install, status, and security notes: **[docs/dsh.md](docs/dsh.md)**. Config contract: [docs/dsh-configuration.md](docs/dsh-configuration.md).
 
 ```bash
-dsh plugin --profile web add github:xinghaix/SoL-Pi --allow-build sol-pi
+dsh plugin --profile web add github:xinghaix/sol-dsh --allow-build sol-dsh
 dsh --profile web --dump-config    # must show id: sol-dsh
 dsh web
 ```
@@ -162,12 +162,12 @@ node scripts/check-pi-compat.mjs
 
 Upstream SoL-Pi is developed and maintained by NVIDIA as a standalone Pi extension.
 
-This public repository ([xinghaix/SoL-Pi](https://github.com/xinghaix/SoL-Pi)) keeps that Pi path and adds a native DSH host:
+This public repository ([xinghaix/sol-dsh](https://github.com/xinghaix/sol-dsh)) keeps that Pi path and publishes the DSH host as **`sol-dsh`**:
 
 - **Pi:** opt-in via `sol-pi.json`, defaults all **false**, tested on 0.84.2.
 - **DSH:** Cordis bundle `sol-dsh`, install = opt-in, Web settings card, tested on 0.1.5-rc.2. See [docs/dsh.md](docs/dsh.md).
 
-DSH v1 limitations: ObservationPack `delayed` only archives (no silent projection hook); the Web card needs `npm run build:dsh` or `--allow-build sol-pi`; OCC uses `todo_write` rather than Pi’s `update_plan`.
+DSH v1 limitations: ObservationPack `delayed` only archives (no silent projection hook); the Web card needs `npm run build:dsh` or `--allow-build sol-dsh`; OCC uses `todo_write` rather than Pi’s `update_plan`.
 
 We welcome tested, host-compatible PRs that improve token efficiency and reduce token cost. NVIDIA’s upstream contribution process is in [CONTRIBUTING.md](CONTRIBUTING.md).
 

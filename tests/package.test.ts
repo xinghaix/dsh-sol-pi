@@ -19,7 +19,7 @@ function packedFiles(): string[] {
 	if (result.status !== 0) throw new Error(result.stderr || result.stdout);
 	const jsonText = result.stdout.trim().replace(/^[\s\S]*?(?=\[|{)/, "");
 	const parsed = JSON.parse(jsonText) as PackReport[] | Record<string, PackReport>;
-	const report = Array.isArray(parsed) ? parsed[0] : parsed["sol-pi"] ?? Object.values(parsed)[0];
+	const report = Array.isArray(parsed) ? parsed[0] : parsed["sol-dsh"] ?? Object.values(parsed)[0];
 	return report?.files.map((file) => file.path) ?? [];
 }
 

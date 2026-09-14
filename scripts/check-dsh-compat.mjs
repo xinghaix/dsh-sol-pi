@@ -40,8 +40,10 @@ must(!/obs_recall/.test(pack), "DSH ObservationPack must not invent obs_recall")
 
 const patch = read("src/sol-dsh/cordis.patch.yml");
 must(/id: sol-dsh/.test(patch), "cordis.patch.yml must insert id sol-dsh");
+must(/name: sol-dsh/.test(patch), "cordis.patch.yml row name must match the npm package sol-dsh");
 
 const pkg = JSON.parse(read("package.json"));
+must(pkg.name === "sol-dsh", "package.json name must be sol-dsh");
 must(pkg.dsh?.bundle?.patch === "./src/sol-dsh/cordis.patch.yml", "package.json dsh.bundle.patch must point at the native patch");
 must(pkg.dsh?.client?.platform === "web", "package.json dsh.client.platform must be web");
 must(pkg.exports?.["./client"], "package.json must export ./client for the settings card");

@@ -1,4 +1,4 @@
 # Inserts the native SoL plugin. Omitted config ⇒ Schemastery best defaults.
 - insert:
     - id: sol-dsh
-      name: sol-pi
+      name: sol-dsh

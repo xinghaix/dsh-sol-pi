@@ -2,7 +2,7 @@
 
 Install steps: [dsh.md](dsh.md).
 
-Native DeepSeek Harness contract. **Do not shape this after Pi.** No `sol-pi.json`, no Pi TUI copy, no Pi event names, no separate language switch. The DSH adapter is a Cordis plugin + settings namespace + Web settings card. The npm package name is `sol-pi`; the Cordis plugin id and settings namespace are `sol-dsh`.
+Native DeepSeek Harness contract. **Do not shape this after Pi.** No `sol-pi.json`, no Pi TUI copy, no Pi event names, no separate language switch. The DSH adapter is a Cordis plugin + settings namespace + Web settings card. The npm package, Cordis plugin id, and settings namespace are all `sol-dsh`.
 
 - Installing the bundle with `dsh plugin --profile <name> add …` **is** the opt-in.
 - After install, omitted fields take **SoL’s DSH best defaults** (Schemastery `.default()`).
@@ -21,7 +21,7 @@ Cordis fills defaults from the exported `Config` schema ([plugin configuration](
 # src/sol-dsh/cordis.patch.yml — ship this
 - insert:
     - id: sol-dsh
-      name: sol-pi          # npm package name; plugin export name is still "sol-dsh"
+      name: sol-dsh
 ```
 
 Partial user override (profile `cordis.patch.yml` or `$DSH_HOME/cordis.patch.yml`):

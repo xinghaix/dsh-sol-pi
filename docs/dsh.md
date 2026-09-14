@@ -30,7 +30,7 @@ Requirements: Node.js 22.19+, a working `dsh` CLI, profile `web` (or another pro
 `dsh plugin add` is pnpm add in the profile directory. Git installs run `prepack`/`prepare`, so allow this package’s build scripts:
 
 ```bash
-dsh plugin --profile web add github:xinghaix/SoL-Pi --allow-build sol-pi
+dsh plugin --profile web add github:xinghaix/sol-dsh --allow-build sol-dsh
 dsh --profile web --dump-config    # composed tree must include a sol-dsh row
 dsh web                            # or: dsh --profile web
 ```
@@ -40,7 +40,7 @@ Then open **Settings → 插件**. The SoL card uses the same expandable chrome 
 ### From a local checkout
 
 ```bash
-git clone https://github.com/xinghaix/SoL-Pi.git
+git clone https://github.com/xinghaix/sol-dsh.git
 cd SoL-Pi
 npm ci --ignore-scripts
 npm run build:dsh                  # host + Web client CJS factory
@@ -54,8 +54,8 @@ dsh web
 ### Other profiles
 
 ```bash
-dsh plugin --profile tui add github:xinghaix/SoL-Pi --allow-build sol-pi
-dsh plugin --profile headless add github:xinghaix/SoL-Pi --allow-build sol-pi
+dsh plugin --profile tui add github:xinghaix/sol-dsh --allow-build sol-dsh
+dsh plugin --profile headless add github:xinghaix/sol-dsh --allow-build sol-dsh
 ```
 
 The settings card is `dsh.client.platform: web`. TUI/headless get the Host mechanisms only.
@@ -71,10 +71,8 @@ You should see the bundle layer and a plugin row `id: sol-dsh`. Restart `dsh web
 ### Remove
 
 ```bash
-dsh plugin --profile web remove sol-pi
+dsh plugin --profile web remove sol-dsh
 ```
-
-(The npm package name is `sol-pi`; the Cordis plugin id is `sol-dsh`.)
 
 ## What you get with no extra config
 
