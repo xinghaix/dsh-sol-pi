@@ -147,10 +147,14 @@ export function registerActionFusion(ctx: DshContext, enabled: () => boolean = (
 		}
 	}) as (...args: never[]) => unknown);
 
-	ctx.systemPrompt?.section({
-		id: "sol-dsh-action-fusion",
-		description: "SoL action fusion then_run",
-		source: () =>
-			"edit and write accept optional then_run { command, timeout? }. After a successful file mutation, the command runs in the same observation. Do not split a mutation and its immediate test/build/run into two turns.",
-	});
+	if (typeof ctx.inject === "function") {
+		ctx.inject(["systemPrompt"], (child) => {
+			child.systemPrompt?.section({
+				id: "sol-dsh-action-fusion",
+				description: "SoL action fusion then_run",
+				source: () =>
+					"edit and write accept optional then_run { command, timeout? }. After a successful file mutation, the command runs in the same observation. Do not split a mutation and its immediate test/build/run into two turns.",
+			});
+		});
+	}
 }

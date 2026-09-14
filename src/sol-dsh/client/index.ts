@@ -20,14 +20,8 @@ type ClientContext = {
 	get?(name: string): unknown;
 };
 
-export const inject = [
-	"slots",
-	"locale",
-	"connection",
-	"remote",
-	"remote.settings",
-	"@deepseek-ai/dsh-client-ui-settings-plugins",
-];
+/** Cordis fiber services — package names belong in package.json dsh.client.inject, not here. */
+export const inject = ["slots", "locale"];
 
 type SettingsRemote = {
 	describe?(): Promise<readonly { namespace: string; revision?: number; value?: unknown; user?: unknown }[]>;

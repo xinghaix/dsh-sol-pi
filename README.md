@@ -53,7 +53,7 @@ The same four mechanisms ship as a **native Cordis plugin** (`dsh-sol-pi`), not 
 Full install, status, and security notes: **[docs/dsh.md](docs/dsh.md)**. Config contract: [docs/dsh-configuration.md](docs/dsh-configuration.md).
 
 ```bash
-dsh plugin --profile web add github:xinghaix/dsh-sol-pi --allow-build dsh-sol-pi
+dsh plugin --profile web add github:xinghaix/dsh-sol-pi
 dsh --profile web --dump-config    # must show id: dsh-sol-pi
 dsh web
 ```
@@ -167,7 +167,7 @@ This public repository ([xinghaix/dsh-sol-pi](https://github.com/xinghaix/dsh-so
 - **Pi:** opt-in via `sol-pi.json`, defaults all **false**, tested on 0.84.2.
 - **DSH:** Cordis bundle `dsh-sol-pi`, install = opt-in, Web settings card, tested on 0.1.5-rc.2. See [docs/dsh.md](docs/dsh.md).
 
-DSH v1 limitations: ObservationPack `delayed` only archives (no silent projection hook); the Web card needs `npm run build:dsh` or `--allow-build dsh-sol-pi`; OCC uses `todo_write` rather than Pi’s `update_plan`.
+DSH v1 limitations: ObservationPack `delayed` only archives (no silent projection hook); OCC uses `todo_write` rather than Pi’s `update_plan`.
 
 We welcome tested, host-compatible PRs that improve token efficiency and reduce token cost. NVIDIA’s upstream contribution process is in [CONTRIBUTING.md](CONTRIBUTING.md).
 

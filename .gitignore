@@ -1,6 +1,8 @@
 node_modules/
 coverage/
-dist/
+dist/*
+!dist/sol-dsh/
+!dist/sol-dsh/**
 *.tgz
 *.tsbuildinfo
 *.log

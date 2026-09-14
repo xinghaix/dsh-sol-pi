@@ -32,9 +32,9 @@
 		"prepack": "npm run build:dsh",
 		"check": "npm run typecheck && npm test && npm run check:dsh && npm pack --dry-run"
 	},
-	"main": "./src/sol-dsh/index.ts",
+	"main": "./dist/sol-dsh/index.js",
 	"exports": {
-		".": "./src/sol-dsh/index.ts",
+		".": "./dist/sol-dsh/index.js",
 		"./client": "./dist/sol-dsh/client.js",
 		"./package.json": "./package.json"
 	},
@@ -43,11 +43,8 @@
 			"patch": "./src/sol-dsh/cordis.patch.yml"
 		},
 		"client": {
-			"inject": [
-				"@deepseek-ai/dsh-client-store",
-				"@deepseek-ai/dsh-client-ui-settings-plugins",
-				"@deepseek-ai/dsh-client-locale"
-			],
+			"inject": ["slots", "locale"],
+			"immediately": true,
 			"platform": "web"
 		}
 	},

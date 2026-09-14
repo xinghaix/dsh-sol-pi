@@ -27,10 +27,10 @@ Requirements: Node.js 22.19+, a working `dsh` CLI, profile `web` (or another pro
 
 ### From this GitHub repo (typical)
 
-`dsh plugin add` is pnpm add in the profile directory. Git installs run `prepack`/`prepare`, so allow this package’s build scripts:
+`dsh plugin add` is pnpm add in the profile directory. The Host/Web entries are committed JS under `dist/sol-dsh/` (Node will not strip types from `.ts` inside `node_modules`). Uninstall by **package name**, not the GitHub URL.
 
 ```bash
-dsh plugin --profile web add github:xinghaix/dsh-sol-pi --allow-build dsh-sol-pi
+dsh plugin --profile web add github:xinghaix/dsh-sol-pi
 dsh --profile web --dump-config    # composed tree must include a dsh-sol-pi row
 dsh web                            # or: dsh --profile web
 ```
@@ -49,13 +49,13 @@ dsh --profile web --dump-config
 dsh web
 ```
 
-`build:dsh` writes `dist/sol-dsh/client.js`. Without it the Host plugin can still load from TypeScript; the Web settings card will not.
+`build:dsh` regenerates `dist/sol-dsh/index.js` (Host) and `dist/sol-dsh/client.js` (Web settings card). GitHub installs use the committed `dist/` copies. The settings card registers at boot (`dsh.client.immediately`) into **Settings → 插件**.
 
 ### Other profiles
 
 ```bash
-dsh plugin --profile tui add github:xinghaix/dsh-sol-pi --allow-build dsh-sol-pi
-dsh plugin --profile headless add github:xinghaix/dsh-sol-pi --allow-build dsh-sol-pi
+dsh plugin --profile tui add github:xinghaix/dsh-sol-pi
+dsh plugin --profile headless add github:xinghaix/dsh-sol-pi
 ```
 
 The settings card is `dsh.client.platform: web`. TUI/headless get the Host mechanisms only.

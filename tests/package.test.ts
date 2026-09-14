@@ -43,6 +43,8 @@ describe("published package", () => {
 		const files = packedFiles();
 		expect(files).toContain("src/sol-pi/extensions/online-context-compact/index.ts");
 		expect(files).toContain("src/sol-dsh/index.ts");
+		expect(files).toContain("dist/sol-dsh/index.js");
+		expect(files).toContain("dist/sol-dsh/client.js");
 		expect(files).toContain("src/sol-core/online-context-compact/economics.ts");
 		expect(files).toContain("scripts/check-sol-pi-config.mjs");
 		expect(files).toContain("scripts/check-dsh-compat.mjs");
