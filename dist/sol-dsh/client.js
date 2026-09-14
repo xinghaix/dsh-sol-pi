@@ -990,363 +990,10 @@ var import_react = require("react");
 if (typeof document !== "undefined" && !document.getElementById("sol-dsh-css")) {
   const s = document.createElement("style");
   s.id = "sol-dsh-css";
-  s.textContent = `/* Match @deepseek-ai/dsh-client-ui-settings-plugins PluginCard + fields chrome. */
-
-.solDsh_card {
-	border: 0.5px solid var(--dsw-alias-border-l4);
-	background: var(--dsw-alias-bg-layer-3);
-	border-radius: 16px;
-	list-style: none;
-	transition: border-color 0.16s, background 0.16s;
-}
-
-.solDsh_card:hover {
-	border-color: var(--dsw-alias-label-dimmed);
-}
-
-.solDsh_cardOpen {
-	background: var(--dsw-alias-bg-layer-2);
-	border-color: var(--dsw-alias-label-dimmed);
-}
-
-.solDsh_header {
-	appearance: none;
-	width: 100%;
-	font: inherit;
-	color: inherit;
-	text-align: left;
-	cursor: pointer;
-	background: 0 0;
-	border: 0;
-	border-radius: 12px;
-	align-items: center;
-	gap: 12px;
-	padding: 14px 16px;
-	display: flex;
-}
-
-.solDsh_header:focus-visible {
-	outline: 2px solid var(--dsw-alias-brand-primary);
-	outline-offset: -2px;
-}
-
-.solDsh_headText {
-	flex-direction: column;
-	flex: 1;
-	gap: 4px;
-	min-width: 0;
-	display: flex;
-}
-
-.solDsh_name {
-	color: var(--dsw-alias-label-primary);
-	font-size: 15px;
-	font-weight: 600;
-	line-height: 1.4;
-}
-
-.solDsh_description {
-	color: var(--dsw-alias-label-tertiary);
-	font-size: 13px;
-	line-height: 1.5;
-}
-
-.solDsh_pending {
-	flex: none;
-}
-
-.solDsh_chevron {
-	color: var(--dsw-alias-label-tertiary);
-	flex: none;
-	width: 14px;
-	height: 14px;
-	transition: transform 0.16s;
-}
-
-.solDsh_chevronOpen {
-	transform: rotate(180deg);
-}
-
-.solDsh_body {
-	border-top: 0.5px solid var(--dsw-alias-border-l2);
-	margin: 0 16px;
-	padding-bottom: 8px;
-}
-
-.solDsh_readOnly {
-	color: var(--dsw-alias-label-tertiary);
-	margin: 12px 0 0;
-	font-size: 12px;
-	line-height: 1.5;
-}
-
-.solDsh_footer {
-	border-top: 0.5px solid var(--dsw-alias-border-l2);
-	justify-content: flex-end;
-	align-items: center;
-	gap: 8px;
-	padding: 12px 0 4px;
-	display: flex;
-}
-
-.solDsh_failed {
-	min-width: 0;
-	color: var(--dsw-alias-label-error);
-	flex: 1;
-	margin: 0;
-	font-size: 12px;
-	line-height: 1.5;
-}
-
-.solDsh_discard,
-.solDsh_save {
-	appearance: none;
-	font: inherit;
-	cursor: pointer;
-	border: 1px solid transparent;
-	border-radius: 8px;
-	padding: 5px 14px;
-	font-size: 13px;
-	line-height: 1.5;
-}
-
-.solDsh_discard {
-	border-color: var(--dsw-alias-border-l2);
-	color: var(--dsw-alias-label-secondary);
-	background: 0 0;
-}
-
-.solDsh_discard:hover:not(:disabled) {
-	color: var(--dsw-alias-label-primary);
-	border-color: var(--dsw-alias-label-dimmed);
-}
-
-.solDsh_save {
-	background: var(--dsw-alias-label-primary);
-	color: var(--dsw-alias-bg-layer-3);
-}
-
-.solDsh_discard:disabled,
-.solDsh_save:disabled {
-	opacity: 0.4;
-	cursor: default;
-}
-
-.solDsh_discard:focus-visible,
-.solDsh_save:focus-visible {
-	outline: 2px solid var(--dsw-alias-brand-primary);
-	outline-offset: 1px;
-}
-
-.solDsh_field {
-	flex-direction: column;
-	gap: 6px;
-	padding: 12px 0;
-	display: flex;
-}
-
-.solDsh_field + .solDsh_field {
-	border-top: 0.5px solid var(--dsw-alias-border-l2);
-}
-
-.solDsh_head {
-	align-items: center;
-	gap: 8px;
-	display: flex;
-}
-
-.solDsh_label {
-	min-width: 0;
-	color: var(--dsw-alias-label-primary);
-	flex: 1;
-	font-size: 13px;
-	font-weight: 500;
-	line-height: 1.5;
-}
-
-.solDsh_hint {
-	color: var(--dsw-alias-label-tertiary);
-	margin: 0;
-	font-size: 12px;
-	line-height: 1.5;
-}
-
-.solDsh_input,
-.solDsh_select {
-	border: 0.5px solid var(--dsw-alias-border-l4);
-	background: var(--dsw-alias-bg-layer-3);
-	height: 34px;
-	font: inherit;
-	color: var(--dsw-alias-label-primary);
-	border-radius: 8px;
-	padding: 0 12px;
-	font-size: 13px;
-	line-height: 1.5;
-	width: 100%;
-	box-sizing: border-box;
-}
-
-.solDsh_select {
-	appearance: none;
-	cursor: pointer;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.solDsh_w3.solDsh_org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2381858C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-	background-position: right 12px center;
-	background-repeat: no-repeat;
-	background-size: 12px 12px;
-	padding-right: 32px;
-	max-width: 100%;
-}
-
-.solDsh_input:focus-visible,
-.solDsh_select:focus-visible {
-	border-color: var(--dsw-alias-brand-primary);
-	outline: none;
-}
-
-.solDsh_input:disabled,
-.solDsh_select:disabled {
-	color: var(--dsw-alias-label-tertiary);
-	cursor: default;
-}
-
-.solDsh_toggleRow {
-	align-items: center;
-	gap: 12px;
-	display: flex;
-}
-
-.solDsh_toggleLabel {
-	min-width: 0;
-	color: var(--dsw-alias-label-primary);
-	flex: 1;
-	font-size: 13px;
-	font-weight: 500;
-	line-height: 1.5;
-}
-
-.solDsh_group {
-	padding: 14px 0 4px;
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-}
-
-.solDsh_group + .solDsh_field {
-	border-top: none;
-	padding-top: 8px;
-}
-
-.solDsh_groupTitle {
-	color: var(--dsw-alias-label-primary);
-	margin: 0;
-	font-size: 13px;
-	font-weight: 600;
-	line-height: 1.5;
-}
-
-.solDsh_groupHint {
-	color: var(--dsw-alias-label-tertiary);
-	margin: 0;
-	font-size: 12px;
-	line-height: 1.5;
-}
-
-.solDsh_nativeSwitch {
-	width: 40px;
-	height: 24px;
-	appearance: none;
-	background: var(--dsw-alias-border-l2);
-	border-radius: 999px;
-	position: relative;
-	cursor: pointer;
-	flex: none;
-	border: 0;
-	padding: 0;
-	transition: background 0.16s;
-}
-
-.solDsh_nativeSwitch::after {
-	content: "";
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	background: var(--dsw-alias-bg-layer-3);
-	position: absolute;
-	top: 3px;
-	left: 3px;
-	transition: transform 0.16s;
-	box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
-}
-
-.solDsh_nativeSwitch:checked {
-	background: var(--dsw-alias-brand-primary);
-}
-
-.solDsh_nativeSwitch:checked::after {
-	transform: translateX(16px);
-}
-
-.solDsh_nativeSwitch:disabled {
-	opacity: 0.4;
-	cursor: default;
-}
-
-.solDsh_nativeSwitch:focus-visible {
-	outline: 2px solid var(--dsw-alias-brand-primary);
-	outline-offset: 2px;
-}
-
-.solDsh_unsavedFallback {
-	white-space: nowrap;
-	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));
-	color: var(--dsw-alias-label-secondary);
-	border-radius: 999px;
-	flex: none;
-	padding: 1px 8px;
-	font-size: 11px;
-	font-weight: 500;
-	line-height: 17px;
-}
-
-.solDsh_badges {
-	align-items: center;
-	gap: 8px;
-	display: inline-flex;
-}
-
-.solDsh_reset {
-	font: inherit;
-	color: var(--dsw-alias-label-secondary);
-	cursor: pointer;
-	background: 0 0;
-	border: none;
-	padding: 0;
-	font-size: 12px;
-	line-height: 1.5;
-}
-
-.solDsh_reset:hover:not(:disabled) {
-	color: var(--dsw-alias-label-primary);
-}
-
-.solDsh_reset:disabled {
-	cursor: default;
-}
-
-.solDsh_inputInvalid {
-	border-color: var(--dsw-alias-label-error);
-}
-
-.solDsh_invalid {
-	color: var(--dsw-alias-label-error);
-	margin: 0;
-	font-size: 12px;
-	line-height: 1.5;
-}
-`;
+  s.textContent = "/* Match @deepseek-ai/dsh-client-ui-settings-plugins PluginCard + fields + Subagent toggle. */\n\n.solDsh_card {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	border-radius: 16px;\n	list-style: none;\n	transition: border-color 0.16s, background 0.16s;\n}\n\n.solDsh_card:hover {\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_cardOpen {\n	background: var(--dsw-alias-bg-layer-2);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_header {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 12px;\n	align-items: center;\n	gap: 12px;\n	padding: 14px 16px;\n	display: flex;\n}\n\n.solDsh_header:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: -2px;\n}\n\n.solDsh_headText {\n	flex-direction: column;\n	flex: 1;\n	gap: 4px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_name {\n	color: var(--dsw-alias-label-primary);\n	font-size: 15px;\n	font-weight: 600;\n	line-height: 1.4;\n}\n\n.solDsh_description {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_pending {\n	flex: none;\n}\n\n.solDsh_chevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_chevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_body {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	margin: 0 16px;\n	padding-bottom: 8px;\n}\n\n.solDsh_readOnly {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 12px 0 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_footer {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	justify-content: flex-end;\n	align-items: center;\n	gap: 8px;\n	padding: 12px 0 4px;\n	display: flex;\n}\n\n.solDsh_failed {\n	min-width: 0;\n	color: var(--dsw-alias-label-error);\n	flex: 1;\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_discard,\n.solDsh_save {\n	appearance: none;\n	font: inherit;\n	cursor: pointer;\n	border: 1px solid transparent;\n	border-radius: 8px;\n	padding: 5px 14px;\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_discard {\n	border-color: var(--dsw-alias-border-l2);\n	color: var(--dsw-alias-label-secondary);\n	background: 0 0;\n}\n\n.solDsh_discard:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_save {\n	background: var(--dsw-alias-label-primary);\n	color: var(--dsw-alias-bg-layer-3);\n}\n\n.solDsh_discard:disabled,\n.solDsh_save:disabled {\n	opacity: 0.4;\n	cursor: default;\n}\n\n.solDsh_discard:focus-visible,\n.solDsh_save:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 1px;\n}\n\n.solDsh_field {\n	flex-direction: column;\n	gap: 6px;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_head {\n	align-items: center;\n	gap: 8px;\n	display: flex;\n}\n\n.solDsh_label {\n	min-width: 0;\n	color: var(--dsw-alias-label-primary);\n	flex: 1;\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_hint {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_input {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	border-radius: 8px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	width: 100%;\n	box-sizing: border-box;\n}\n\n.solDsh_input:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_input:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n/* Permission-row style trigger; menu chrome comes from primitives.solDsh_Menu */\n.solDsh_selector {\n	appearance: none;\n	width: 100%;\n	box-sizing: border-box;\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	cursor: pointer;\n	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	border-radius: 8px;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: inline-flex;\n}\n\n.solDsh_selector:hover:not(:disabled) {\n	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));\n}\n\n.solDsh_selector:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n.solDsh_selector:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_selectorLabel {\n	min-width: 0;\n	overflow: hidden;\n	text-overflow: ellipsis;\n	white-space: nowrap;\n	flex: 1;\n	text-align: left;\n}\n\n.solDsh_selectorChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_selectorChevronOpen {\n	transform: rotate(180deg);\n}\n\n/* SubagentModelSelectionCard.solDsh_toggleRow */\n.solDsh_toggleRow {\n	color: var(--dsw-alias-label-primary);\n	justify-content: space-between;\n	align-items: flex-start;\n	gap: 16px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: flex;\n}\n\n.solDsh_toggleLabel {\n	flex: 1;\n	min-width: 0;\n	font-weight: 500;\n}\n\n.solDsh_badges {\n	align-items: center;\n	gap: 8px;\n	display: inline-flex;\n	flex: none;\n	padding-top: 1px;\n}\n\n.solDsh_reset {\n	font: inherit;\n	color: var(--dsw-alias-label-secondary);\n	cursor: pointer;\n	background: 0 0;\n	border: none;\n	padding: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_reset:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n}\n\n.solDsh_reset:disabled {\n	cursor: default;\n}\n\n.solDsh_inputInvalid {\n	border-color: var(--dsw-alias-label-error);\n}\n\n.solDsh_invalid {\n	color: var(--dsw-alias-label-error);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n";
   document.head.appendChild(s);
 }
-var card_default = { "card": "solDsh_card", "cardOpen": "solDsh_cardOpen", "header": "solDsh_header", "headText": "solDsh_headText", "name": "solDsh_name", "description": "solDsh_description", "pending": "solDsh_pending", "chevron": "solDsh_chevron", "chevronOpen": "solDsh_chevronOpen", "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "select": "solDsh_select", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "group": "solDsh_group", "groupTitle": "solDsh_groupTitle", "groupHint": "solDsh_groupHint", "nativeSwitch": "solDsh_nativeSwitch", "unsavedFallback": "solDsh_unsavedFallback", "badges": "solDsh_badges", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid" };
+var card_default = { "card": "solDsh_card", "cardOpen": "solDsh_cardOpen", "header": "solDsh_header", "headText": "solDsh_headText", "name": "solDsh_name", "description": "solDsh_description", "pending": "solDsh_pending", "chevron": "solDsh_chevron", "chevronOpen": "solDsh_chevronOpen", "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "input": "solDsh_input", "selector": "solDsh_selector", "selectorLabel": "solDsh_selectorLabel", "selectorChevron": "solDsh_selectorChevron", "selectorChevronOpen": "solDsh_selectorChevronOpen", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "badges": "solDsh_badges", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid" };
 
 // src/sol-dsh/client/card.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
@@ -1389,12 +1036,6 @@ function writePath(target, path, value) {
 function pathKey(path) {
   return path.join(".");
 }
-function Group(props) {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.group, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.groupTitle, children: props.title }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.groupHint, children: props.hint })
-  ] });
-}
 function FieldHead(props) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.head, children: [
     props.id ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: card_default.label, htmlFor: props.id, children: props.label }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.label, children: props.label }),
@@ -1405,28 +1046,25 @@ function FieldHead(props) {
   ] });
 }
 function SwitchRow(props) {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: card_default.field, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.toggleRow, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: card_default.headText, style: { flex: 1, minWidth: 0 }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-      FieldHead,
-      {
-        label: props.label,
-        overridden: props.overridden,
-        disabled: props.disabled,
-        overriddenLabel: props.overriddenLabel,
-        resetLabel: props.resetLabel,
-        onReset: props.onReset
-      }
-    ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-      import_dsh_client_ui_primitives.Switch,
-      {
-        checked: props.checked,
-        label: props.label,
-        disabled: props.disabled,
-        onChange: props.onChange
-      }
-    )
-  ] }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.field, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.toggleRow, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.toggleLabel, children: props.label }),
+      props.overridden ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.badges, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.Tag, { tone: "neutral", children: props.overriddenLabel }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.reset, disabled: props.disabled, onClick: props.onReset, children: props.resetLabel })
+      ] }) : null,
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        import_dsh_client_ui_primitives.Switch,
+        {
+          checked: props.checked,
+          label: props.label,
+          disabled: props.disabled,
+          onChange: props.onChange
+        }
+      )
+    ] }),
+    props.hint ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, children: props.hint }) : null
+  ] });
 }
 function ValueRow(props) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.field, children: [
@@ -1455,10 +1093,13 @@ function ValueRow(props) {
         onChange: (event) => props.onEdit(event.target.value)
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: props.invalid ? card_default.invalid : card_default.hint, children: props.invalid ? props.invalidLabel : props.hint })
+    props.invalid ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.invalid, children: props.invalidLabel }) : props.hint ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, children: props.hint }) : null
   ] });
 }
 function SelectRow(props) {
+  const [open, setOpen] = (0, import_react.useState)(false);
+  const selected = props.options.find((option) => option.id === props.value);
+  const triggerLabel = selected?.label ?? props.value;
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.field, children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
       FieldHead,
@@ -1473,16 +1114,44 @@ function SelectRow(props) {
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-      "select",
+      import_dsh_client_ui_primitives.Menu,
       {
-        id: props.id,
-        className: card_default.select,
-        value: props.value,
-        disabled: props.disabled,
-        onChange: (event) => props.onChange(event.target.value),
-        children: props.children
+        open,
+        onClose: () => setOpen(false),
+        items: props.options,
+        selectedId: props.value,
+        align: "start",
+        portal: true,
+        onSelect: (id) => {
+          setOpen(false);
+          if (id === props.value) return;
+          props.onChange(id);
+        },
+        anchor: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          "button",
+          {
+            type: "button",
+            id: props.id,
+            className: card_default.selector,
+            "aria-haspopup": "menu",
+            "aria-expanded": open,
+            disabled: props.disabled,
+            onClick: () => setOpen((value) => !value),
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.selectorLabel, children: triggerLabel }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                import_dsh_client_ui_primitives.IconChevronDownOutline14,
+                {
+                  className: `${card_default.selectorChevron}${open ? ` ${card_default.selectorChevronOpen}` : ""}`
+                }
+              )
+            ]
+          }
+        )
       }
-    )
+    ),
+    props.hint ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, children: props.hint }) : null,
+    props.detail ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, children: props.detail }) : null
   ] });
 }
 function SolDshCard(props) {
@@ -1678,37 +1347,43 @@ function SolDshCard(props) {
     ),
     open ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.body, children: [
       !writable ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.readOnly, role: "status", children: t("readonly") }) : null,
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Group, { title: t("actionFusion"), hint: t("actionFusionHelp") }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         SwitchRow,
         {
           ...common,
-          label: t("enabled"),
+          label: t("actionFusion"),
+          hint: t("actionFusionHelp"),
           checked: draft.actionFusion.enabled,
           overridden: overridden(["actionFusion", "enabled"]),
           onChange: (checked) => editValue(["actionFusion", "enabled"], checked),
           onReset: () => resetPath(["actionFusion", "enabled"])
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Group, { title: t("observationPack"), hint: t("observationPackHelp") }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         SwitchRow,
         {
           ...common,
-          label: t("enabled"),
+          label: t("observationPack"),
+          hint: t("observationPackHelp"),
           checked: draft.observationPack.enabled,
           overridden: overridden(["observationPack", "enabled"]),
           onChange: (checked) => editValue(["observationPack", "enabled"], checked),
           onReset: () => resetPath(["observationPack", "enabled"])
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         SelectRow,
         {
           ...common,
           id: "sol-obs-mode",
           label: t("mode"),
+          hint: t("modeHelp"),
+          detail: draft.observationPack.mode === "delayed" ? t("modeDelayedHint") : t("modeImmediateHint"),
           value: draft.observationPack.mode,
+          options: [
+            { id: "immediate", label: t("modeImmediate") },
+            { id: "delayed", label: t("modeDelayed") }
+          ],
           overridden: overridden(["observationPack", "mode"]),
           onChange: (value) => {
             editValue(["observationPack", "mode"], value === "delayed" ? "delayed" : "immediate");
@@ -1717,11 +1392,7 @@ function SolDshCard(props) {
             }
             if (value === "immediate") editValue(["observationPack", "fullSends"], 0);
           },
-          onReset: () => resetPath(["observationPack", "mode"]),
-          children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "immediate", children: t("modeImmediate") }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "delayed", children: t("modeDelayed") })
-          ]
+          onReset: () => resetPath(["observationPack", "mode"])
         }
       ),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -1730,6 +1401,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-obs-threshold",
           label: t("thresholdBytes"),
+          hint: t("thresholdBytesHelp"),
           numeric: true,
           text: textOf(["observationPack", "thresholdBytes"], draft.observationPack.thresholdBytes),
           invalid: invalidNumeric(["observationPack", "thresholdBytes"]),
@@ -1744,6 +1416,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-obs-fullsends",
           label: t("fullSends"),
+          hint: t("fullSendsHelp"),
           numeric: true,
           text: textOf(["observationPack", "fullSends"], draft.observationPack.fullSends),
           invalid: invalidNumeric(["observationPack", "fullSends"]),
@@ -1758,6 +1431,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-obs-excerpt",
           label: t("placeholderExcerptBytes"),
+          hint: t("placeholderExcerptBytesHelp"),
           numeric: true,
           text: textOf(["observationPack", "placeholderExcerptBytes"], draft.observationPack.placeholderExcerptBytes),
           invalid: invalidNumeric(["observationPack", "placeholderExcerptBytes"]),
@@ -1766,12 +1440,12 @@ function SolDshCard(props) {
           onReset: () => resetPath(["observationPack", "placeholderExcerptBytes"])
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Group, { title: t("epr"), hint: t("eprHelp") }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         SwitchRow,
         {
           ...common,
-          label: t("enabled"),
+          label: t("epr"),
+          hint: t("eprHelp"),
           checked: draft.evidencePreservingReducer.enabled,
           overridden: overridden(["evidencePreservingReducer", "enabled"]),
           onChange: (checked) => editValue(["evidencePreservingReducer", "enabled"], checked),
@@ -1784,6 +1458,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-epr-min",
           label: t("minBytes"),
+          hint: t("minBytesHelp"),
           numeric: true,
           text: textOf(["evidencePreservingReducer", "minBytes"], draft.evidencePreservingReducer.minBytes),
           invalid: invalidNumeric(["evidencePreservingReducer", "minBytes"]),
@@ -1798,6 +1473,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-epr-maxchars",
           label: t("maxChars"),
+          hint: t("maxCharsHelp"),
           numeric: true,
           text: textOf(["evidencePreservingReducer", "maxChars"], draft.evidencePreservingReducer.maxChars),
           invalid: invalidNumeric(["evidencePreservingReducer", "maxChars"]),
@@ -1812,6 +1488,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-epr-out",
           label: t("maxOutputTokens"),
+          hint: t("maxOutputTokensHelp"),
           numeric: true,
           text: textOf(["evidencePreservingReducer", "maxOutputTokens"], draft.evidencePreservingReducer.maxOutputTokens),
           invalid: invalidNumeric(["evidencePreservingReducer", "maxOutputTokens"]),
@@ -1826,6 +1503,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-epr-timeout",
           label: t("timeoutMs"),
+          hint: t("timeoutMsHelp"),
           numeric: true,
           text: textOf(["evidencePreservingReducer", "timeoutMs"], draft.evidencePreservingReducer.timeoutMs),
           invalid: invalidNumeric(["evidencePreservingReducer", "timeoutMs"]),
@@ -1865,12 +1543,12 @@ function SolDshCard(props) {
           onReset: () => resetPath(["evidencePreservingReducer", "reducerModel"])
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Group, { title: t("occ"), hint: t("occHelp") }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         SwitchRow,
         {
           ...common,
-          label: t("enabled"),
+          label: t("occ"),
+          hint: t("occHelp"),
           checked: draft.onlineContextCompact.enabled,
           overridden: overridden(["onlineContextCompact", "enabled"]),
           onChange: (checked) => editValue(["onlineContextCompact", "enabled"], checked),
@@ -1913,6 +1591,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-occ-summary",
           label: t("nativeSummaryTokenEstimate"),
+          hint: t("nativeSummaryTokenEstimateHelp"),
           numeric: true,
           text: textOf(
             ["onlineContextCompact", "nativeSummaryTokenEstimate"],
@@ -1930,6 +1609,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-occ-reserve",
           label: t("windowReserveTokens"),
+          hint: t("windowReserveTokensHelp"),
           numeric: true,
           text: textOf(["onlineContextCompact", "windowReserveTokens"], draft.onlineContextCompact.windowReserveTokens),
           invalid: invalidNumeric(["onlineContextCompact", "windowReserveTokens"]),
@@ -1944,6 +1624,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-occ-first",
           label: t("firstCompactionRequestScale"),
+          hint: t("firstCompactionRequestScaleHelp"),
           numeric: true,
           text: textOf(
             ["onlineContextCompact", "firstCompactionRequestScale"],
@@ -1961,6 +1642,7 @@ function SolDshCard(props) {
           ...common,
           id: "sol-occ-margin",
           label: t("subsequentCompactionMargin"),
+          hint: t("subsequentCompactionMarginHelp"),
           numeric: true,
           text: textOf(
             ["onlineContextCompact", "subsequentCompactionMargin"],
@@ -1985,95 +1667,121 @@ function SolDshCard(props) {
 var SOL_DSH_LOCALE_NS = "settings.solDsh";
 var zh = {
   title: "SoL",
-  description: "\u4E0A\u4E0B\u6587\u4E0E\u5DE5\u5177\u6548\u7387\uFF1A\u52A8\u4F5C\u878D\u5408\u3001ObservationPack\u3001\u8BC1\u636E\u4FDD\u7559\u5F52\u7EA6\u3001\u5728\u7EBF\u538B\u7F29\u3002",
-  expand: "\u5C55\u5F00",
+  description: "\u7701\u4E0A\u4E0B\u6587\u3001\u5C11\u91CD\u590D\u8DD1\u5DE5\u5177\uFF1A\u52A8\u4F5C\u878D\u5408\u3001ObservationPack\u3001\u8BC1\u636E\u4FDD\u7559\u5F52\u7EA6\u3001\u5728\u7EBF\u538B\u7F29\u3002",
+  expand: "\u5C55\u5F00\u8BBE\u7F6E",
   overridden: "\u5DF2\u8986\u76D6",
-  invalidNumber: "\u8BF7\u8F93\u5165\u6709\u6548\u6570\u5B57",
-  collapse: "\u6536\u8D77",
+  invalidNumber: "\u8BF7\u586B\u6570\u5B57\uFF1B\u7559\u7A7A\u8868\u793A\u4F7F\u7528\u9ED8\u8BA4\u503C\u3002",
+  collapse: "\u6536\u8D77\u8BBE\u7F6E",
   unsaved: "\u672A\u4FDD\u5B58",
   save: "\u4FDD\u5B58",
-  discard: "\u4E22\u5F03",
-  reset: "\u91CD\u7F6E\u4E3A\u9ED8\u8BA4",
-  saving: "\u6B63\u5728\u4FDD\u5B58\u2026",
-  saveFailed: "\u4FDD\u5B58\u5931\u8D25\u3002\u8349\u7A3F\u5DF2\u4FDD\u7559\u3002",
-  conflict: "\u914D\u7F6E\u5DF2\u5728\u522B\u5904\u66F4\u65B0\uFF0C\u4FDD\u5B58\u88AB\u62D2\u7EDD\u3002\u8BF7\u4E22\u5F03\u540E\u91CD\u8BD5\u3002",
-  readonly: "\u5F53\u524D\u73AF\u5883\u53EA\u8BFB\uFF0C\u65E0\u6CD5\u5199\u5165\u8BBE\u7F6E\u3002",
+  discard: "\u653E\u5F03\u4FEE\u6539",
+  reset: "\u6062\u590D\u9ED8\u8BA4",
+  saving: "\u4FDD\u5B58\u4E2D\u2026",
+  saveFailed: "\u672C\u90E8\u7F72\u6CA1\u6709\u63A5\u53D7\u8FD9\u4E9B\u503C\uFF0C\u5DF2\u4FDD\u7559\u4F9B\u4F60\u4FEE\u6539\u3002",
+  conflict: "\u914D\u7F6E\u5DF2\u5728\u522B\u5904\u66F4\u65B0\uFF0C\u4FDD\u5B58\u88AB\u62D2\u7EDD\u3002\u8BF7\u653E\u5F03\u4FEE\u6539\u540E\u91CD\u8BD5\u3002",
+  readonly: "\u672C\u90E8\u7F72\u7684\u8BBE\u7F6E\u4E3A\u53EA\u8BFB\u3002",
   actionFusion: "\u52A8\u4F5C\u878D\u5408",
-  actionFusionHelp: "\u4E3A edit / write \u589E\u52A0\u53EF\u9009 then_run\uFF0C\u5728\u540C\u4E00\u6B21\u89C2\u5BDF\u91CC\u8DD1\u5B8C\u540E\u7EED\u547D\u4EE4\u3002",
+  actionFusionHelp: "\u6253\u5F00\u540E\uFF0C\u7F16\u8F91\u6216\u5199\u5165\u6587\u4EF6\u65F6\u53EF\u987A\u5E26\u6267\u884C\u4E00\u6761\u540E\u7EED\u547D\u4EE4\uFF08then_run\uFF09\uFF0C\u7ED3\u679C\u548C\u6587\u4EF6\u6539\u52A8\u5199\u5728\u540C\u4E00\u6B21\u89C2\u5BDF\u91CC\uFF0C\u5C11\u4E00\u8F6E\u6765\u56DE\u3002",
   observationPack: "ObservationPack",
-  observationPackHelp: "\u5927\u5DE5\u5177\u7ED3\u679C\u843D\u76D8\u5E76\u4EE5\u9884\u89C8\u4EE3\u66FF\u5168\u6587\u3002\u68C0\u7D22\u8BF7\u7528 read / grep\uFF0C\u4E0D\u8981\u53D1\u660E obs_recall\u3002",
-  mode: "\u6A21\u5F0F",
-  modeImmediate: "\u7ACB\u5373\uFF08\u9ED8\u8BA4\uFF0C\u4E0D\u6539\u5386\u53F2\u524D\u7F00\uFF09",
-  modeDelayed: "\u5EF6\u8FDF\uFF08\u82E5\u5E72\u6B21\u5168\u6587\u540E\u518D\u66FF\u6362\uFF0C\u4F1A\u7F13\u5B58\u672A\u547D\u4E2D\uFF09",
+  observationPackHelp: "\u5DE5\u5177\u8F93\u51FA\u7279\u522B\u957F\u65F6\uFF0C\u5148\u843D\u76D8\u518D\u53EA\u628A\u6458\u8981/\u9884\u89C8\u585E\u8FDB\u5BF9\u8BDD\uFF0C\u7701 token\u3002\u9700\u8981\u5168\u6587\u65F6\u7528 read / grep \u53BB\u8BFB\uFF0C\u4E0D\u8981\u81EA\u5DF1\u53D1\u660E obs_recall \u4E4B\u7C7B\u5DE5\u5177\u3002",
+  mode: "\u6253\u5305\u65F6\u673A",
+  modeHelp: "\u51B3\u5B9A\u5927\u7ED3\u679C\u4F55\u65F6\u4ECE\u300C\u5168\u6587\u300D\u6362\u6210\u300C\u9884\u89C8\u300D\u3002\u6539\u5B8C\u53EA\u5F71\u54CD\u4E4B\u540E\u7684\u65B0\u5DE5\u5177\u7ED3\u679C\u3002",
+  modeImmediate: "\u7ACB\u5373\u6253\u5305\uFF08\u9ED8\u8BA4\uFF09",
+  modeImmediateHint: "\u4E00\u8D85\u9608\u503C\u5C31\u6362\u6210\u9884\u89C8\uFF0C\u5386\u53F2\u524D\u7F00\u4E0D\u53D8\uFF0C\u66F4\u7701\u7F13\u5B58\u3001\u4E5F\u66F4\u7A33\u3002",
+  modeDelayed: "\u5EF6\u8FDF\u6253\u5305",
+  modeDelayedHint: "\u5148\u6309\u5168\u6587\u53D1\u9001\u82E5\u5E72\u6B21\uFF0C\u518D\u6362\u6210\u9884\u89C8\uFF1B\u53EF\u80FD\u6253\u7A7F\u524D\u7F00\u7F13\u5B58\uFF0C\u9002\u5408\u5076\u5C14\u8FD8\u8981\u770B\u5168\u6587\u7684\u573A\u666F\u3002",
   thresholdBytes: "\u4F53\u79EF\u9608\u503C\uFF08\u5B57\u8282\uFF09",
+  thresholdBytesHelp: "\u5355\u6B21\u5DE5\u5177\u8F93\u51FA\u8D85\u8FC7\u8FD9\u4E2A\u5927\u5C0F\u624D\u6253\u5305\u3002\u592A\u5C0F\u4F1A\u9891\u7E41\u9884\u89C8\uFF0C\u592A\u5927\u4F1A\u7EE7\u7EED\u628A\u5927\u6BB5\u539F\u6587\u585E\u8FDB\u5BF9\u8BDD\u3002",
   fullSends: "\u5168\u6587\u53D1\u9001\u6B21\u6570",
+  fullSendsHelp: "\u4EC5\u300C\u5EF6\u8FDF\u6253\u5305\u300D\u6709\u7528\uFF1A\u5148\u5B8C\u6574\u53D1\u9001\u8FD9\u4E48\u591A\u6B21\uFF0C\u4E4B\u540E\u518D\u6539\u9884\u89C8\u3002\u9009\u300C\u7ACB\u5373\u300D\u65F6\u4F1A\u6309 0 \u5904\u7406\u3002",
   placeholderExcerptBytes: "\u9884\u89C8\u6458\u5F55\uFF08\u5B57\u8282\uFF09",
+  placeholderExcerptBytesHelp: "\u9884\u89C8\u91CC\u4FDD\u7559\u5F00\u5934\u591A\u5C11\u5B57\u8282\uFF0C\u65B9\u4FBF\u4F60\u8BA4\u51FA\u8FD9\u662F\u54EA\u6B21\u8F93\u51FA\u3002",
   epr: "\u8BC1\u636E\u4FDD\u7559\u5F52\u7EA6",
-  eprHelp: "\u628A\u8BCA\u65AD\u65E5\u5FD7\u6536\u6210\u53EF\u6838\u5BF9\u7684\u8BC1\u636E\u56DE\u6267\u3002\u65E5\u5FD7\u4E0D\u5F97\u79BB\u673A\u65F6\u8BF7\u5173\u95ED\u3002",
+  eprHelp: "\u628A\u53C8\u957F\u53C8\u5435\u7684\u8BCA\u65AD\u65E5\u5FD7\u6536\u6210\u4E00\u5F20\u53EF\u6838\u5BF9\u7684\u300C\u8BC1\u636E\u56DE\u6267\u300D\u3002\u65E5\u5FD7\u4E0D\u80FD\u79BB\u5F00\u672C\u673A\u65F6\u8BF7\u5173\u6389\u3002",
   minBytes: "\u6700\u5C0F\u4F53\u79EF\uFF08\u5B57\u8282\uFF09",
-  maxChars: "\u6700\u5927\u5B57\u7B26",
+  minBytesHelp: "\u5C0F\u4E8E\u8FD9\u4E2A\u4F53\u79EF\u7684\u65E5\u5FD7\u4E0D\u5F52\u7EA6\uFF0C\u539F\u6837\u4FDD\u7559\uFF0C\u907F\u514D\u5C0F\u8F93\u51FA\u4E5F\u88AB\u6A21\u578B\u518D\u52A0\u5DE5\u4E00\u904D\u3002",
+  maxChars: "\u9001\u5165\u5F52\u7EA6\u7684\u6700\u5927\u5B57\u7B26",
+  maxCharsHelp: "\u4EA4\u7ED9\u5F52\u7EA6\u6A21\u578B\u7684\u539F\u6587\u4E0A\u9650\uFF0C\u8D85\u51FA\u90E8\u5206\u4F1A\u622A\u65AD\uFF0C\u9632\u6B62\u4E00\u6B21\u585E\u7206\u4E0A\u4E0B\u6587\u3002",
   maxOutputTokens: "\u5F52\u7EA6\u8F93\u51FA\u4E0A\u9650",
+  maxOutputTokensHelp: "\u56DE\u6267\u672C\u8EAB\u6700\u591A\u5141\u8BB8\u591A\u5C11 token\uFF0C\u907F\u514D\u300C\u538B\u7F29\u7ED3\u679C\u300D\u6BD4\u539F\u6587\u8FD8\u957F\u3002",
   timeoutMs: "\u8D85\u65F6\uFF08\u6BEB\u79D2\uFF09",
+  timeoutMsHelp: "\u5F52\u7EA6\u8BF7\u6C42\u6700\u957F\u7B49\u591A\u4E45\uFF1B\u8D85\u65F6\u5219\u4FDD\u7559\u539F\u6587\uFF0C\u4E0D\u963B\u585E\u4E3B\u5BF9\u8BDD\u3002",
   reducerProvider: "\u5F52\u7EA6\u4F9B\u5E94\u5546",
   reducerModel: "\u5F52\u7EA6\u6A21\u578B",
-  reducerRouteHelp: "\u7559\u7A7A\u5219\u4F7F\u7528\u5F53\u524D agent \u8DEF\u7531\u3002\u4E24\u9879\u5FC5\u987B\u540C\u7A7A\u6216\u540C\u586B\u3002",
+  reducerRouteHelp: "\u90FD\u7559\u7A7A = \u8DDF\u5F53\u524D Agent \u540C\u4E00\u6761\u6A21\u578B\u8DEF\u7531\u3002\u8981\u6307\u5B9A\u4E13\u7528\u6A21\u578B\u65F6\uFF0C\u4F9B\u5E94\u5546\u548C\u6A21\u578B\u540D\u5FC5\u987B\u4E00\u8D77\u586B\u3002",
   occ: "\u5728\u7EBF\u4E0A\u4E0B\u6587\u538B\u7F29",
-  occHelp: "\u53EA\u4F5C\u4E3A ctx.compaction \u7684\u7B56\u7565\uFF0C\u4E0D\u6302\u7B2C\u4E8C\u5957\u538B\u7F29\u5F15\u64CE\u3002",
+  occHelp: "\u6302\u5728\u5B98\u65B9 ctx.compaction \u4E0A\u7684\u7B56\u7565\uFF0C\u4E0D\u662F\u7B2C\u4E8C\u5957\u538B\u7F29\u5F15\u64CE\u3002\u7528\u6765\u51B3\u5B9A\u4F55\u65F6\u538B\u3001\u538B\u591A\u5C11\u3001\u7559\u591A\u5C11\u8FD1\u671F\u5185\u5BB9\u3002",
   cacheWriteReadRatio: "\u7F13\u5B58\u5199/\u8BFB\u6BD4",
-  cacheWriteReadRatioHelp: "DeepSeek Flash \u5CF0\u503C miss/hit = 50\u3002V4 Pro = 30\u3002",
+  cacheWriteReadRatioHelp: "\u8861\u91CF\u300C\u65B0\u5199\u5165\u7F13\u5B58\u300D\u76F8\u5BF9\u300C\u547D\u4E2D\u5DF2\u6709\u7F13\u5B58\u300D\u7684\u6BD4\u4F8B\u3002DeepSeek Flash \u5CF0\u503C\u5927\u7EA6 50\uFF0CV4 Pro \u5927\u7EA6 30\uFF1B\u504F\u9AD8\u8BF4\u660E\u7F13\u5B58\u4E0D\u5212\u7B97\uFF0C\u66F4\u8BE5\u538B\u7F29\u3002",
   keepRecentTokens: "\u4FDD\u7559\u8FD1\u671F token",
-  keepRecentTokensHelp: "0 \u8868\u793A\u8DDF\u968F DSH retainRatio\uFF08\u7EA6 0.16 \xD7 \u7A97\u53E3\uFF09\u3002",
+  keepRecentTokensHelp: "\u538B\u7F29\u65F6\u6700\u8FD1\u8FD9\u4E00\u6BB5\u5BF9\u8BDD\u81F3\u5C11\u7559\u591A\u5C11 token\u3002\u586B 0 \u5219\u8DDF\u968F DSH \u9ED8\u8BA4 retainRatio\uFF08\u5927\u7EA6\u7A97\u53E3\u7684 16%\uFF09\u3002",
   nativeSummaryTokenEstimate: "\u6458\u8981 token \u4F30\u8BA1",
+  nativeSummaryTokenEstimateHelp: "\u538B\u7F29\u540E\u5199\u5165\u7684\u6458\u8981\u5927\u6982\u5360\u591A\u5C11 token\uFF0C\u7528\u6765\u7ED9\u7A97\u53E3\u9884\u7B97\u7559\u7A7A\uFF0C\u907F\u514D\u521A\u538B\u5B8C\u53C8\u7ACB\u523B\u8D85\u7A97\u3002",
   windowReserveTokens: "\u7A97\u53E3\u4FDD\u62A4\u9884\u7559",
+  windowReserveTokensHelp: "\u7ED9\u7CFB\u7EDF\u63D0\u793A\u3001\u5DE5\u5177\u5B9A\u4E49\u7B49\u56FA\u5B9A\u5F00\u9500\u7559\u7684\u4F59\u91CF\uFF0C\u538B\u7F29\u8BA1\u7B97\u65F6\u4F1A\u5148\u6263\u6389\u8FD9\u90E8\u5206\u3002",
   firstCompactionRequestScale: "\u9996\u6B21\u538B\u7F29\u89C6\u91CE\u500D\u7387",
+  firstCompactionRequestScaleHelp: "\u7B2C\u4E00\u6B21\u89E6\u53D1\u538B\u7F29\u65F6\uFF0C\u6309\u7A97\u53E3\u7684\u591A\u5C11\u500D\u53BB\u770B\u5386\u53F2\u3002\u5927\u4E8E 1 \u4F1A\u770B\u5F97\u66F4\u8FDC\uFF0C\u6458\u8981\u66F4\u5168\uFF0C\u4F46\u4E5F\u66F4\u8D39\u3002",
   subsequentCompactionMargin: "\u540E\u7EED\u538B\u7F29\u4F59\u91CF",
-  enabled: "\u542F\u7528"
+  subsequentCompactionMarginHelp: "\u5DF2\u7ECF\u538B\u8FC7\u4E4B\u540E\uFF0C\u518D\u538B\u65F6\u989D\u5916\u7559\u4E00\u70B9\u5B89\u5168\u8FB9\u8DDD\uFF0C\u51CF\u5C11\u6765\u56DE\u6296\u52A8\u3002"
 };
 var en = {
   title: "SoL",
-  description: "Context and tool efficiency: action fusion, ObservationPack, evidence-preserving reduction, online compaction.",
-  expand: "Expand",
+  description: "Save context and avoid redo: action fusion, ObservationPack, evidence-preserving reduction, online compaction.",
+  expand: "Show settings",
   overridden: "Overridden",
-  invalidNumber: "Enter a valid number",
-  collapse: "Collapse",
+  invalidNumber: "Enter a number, or leave blank to use the default.",
+  collapse: "Hide settings",
   unsaved: "Unsaved",
   save: "Save",
   discard: "Discard",
-  reset: "Reset to defaults",
+  reset: "Reset to default",
   saving: "Saving\u2026",
-  saveFailed: "Save failed. Drafts were kept.",
+  saveFailed: "The deployment did not accept these values; they were left for you to correct.",
   conflict: "Configuration changed elsewhere; save was rejected. Discard and retry.",
-  readonly: "This environment is read-only.",
+  readonly: "This deployment stores settings read-only.",
   actionFusion: "Action fusion",
-  actionFusionHelp: "Adds optional then_run on edit/write so the follow-up command shares one observation.",
+  actionFusionHelp: "When on, edit/write can include an optional then_run so the follow-up command shares one observation \u2014 one less round trip.",
   observationPack: "ObservationPack",
-  observationPackHelp: "Stores large tool results and shows a preview. Retrieve with read/grep \u2014 do not invent obs_recall.",
-  mode: "Mode",
-  modeImmediate: "Immediate (default, prefix-cache safe)",
-  modeDelayed: "Delayed (full sends then replace; cache miss)",
-  thresholdBytes: "Threshold (bytes)",
-  fullSends: "Full sends",
+  observationPackHelp: "Large tool output is stored on disk and only a preview stays in the chat. Fetch the full text with read/grep \u2014 do not invent obs_recall.",
+  mode: "Packing timing",
+  modeHelp: "When oversized results switch from full text to a preview. Applies to new tool results after you save.",
+  modeImmediate: "Pack immediately (default)",
+  modeImmediateHint: "Swap to a preview as soon as the threshold is hit. Keeps the history prefix stable and cache-friendly.",
+  modeDelayed: "Pack after full sends",
+  modeDelayedHint: "Send the full text a few times first, then switch to a preview. May miss the prefix cache; useful when you still need the full body briefly.",
+  thresholdBytes: "Size threshold (bytes)",
+  thresholdBytesHelp: "Pack only when a single tool result is larger than this. Too low packs often; too high keeps dumping huge text into the chat.",
+  fullSends: "Full-text sends",
+  fullSendsHelp: "Only for delayed packing: send the full body this many times before previewing. Immediate mode treats this as 0.",
   placeholderExcerptBytes: "Preview excerpt (bytes)",
+  placeholderExcerptBytesHelp: "How many leading bytes to keep in the preview so you can recognize which result it was.",
   epr: "Evidence-preserving reducer",
-  eprHelp: "Turns diagnostic logs into a verifiable receipt. Disable if logs must not leave the machine.",
+  eprHelp: "Turns long noisy diagnostic logs into a short verifiable receipt. Turn off if logs must not leave this machine.",
   minBytes: "Minimum size (bytes)",
-  maxChars: "Maximum characters",
+  minBytesHelp: "Skip reduction below this size so small logs are not reprocessed for no gain.",
+  maxChars: "Max characters into reducer",
+  maxCharsHelp: "Upper bound on raw text sent to the reducer model; the rest is truncated.",
   maxOutputTokens: "Reducer output cap",
+  maxOutputTokensHelp: "Max tokens allowed in the receipt itself, so the \u201Csummary\u201D cannot outgrow the log.",
   timeoutMs: "Timeout (ms)",
+  timeoutMsHelp: "How long to wait for reduction. On timeout the original log is kept and the main turn is not blocked.",
   reducerProvider: "Reducer provider",
   reducerModel: "Reducer model",
-  reducerRouteHelp: "Leave both empty to use the current agent route. Both must be empty or both set.",
+  reducerRouteHelp: "Leave both empty to follow the current agent route. To pin a dedicated model, set provider and model together.",
   occ: "Online context compact",
-  occHelp: "A policy on ctx.compaction \u2014 not a second compaction engine.",
+  occHelp: "A policy on the host ctx.compaction \u2014 not a second engine. Controls when to compact, how far to look, and how much recent context to keep.",
   cacheWriteReadRatio: "Cache write/read ratio",
-  cacheWriteReadRatioHelp: "DeepSeek Flash peak miss/hit = 50. V4 Pro = 30.",
+  cacheWriteReadRatioHelp: "New cache writes versus cache hits. DeepSeek Flash peaks near 50, V4 Pro near 30; higher means caching is less worthwhile and compaction helps more.",
   keepRecentTokens: "Keep-recent tokens",
-  keepRecentTokensHelp: "0 follows DSH retainRatio (about 0.16 \xD7 window).",
+  keepRecentTokensHelp: "Minimum recent dialogue to keep when compacting. 0 follows the DSH retainRatio (about 16% of the window).",
   nativeSummaryTokenEstimate: "Summary token estimate",
+  nativeSummaryTokenEstimateHelp: "Budget reserved for the post-compaction summary so the window does not refill immediately.",
   windowReserveTokens: "Window-protection reserve",
+  windowReserveTokensHelp: "Tokens reserved for fixed overhead (system prompt, tool defs, etc.) before compaction math runs.",
   firstCompactionRequestScale: "First-compaction horizon scale",
+  firstCompactionRequestScaleHelp: "How many window-lengths of history the first compaction looks at. Above 1 sees farther (richer summary, more cost).",
   subsequentCompactionMargin: "Subsequent compaction margin",
-  enabled: "Enabled"
+  subsequentCompactionMarginHelp: "Extra slack on later compactions to reduce thrashing after the first pass."
 };
 var zhKeys = Object.keys(zh).sort();
 var enKeys = Object.keys(en).sort();

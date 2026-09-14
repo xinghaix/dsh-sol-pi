@@ -22,4 +22,21 @@ declare module "@deepseek-ai/dsh-client-ui-primitives" {
 		className?: string;
 		style?: CSSProperties;
 	}): ReactNode;
+
+	export type MenuItem = {
+		id: string;
+		label: string;
+		disabled?: boolean;
+	};
+
+	export function Menu(props: {
+		open: boolean;
+		onClose: () => void;
+		items: readonly MenuItem[];
+		selectedId?: string | null;
+		onSelect: (id: string) => void;
+		align?: "start" | "end";
+		portal?: boolean;
+		anchor: ReactNode;
+	}): ReactNode;
 }

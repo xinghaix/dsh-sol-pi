@@ -1,4 +1,4 @@
-/* Match @deepseek-ai/dsh-client-ui-settings-plugins PluginCard + fields chrome. */
+/* Match @deepseek-ai/dsh-client-ui-settings-plugins PluginCard + fields + Subagent toggle. */
 
 .card {
 	border: 0.5px solid var(--dsw-alias-border-l4);
@@ -66,8 +66,6 @@
 .chevron {
 	color: var(--dsw-alias-label-tertiary);
 	flex: none;
-	width: 14px;
-	height: 14px;
 	transition: transform 0.16s;
 }
 
@@ -179,8 +177,7 @@
 	line-height: 1.5;
 }
 
-.input,
-.select {
+.input {
 	border: 0.5px solid var(--dsw-alias-border-l4);
 	background: var(--dsw-alias-bg-layer-3);
 	height: 34px;
@@ -194,132 +191,93 @@
 	box-sizing: border-box;
 }
 
-.select {
-	appearance: none;
-	cursor: pointer;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2381858C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-	background-position: right 12px center;
-	background-repeat: no-repeat;
-	background-size: 12px 12px;
-	padding-right: 32px;
-	max-width: 100%;
-}
-
-.input:focus-visible,
-.select:focus-visible {
+.input:focus-visible {
 	border-color: var(--dsw-alias-brand-primary);
 	outline: none;
 }
 
-.input:disabled,
-.select:disabled {
+.input:disabled {
 	color: var(--dsw-alias-label-tertiary);
 	cursor: default;
 }
 
-.toggleRow {
+/* Permission-row style trigger; menu chrome comes from primitives.Menu */
+.selector {
+	appearance: none;
+	width: 100%;
+	box-sizing: border-box;
+	height: 34px;
+	font: inherit;
+	color: var(--dsw-alias-label-primary);
+	cursor: pointer;
+	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));
+	border: 0.5px solid var(--dsw-alias-border-l4);
+	border-radius: 8px;
 	align-items: center;
+	justify-content: space-between;
 	gap: 12px;
+	padding: 0 12px;
+	font-size: 13px;
+	line-height: 1.5;
+	display: inline-flex;
+}
+
+.selector:hover:not(:disabled) {
+	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));
+}
+
+.selector:disabled {
+	color: var(--dsw-alias-label-tertiary);
+	cursor: default;
+}
+
+.selector:focus-visible {
+	border-color: var(--dsw-alias-brand-primary);
+	outline: none;
+}
+
+.selectorLabel {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex: 1;
+	text-align: left;
+}
+
+.selectorChevron {
+	color: var(--dsw-alias-label-tertiary);
+	flex: none;
+	transition: transform 0.16s;
+}
+
+.selectorChevronOpen {
+	transform: rotate(180deg);
+}
+
+/* SubagentModelSelectionCard.toggleRow */
+.toggleRow {
+	color: var(--dsw-alias-label-primary);
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 16px;
+	font-size: 13px;
+	line-height: 1.5;
 	display: flex;
 }
 
 .toggleLabel {
-	min-width: 0;
-	color: var(--dsw-alias-label-primary);
 	flex: 1;
-	font-size: 13px;
+	min-width: 0;
 	font-weight: 500;
-	line-height: 1.5;
-}
-
-.group {
-	padding: 14px 0 4px;
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-}
-
-.group + .field {
-	border-top: none;
-	padding-top: 8px;
-}
-
-.groupTitle {
-	color: var(--dsw-alias-label-primary);
-	margin: 0;
-	font-size: 13px;
-	font-weight: 600;
-	line-height: 1.5;
-}
-
-.groupHint {
-	color: var(--dsw-alias-label-tertiary);
-	margin: 0;
-	font-size: 12px;
-	line-height: 1.5;
-}
-
-.nativeSwitch {
-	width: 40px;
-	height: 24px;
-	appearance: none;
-	background: var(--dsw-alias-border-l2);
-	border-radius: 999px;
-	position: relative;
-	cursor: pointer;
-	flex: none;
-	border: 0;
-	padding: 0;
-	transition: background 0.16s;
-}
-
-.nativeSwitch::after {
-	content: "";
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	background: var(--dsw-alias-bg-layer-3);
-	position: absolute;
-	top: 3px;
-	left: 3px;
-	transition: transform 0.16s;
-	box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
-}
-
-.nativeSwitch:checked {
-	background: var(--dsw-alias-brand-primary);
-}
-
-.nativeSwitch:checked::after {
-	transform: translateX(16px);
-}
-
-.nativeSwitch:disabled {
-	opacity: 0.4;
-	cursor: default;
-}
-
-.nativeSwitch:focus-visible {
-	outline: 2px solid var(--dsw-alias-brand-primary);
-	outline-offset: 2px;
-}
-
-.unsavedFallback {
-	white-space: nowrap;
-	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));
-	color: var(--dsw-alias-label-secondary);
-	border-radius: 999px;
-	flex: none;
-	padding: 1px 8px;
-	font-size: 11px;
-	font-weight: 500;
-	line-height: 17px;
 }
 
 .badges {
 	align-items: center;
 	gap: 8px;
 	display: inline-flex;
+	flex: none;
+	padding-top: 1px;
 }
 
 .reset {

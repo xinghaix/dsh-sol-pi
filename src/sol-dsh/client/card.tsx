@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { IconChevronDownOutline14, Switch, Tag } from "@deepseek-ai/dsh-client-ui-primitives";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { IconChevronDownOutline14, Menu, Switch, Tag } from "@deepseek-ai/dsh-client-ui-primitives";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { SolDshConfig } from "../config.ts";
 import { DEFAULT_SOL_DSH_CONFIG, resolveSolDshConfig } from "../config.ts";
 import type { SolDshLocaleKey } from "./locales.ts";
@@ -79,15 +79,6 @@ function pathKey(path: readonly string[]): string {
 	return path.join(".");
 }
 
-function Group(props: { title: string; hint: string }) {
-	return (
-		<div className={styles.group}>
-			<p className={styles.groupTitle}>{props.title}</p>
-			<p className={styles.groupHint}>{props.hint}</p>
-		</div>
-	);
-}
-
 function FieldHead(props: {
 	id?: string;
 	label: string;
@@ -122,6 +113,7 @@ function FieldHead(props: {
 
 function SwitchRow(props: {
 	label: string;
+	hint?: string;
 	checked: boolean;
 	disabled: boolean;
 	overridden: boolean;
@@ -133,16 +125,15 @@ function SwitchRow(props: {
 	return (
 		<div className={styles.field}>
 			<div className={styles.toggleRow}>
-				<div className={styles.headText} style={{ flex: 1, minWidth: 0 }}>
-					<FieldHead
-						label={props.label}
-						overridden={props.overridden}
-						disabled={props.disabled}
-						overriddenLabel={props.overriddenLabel}
-						resetLabel={props.resetLabel}
-						onReset={props.onReset}
-					/>
-				</div>
+				<span className={styles.toggleLabel}>{props.label}</span>
+				{props.overridden ? (
+					<span className={styles.badges}>
+						<Tag tone="neutral">{props.overriddenLabel}</Tag>
+						<button type="button" className={styles.reset} disabled={props.disabled} onClick={props.onReset}>
+							{props.resetLabel}
+						</button>
+					</span>
+				) : null}
 				<Switch
 					checked={props.checked}
 					label={props.label}
@@ -150,6 +141,7 @@ function SwitchRow(props: {
 					onChange={props.onChange}
 				/>
 			</div>
+			{props.hint ? <p className={styles.hint}>{props.hint}</p> : null}
 		</div>
 	);
 }
@@ -190,9 +182,11 @@ function ValueRow(props: {
 				disabled={props.disabled}
 				onChange={(event) => props.onEdit(event.target.value)}
 			/>
-			<p className={props.invalid ? styles.invalid : styles.hint}>
-				{props.invalid ? props.invalidLabel : props.hint}
-			</p>
+			{props.invalid ? (
+				<p className={styles.invalid}>{props.invalidLabel}</p>
+			) : props.hint ? (
+				<p className={styles.hint}>{props.hint}</p>
+			) : null}
 		</div>
 	);
 }
@@ -200,15 +194,21 @@ function ValueRow(props: {
 function SelectRow(props: {
 	id: string;
 	label: string;
+	hint?: string;
+	detail?: string;
 	value: string;
+	options: readonly { id: string; label: string }[];
 	disabled: boolean;
 	overridden: boolean;
 	overriddenLabel: string;
 	resetLabel: string;
-	children: ReactNode;
 	onChange: (value: string) => void;
 	onReset: () => void;
 }) {
+	const [open, setOpen] = useState(false);
+	const selected = props.options.find((option) => option.id === props.value);
+	const triggerLabel = selected?.label ?? props.value;
+
 	return (
 		<div className={styles.field}>
 			<FieldHead
@@ -220,15 +220,37 @@ function SelectRow(props: {
 				resetLabel={props.resetLabel}
 				onReset={props.onReset}
 			/>
-			<select
-				id={props.id}
-				className={styles.select}
-				value={props.value}
-				disabled={props.disabled}
-				onChange={(event) => props.onChange(event.target.value)}
-			>
-				{props.children}
-			</select>
+			<Menu
+				open={open}
+				onClose={() => setOpen(false)}
+				items={props.options}
+				selectedId={props.value}
+				align="start"
+				portal
+				onSelect={(id) => {
+					setOpen(false);
+					if (id === props.value) return;
+					props.onChange(id);
+				}}
+				anchor={
+					<button
+						type="button"
+						id={props.id}
+						className={styles.selector}
+						aria-haspopup="menu"
+						aria-expanded={open}
+						disabled={props.disabled}
+						onClick={() => setOpen((value) => !value)}
+					>
+						<span className={styles.selectorLabel}>{triggerLabel}</span>
+						<IconChevronDownOutline14
+							className={`${styles.selectorChevron}${open ? ` ${styles.selectorChevronOpen}` : ""}`}
+						/>
+					</button>
+				}
+			/>
+			{props.hint ? <p className={styles.hint}>{props.hint}</p> : null}
+			{props.detail ? <p className={styles.hint}>{props.detail}</p> : null}
 		</div>
 	);
 }
@@ -454,20 +476,20 @@ export function SolDshCard(props: SolDshCardProps) {
 						</p>
 					) : null}
 
-					<Group title={t("actionFusion")} hint={t("actionFusionHelp")} />
 					<SwitchRow
 						{...common}
-						label={t("enabled")}
+						label={t("actionFusion")}
+						hint={t("actionFusionHelp")}
 						checked={draft.actionFusion.enabled}
 						overridden={overridden(["actionFusion", "enabled"])}
 						onChange={(checked) => editValue(["actionFusion", "enabled"], checked)}
 						onReset={() => resetPath(["actionFusion", "enabled"])}
 					/>
 
-					<Group title={t("observationPack")} hint={t("observationPackHelp")} />
 					<SwitchRow
 						{...common}
-						label={t("enabled")}
+						label={t("observationPack")}
+						hint={t("observationPackHelp")}
 						checked={draft.observationPack.enabled}
 						overridden={overridden(["observationPack", "enabled"])}
 						onChange={(checked) => editValue(["observationPack", "enabled"], checked)}
@@ -477,7 +499,15 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-obs-mode"
 						label={t("mode")}
+						hint={t("modeHelp")}
+						detail={
+							draft.observationPack.mode === "delayed" ? t("modeDelayedHint") : t("modeImmediateHint")
+						}
 						value={draft.observationPack.mode}
+						options={[
+							{ id: "immediate", label: t("modeImmediate") },
+							{ id: "delayed", label: t("modeDelayed") },
+						]}
 						overridden={overridden(["observationPack", "mode"])}
 						onChange={(value) => {
 							editValue(["observationPack", "mode"], value === "delayed" ? "delayed" : "immediate");
@@ -487,14 +517,12 @@ export function SolDshCard(props: SolDshCardProps) {
 							if (value === "immediate") editValue(["observationPack", "fullSends"], 0);
 						}}
 						onReset={() => resetPath(["observationPack", "mode"])}
-					>
-						<option value="immediate">{t("modeImmediate")}</option>
-						<option value="delayed">{t("modeDelayed")}</option>
-					</SelectRow>
+					/>
 					<ValueRow
 						{...common}
 						id="sol-obs-threshold"
 						label={t("thresholdBytes")}
+						hint={t("thresholdBytesHelp")}
 						numeric
 						text={textOf(["observationPack", "thresholdBytes"], draft.observationPack.thresholdBytes)}
 						invalid={invalidNumeric(["observationPack", "thresholdBytes"])}
@@ -506,6 +534,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-obs-fullsends"
 						label={t("fullSends")}
+						hint={t("fullSendsHelp")}
 						numeric
 						text={textOf(["observationPack", "fullSends"], draft.observationPack.fullSends)}
 						invalid={invalidNumeric(["observationPack", "fullSends"])}
@@ -517,6 +546,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-obs-excerpt"
 						label={t("placeholderExcerptBytes")}
+						hint={t("placeholderExcerptBytesHelp")}
 						numeric
 						text={textOf(["observationPack", "placeholderExcerptBytes"], draft.observationPack.placeholderExcerptBytes)}
 						invalid={invalidNumeric(["observationPack", "placeholderExcerptBytes"])}
@@ -525,10 +555,10 @@ export function SolDshCard(props: SolDshCardProps) {
 						onReset={() => resetPath(["observationPack", "placeholderExcerptBytes"])}
 					/>
 
-					<Group title={t("epr")} hint={t("eprHelp")} />
 					<SwitchRow
 						{...common}
-						label={t("enabled")}
+						label={t("epr")}
+						hint={t("eprHelp")}
 						checked={draft.evidencePreservingReducer.enabled}
 						overridden={overridden(["evidencePreservingReducer", "enabled"])}
 						onChange={(checked) => editValue(["evidencePreservingReducer", "enabled"], checked)}
@@ -538,6 +568,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-epr-min"
 						label={t("minBytes")}
+						hint={t("minBytesHelp")}
 						numeric
 						text={textOf(["evidencePreservingReducer", "minBytes"], draft.evidencePreservingReducer.minBytes)}
 						invalid={invalidNumeric(["evidencePreservingReducer", "minBytes"])}
@@ -549,6 +580,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-epr-maxchars"
 						label={t("maxChars")}
+						hint={t("maxCharsHelp")}
 						numeric
 						text={textOf(["evidencePreservingReducer", "maxChars"], draft.evidencePreservingReducer.maxChars)}
 						invalid={invalidNumeric(["evidencePreservingReducer", "maxChars"])}
@@ -560,6 +592,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-epr-out"
 						label={t("maxOutputTokens")}
+						hint={t("maxOutputTokensHelp")}
 						numeric
 						text={textOf(["evidencePreservingReducer", "maxOutputTokens"], draft.evidencePreservingReducer.maxOutputTokens)}
 						invalid={invalidNumeric(["evidencePreservingReducer", "maxOutputTokens"])}
@@ -571,6 +604,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-epr-timeout"
 						label={t("timeoutMs")}
+						hint={t("timeoutMsHelp")}
 						numeric
 						text={textOf(["evidencePreservingReducer", "timeoutMs"], draft.evidencePreservingReducer.timeoutMs)}
 						invalid={invalidNumeric(["evidencePreservingReducer", "timeoutMs"])}
@@ -604,10 +638,10 @@ export function SolDshCard(props: SolDshCardProps) {
 						onReset={() => resetPath(["evidencePreservingReducer", "reducerModel"])}
 					/>
 
-					<Group title={t("occ")} hint={t("occHelp")} />
 					<SwitchRow
 						{...common}
-						label={t("enabled")}
+						label={t("occ")}
+						hint={t("occHelp")}
 						checked={draft.onlineContextCompact.enabled}
 						overridden={overridden(["onlineContextCompact", "enabled"])}
 						onChange={(checked) => editValue(["onlineContextCompact", "enabled"], checked)}
@@ -641,6 +675,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-occ-summary"
 						label={t("nativeSummaryTokenEstimate")}
+						hint={t("nativeSummaryTokenEstimateHelp")}
 						numeric
 						text={textOf(
 							["onlineContextCompact", "nativeSummaryTokenEstimate"],
@@ -655,6 +690,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-occ-reserve"
 						label={t("windowReserveTokens")}
+						hint={t("windowReserveTokensHelp")}
 						numeric
 						text={textOf(["onlineContextCompact", "windowReserveTokens"], draft.onlineContextCompact.windowReserveTokens)}
 						invalid={invalidNumeric(["onlineContextCompact", "windowReserveTokens"])}
@@ -666,6 +702,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-occ-first"
 						label={t("firstCompactionRequestScale")}
+						hint={t("firstCompactionRequestScaleHelp")}
 						numeric
 						text={textOf(
 							["onlineContextCompact", "firstCompactionRequestScale"],
@@ -680,6 +717,7 @@ export function SolDshCard(props: SolDshCardProps) {
 						{...common}
 						id="sol-occ-margin"
 						label={t("subsequentCompactionMargin")}
+						hint={t("subsequentCompactionMarginHelp")}
 						numeric
 						text={textOf(
 							["onlineContextCompact", "subsequentCompactionMargin"],
