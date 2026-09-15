@@ -178,7 +178,7 @@ var THEN_RUN_SCHEMA = {
   required: ["command"]
 };
 var FUSED_TOOLS = ["edit", "write"];
-var THEN_RUN_LEAD = "After a successful mutation, pass optional then_run {command, timeout?} to run one bash command in the SAME observation (test/build/run/check). Do not split that follow-up into a later bash turn.";
+var THEN_RUN_LEAD = "After a successful mutation, you MUST pass then_run {command, timeout?} to run the immediate format/test/build in the SAME observation. Do not split that follow-up into a later bash turn.";
 function thenRunFromArgs(args) {
   const thenRun = recordValue(args, "then_run");
   const command = recordValue(thenRun, "command");
@@ -494,7 +494,7 @@ var MAX_EVIDENCE_ITEMS = 12;
 var MAX_QUOTE_CHARS = 600;
 var DEFAULT_REDUCER_PROVIDER = ["openai", "codex"].join("-");
 var DEFAULT_REDUCER_MODEL = ["gpt-5.6", "luna"].join("-");
-var DIAGNOSTIC_COMMAND = /(?:^|[;&|()\s])(?:lake\s+build|lake\s+env\s+lean|lean|coq|cargo(?:\s+(?:build|test|check))?|zig\s+build|pytest|python(?:3)?\s+-m\s+(?:pytest|unittest|py_compile)|ctest|cmake\s+--build|ninja|make|npm\s+test|pnpm\s+test|yarn\s+test|go\s+test|bazel\s+test)(?:\s|$)/i;
+var DIAGNOSTIC_COMMAND = /(?:^|[;&|()\s])(?:lake\s+build|lake\s+env\s+lean|lean|coq|cargo(?:\s+(?:build|test|check))?|zig\s+build|pytest|python(?:3)?\s+-m\s+(?:pytest|unittest|py_compile)|ctest|cmake\s+--build|ninja|make|npm\s+test|pnpm\s+test|yarn\s+test|vitest|node\s+--(?:test|check)|go\s+test|bazel\s+test)(?:\s|$)/i;
 var FAILURE_SIGNAL = /error|failed|failure|fatal|exception|panic|timeout|unsolved|type mismatch|assert/i;
 var LIKELY_SECRET = /(?:api[_-]?key|authorization|bearer|access[_-]?token|secret)[^\n]{0,32}[=:][^\n]+/i;
 function sha256(value) {
@@ -675,13 +675,32 @@ async function collectStreamText(ctx, options) {
   }
   return { text, usageTokens };
 }
-function agentRoute(agent) {
-  const session = agent?.session;
-  const model = session?.model;
-  return {
-    provider: typeof model?.provider === "string" ? model.provider : typeof session?.provider === "string" ? session.provider : void 0,
-    model: typeof model?.id === "string" ? model.id : typeof session?.modelId === "string" ? session.modelId : void 0
+function stringField(value) {
+  return typeof value === "string" && value.length > 0 ? value : void 0;
+}
+function resolveReducerRoute(config, agent) {
+  if (config.reducerProvider && config.reducerModel) {
+    return { provider: config.reducerProvider, model: config.reducerModel };
+  }
+  const fromOptions = {
+    provider: stringField(agent?.options?.provider),
+    model: stringField(agent?.options?.model)
   };
+  if (fromOptions.provider && fromOptions.model) return fromOptions;
+  const session = agent?.session;
+  const nested = session?.model;
+  if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+    const record = nested;
+    const provider = stringField(record.provider);
+    const model = stringField(record.model) ?? stringField(record.id);
+    if (provider && model) return { provider, model };
+  }
+  const fromSession = {
+    provider: stringField(session?.provider),
+    model: stringField(session?.modelId)
+  };
+  if (fromSession.provider && fromSession.model) return fromSession;
+  return {};
 }
 async function reduceDiagnosticResult(ctx, exec, result, config, agent) {
   const command = commandFromExecution(exec);
@@ -689,8 +708,7 @@ async function reduceDiagnosticResult(ctx, exec, result, config, agent) {
   const body = reducibleBody(exec, result);
   if (body === void 0) return void 0;
   if (reductionEligibility(command, body, config) !== "reduce") return void 0;
-  const provider = config.reducerProvider || agentRoute(agent).provider;
-  const model = config.reducerModel || agentRoute(agent).model;
+  const { provider, model } = resolveReducerRoute(config, agent);
   if (!provider || !model) return void 0;
   const archive = await archiveBody(`${solDshRuntimeRoot(agent)}/evidence-preserving-reducer`, body);
   const controller = new AbortController();
@@ -1105,8 +1123,15 @@ import { lstat, mkdir as mkdir2, open } from "node:fs/promises";
 import { dirname as dirname2, join as join3 } from "node:path";
 var DEFAULT_THRESHOLD_BYTES = 10 * 1024;
 var IMMEDIATE_REPLACE_TOOL_NAMES = ["bash", "edit", "write"];
-function shouldReplaceObservationAtBirth(toolName) {
-  return IMMEDIATE_REPLACE_TOOL_NAMES.includes(toolName);
+var RETRIEVAL_BASH_COMMAND = /(?:^|[;&|\n]|&&|\|\|)\s*(?:git\s+(?:diff|show|log|blame|grep|status)\b|(?:rg|grep|egrep|fgrep|ag)\b|find\s|sed\s+-n\b|(?:cat|head|tail|less|bat|nl)\s)/iu;
+function isRetrievalBash(command) {
+  return RETRIEVAL_BASH_COMMAND.test(command);
+}
+function shouldReplaceObservationAtBirth(toolName, command) {
+  if (!IMMEDIATE_REPLACE_TOOL_NAMES.includes(toolName)) return false;
+  if (toolName !== "bash" || command === void 0 || command.length === 0) return true;
+  if (DIAGNOSTIC_COMMAND.test(command)) return true;
+  return !isRetrievalBash(command);
 }
 var CHARS_PER_TOKEN = 4;
 var READ_OBJECT_FLAGS = constants.O_RDONLY | constants.O_NOFOLLOW;
@@ -1226,11 +1251,20 @@ function retrieveHint(path, locator) {
   if (locator) return `read or grep the spill locator ${locator}`;
   return `read ${path} with offset 0; continue from the returned window`;
 }
+function dumpCommand(exec) {
+  if (exec.name === "bash") {
+    const command2 = recordValue(exec.args, "command");
+    return typeof command2 === "string" && command2.length > 0 ? command2 : void 0;
+  }
+  if (exec.name !== "edit" && exec.name !== "write") return void 0;
+  const command = recordValue(recordValue(exec.args, "then_run"), "command");
+  return typeof command === "string" && command.length > 0 ? command : void 0;
+}
 async function packObservation(exec, result, config, agent, spill) {
   if (result.isError) return void 0;
   const text = textOf(result.content);
   if (!text) return void 0;
-  if (config.mode === "immediate" && !shouldReplaceObservationAtBirth(exec.name)) {
+  if (config.mode === "immediate" && !shouldReplaceObservationAtBirth(exec.name, dumpCommand(exec))) {
     return void 0;
   }
   const observation = createObservationFromText(
@@ -1328,8 +1362,8 @@ function apply(ctx, config = {}) {
   const source = installSolDshSettings(ctx, live, (next) => {
     live = next;
   });
-  registerObservationPack(ctx, () => source().observationPack);
   registerEvidencePreservingReducer(ctx, () => source().evidencePreservingReducer);
+  registerObservationPack(ctx, () => source().observationPack);
   registerActionFusion(ctx, () => source().actionFusion.enabled);
   registerOnlineContextCompact(ctx, () => source().onlineContextCompact);
   ctx.inject?.(["systemPrompt"], (child) => {
@@ -1344,11 +1378,13 @@ function apply(ctx, config = {}) {
         const parts = ["SoL (dsh-sol-pi) is active."];
         if (current.actionFusion.enabled) {
           parts.push(
-            "edit and write accept optional then_run {command, timeout?}. After a successful file mutation, run that bash command in the same observation \u2014 do not split a mutation and its immediate test/build/run into two turns."
+            "edit and write accept optional then_run {command, timeout?}. After a successful file mutation, you MUST pass then_run for the immediate format/test/build instead of a later bash call."
           );
         }
         if (current.observationPack.enabled && current.observationPack.mode === "immediate") {
-          parts.push("Large tool results are stored and shown as a preview; retrieve with read/grep on the given path or locator.");
+          parts.push(
+            "Oversized command dumps (go test, make, fused then_run) are stored as a preview; read, grep, and git diff/show stay in full. Retrieve a dump with read/grep on the given path or locator."
+          );
         }
         if (current.evidencePreservingReducer.enabled) {
           parts.push("Long diagnostic logs may be replaced with a verified evidence receipt pointing at a local archive.");

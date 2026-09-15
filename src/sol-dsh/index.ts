@@ -29,8 +29,10 @@ export function apply(ctx: DshContext, config: SolDshConfig | Record<string, unk
 		live = next;
 	});
 
-	registerObservationPack(ctx, () => source().observationPack);
+	// EPR must register first (inner prepend) so diagnostic logs reduce before
+	// ObservationPack replaces them with a preview that looks "too small".
 	registerEvidencePreservingReducer(ctx, () => source().evidencePreservingReducer);
+	registerObservationPack(ctx, () => source().observationPack);
 	registerActionFusion(ctx, () => source().actionFusion.enabled);
 	registerOnlineContextCompact(ctx, () => source().onlineContextCompact);
 
@@ -46,11 +48,13 @@ export function apply(ctx: DshContext, config: SolDshConfig | Record<string, unk
 				const parts = ["SoL (dsh-sol-pi) is active."];
 				if (current.actionFusion.enabled) {
 					parts.push(
-						"edit and write accept optional then_run {command, timeout?}. After a successful file mutation, run that bash command in the same observation — do not split a mutation and its immediate test/build/run into two turns.",
+						"edit and write accept optional then_run {command, timeout?}. After a successful file mutation, you MUST pass then_run for the immediate format/test/build instead of a later bash call.",
 					);
 				}
 				if (current.observationPack.enabled && current.observationPack.mode === "immediate") {
-					parts.push("Large tool results are stored and shown as a preview; retrieve with read/grep on the given path or locator.");
+					parts.push(
+						"Oversized command dumps (go test, make, fused then_run) are stored as a preview; read, grep, and git diff/show stay in full. Retrieve a dump with read/grep on the given path or locator.",
+					);
 				}
 				if (current.evidencePreservingReducer.enabled) {
 					parts.push("Long diagnostic logs may be replaced with a verified evidence receipt pointing at a local archive.");

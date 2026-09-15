@@ -78,7 +78,7 @@ If the user’s dshweb is English, SoL’s card is English. If it is 中文, the
 | Mechanism | Default | Why this is the DSH best |
 |---|---|---|
 | Action Fusion | **on** | Local, schema-stable for the session, saves a round-trip. PTC/code mode already fuses; native mode needs this. |
-| ObservationPack | **on**, mode `immediate` | Shrink command dumps at birth (append-only). Immediate replace is only `bash` / fused `edit`/`write`; `read`, `grep`, and knowledge pages stay inline until native spill. `fullSends: 0`. Evidence stays in `ctx.spillStore` / `read`+`grep`. |
+| ObservationPack | **on**, mode `immediate` | Shrink test/build dumps at birth (append-only). Immediate replace is `bash` / fused `edit`/`write` **except** retrieval bash (`git diff/show`, `grep`/`rg`/`find`). `read`, `grep`, and knowledge pages stay inline until native spill. `fullSends: 0`. Evidence stays in `ctx.spillStore` / `read`+`grep`. |
 | Evidence-Preserving Reducer | **on**, reducer = current agent route | Unique SoL value. Fail-open. Diagnostic-command + likely-secret filters. Uses the model the user already configured — not `openai-codex` / `gpt-5.6-luna`. |
 | Online Context Compact | **on**, `cacheWriteReadRatio: 50` | Priced replace. DeepSeek Flash peak cache **miss/hit = 0.30 / 0.006 = 50** ([Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing), checked 2026-09-14). Conservative: prefers not to bust a 50× cache. Window protection still fires. |
 
@@ -131,7 +131,7 @@ onlineContextCompact:
 | unknown keys | fail load |
 | credentials, URLs, storage paths | forbidden keys — fail load |
 
-Protocol constants that are **not** config (changing them changes receipt identity or packing identity): `MAX_EVIDENCE_ITEMS` (12), `MAX_QUOTE_CHARS` (600), receipt schema id, `LIKELY_SECRET` / `DIAGNOSTIC_COMMAND` regexes, `IMMEDIATE_REPLACE_TOOL_NAMES` (`bash`, `edit`, `write`). Those stay in `sol-core`.
+Protocol constants that are **not** config (changing them changes receipt identity or packing identity): `MAX_EVIDENCE_ITEMS` (12), `MAX_QUOTE_CHARS` (600), receipt schema id, `LIKELY_SECRET` / `DIAGNOSTIC_COMMAND` / `RETRIEVAL_BASH_COMMAND` regexes, `IMMEDIATE_REPLACE_TOOL_NAMES` (`bash`, `edit`, `write`). Those stay in `sol-core`. EPR registers before ObservationPack so a diagnostic log is reduced before any dump replace.
 
 ## Metric catalog (what each number does)
 
@@ -139,7 +139,7 @@ Protocol constants that are **not** config (changing them changes receipt identi
 
 | Key | Best | Effect |
 |---|---|---|
-| `mode` | `immediate` | `immediate`: command dumps (`bash`, fused `edit`/`write`) become a preview + locator at birth (append-only, cache-safe). Other tools stay full. `delayed`: archive everything oversized but do not replace at birth; native spill/compaction shrink later. |
+| `mode` | `immediate` | `immediate`: test/build dumps become a preview + locator at birth (append-only, cache-safe). Retrieval bash (`git diff/show`, `grep`/`rg`/`find`) and other tools stay full. `delayed`: archive everything oversized but do not replace at birth; native spill/compaction shrink later. |
 | `thresholdBytes` | `10240` | Below this, leave the result alone. Immediate replace still requires a dump tool. DSH spill-policy (50 000) remains a backstop for text SoL does not pack. |
 | `fullSends` | `0` | Only for `delayed`. Pi uses 2. |
 | `placeholderExcerptBytes` | `1024` | Head+tail excerpt in the placeholder. |

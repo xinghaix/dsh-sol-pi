@@ -13,8 +13,8 @@ Configuration contract: [dsh-configuration.md](dsh-configuration.md). Research: 
 | Host plugin | Shipped. Named exports `name` / `inject` / `apply` / `Config`. No `export default`. |
 | Settings card | Shipped. **Settings → 插件 → 插件配置**. zh + en, follows **通用设置 → 语言**. No SoL language field. |
 | Action Fusion | Shadows agent-scoped `edit`/`write` with optional `then_run` (session-start, created, and already-live agents). DSH has no first-party `then_run`. |
-| ObservationPack | `tools/post-execute` returns `{ kind: "accept", content }`. Immediate dialect replaces only command dumps (`bash`, fused `edit`/`write`). Retrieval is `read` / `grep`. No `obs_recall`. |
-| Evidence-Preserving Reducer | Same post-execute decision shape + `ctx.llm.stream` with `purpose` unset. Fail-open. |
+| ObservationPack | `tools/post-execute` returns `{ kind: "accept", content }`. Immediate dialect replaces test/build dumps (`go test`, `make`, fused `then_run`). `read` / `grep` / `git diff` / `git show` stay full. No `obs_recall`. |
+| Evidence-Preserving Reducer | Registers **before** ObservationPack. Same post-execute decision shape + `ctx.llm.stream` (`purpose` unset) on `Agent.options` route. Fail-open. |
 | Online Context Compact | Policy on `ctx.compaction` (`todo_write` + `compactNow`). `agent/pre-step` always calls `next()`. |
 | Tests | `npm test` and `npm run check:dsh` cover config, locales, packaging, and the plugin export shape. |
 | Upstream Pi | Unmodified. Do not fork Pi or DSH. |
@@ -79,7 +79,7 @@ dsh plugin --profile web remove dsh-sol-pi
 Installing the plugin enables:
 
 - Action Fusion **on**
-- ObservationPack **on**, `mode: immediate`, `fullSends: 0` (replaces `bash` / fused `edit`/`write` dumps only)
+- ObservationPack **on**, `mode: immediate`, `fullSends: 0` (replaces test/build dumps; not git/grep retrieval)
 - Evidence-Preserving Reducer **on**, reducer = current agent route
 - Online Context Compact **on**, `cacheWriteReadRatio: 50`
 

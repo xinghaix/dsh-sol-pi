@@ -31,7 +31,7 @@ const THEN_RUN_SCHEMA = {
 const FUSED_TOOLS = ["edit", "write"] as const;
 
 const THEN_RUN_LEAD =
-	"After a successful mutation, pass optional then_run {command, timeout?} to run one bash command in the SAME observation (test/build/run/check). Do not split that follow-up into a later bash turn.";
+	"After a successful mutation, you MUST pass then_run {command, timeout?} to run the immediate format/test/build in the SAME observation. Do not split that follow-up into a later bash turn.";
 
 export function thenRunFromArgs(args: unknown): ThenRunInput | undefined {
 	const thenRun = recordValue(args, "then_run");

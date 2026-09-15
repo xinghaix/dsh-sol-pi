@@ -91,13 +91,37 @@ async function collectStreamText(
 	return { text, usageTokens };
 }
 
-function agentRoute(agent: DshAgent | undefined): { provider?: string; model?: string } {
-	const session = agent?.session as Record<string, unknown> | undefined;
-	const model = session?.model as Record<string, unknown> | undefined;
-	return {
-		provider: typeof model?.provider === "string" ? model.provider : typeof session?.provider === "string" ? session.provider : undefined,
-		model: typeof model?.id === "string" ? model.id : typeof session?.modelId === "string" ? session.modelId : undefined,
+function stringField(value: unknown): string | undefined {
+	return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+/** Live DSH route: pinned config, then Agent.options, then session leftovers. */
+export function resolveReducerRoute(
+	config: EvidencePreservingReducerConfig,
+	agent: DshAgent | undefined,
+): { provider?: string; model?: string } {
+	if (config.reducerProvider && config.reducerModel) {
+		return { provider: config.reducerProvider, model: config.reducerModel };
+	}
+	const fromOptions = {
+		provider: stringField(agent?.options?.provider),
+		model: stringField(agent?.options?.model),
 	};
+	if (fromOptions.provider && fromOptions.model) return fromOptions;
+	const session = agent?.session as Record<string, unknown> | undefined;
+	const nested = session?.model;
+	if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+		const record = nested as Record<string, unknown>;
+		const provider = stringField(record.provider);
+		const model = stringField(record.model) ?? stringField(record.id);
+		if (provider && model) return { provider, model };
+	}
+	const fromSession = {
+		provider: stringField(session?.provider),
+		model: stringField(session?.modelId),
+	};
+	if (fromSession.provider && fromSession.model) return fromSession;
+	return {};
 }
 
 export async function reduceDiagnosticResult(
@@ -113,8 +137,7 @@ export async function reduceDiagnosticResult(
 	if (body === undefined) return undefined;
 	if (reductionEligibility(command, body, config) !== "reduce") return undefined;
 
-	const provider = config.reducerProvider || agentRoute(agent).provider;
-	const model = config.reducerModel || agentRoute(agent).model;
+	const { provider, model } = resolveReducerRoute(config, agent);
 	if (!provider || !model) return undefined;
 
 	const archive = await archiveBody(`${solDshRuntimeRoot(agent)}/evidence-preserving-reducer`, body);

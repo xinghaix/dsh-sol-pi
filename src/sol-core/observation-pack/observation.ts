@@ -7,7 +7,7 @@ import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import { type FileHandle, lstat, mkdir, open } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { REDUCER_RECEIPT_PREFIX } from "../evidence-preserving-reducer/config.ts";
+import { DIAGNOSTIC_COMMAND, REDUCER_RECEIPT_PREFIX } from "../evidence-preserving-reducer/config.ts";
 
 export const DEFAULT_THRESHOLD_BYTES = 10 * 1024;
 export const DEFAULT_FULL_SENDS = 2;
@@ -20,8 +20,23 @@ export const DEFAULT_PLACEHOLDER_EXCERPT_BYTES = 1024;
  */
 export const IMMEDIATE_REPLACE_TOOL_NAMES = ["bash", "edit", "write"] as const;
 
-export function shouldReplaceObservationAtBirth(toolName: string): boolean {
-	return (IMMEDIATE_REPLACE_TOOL_NAMES as readonly string[]).includes(toolName);
+/**
+ * Read-only inspection. Immediate replace would hide the bytes the model just
+ * asked to see — the same failure as packing `grep` / `read`. Diagnostic
+ * commands win when both match (`go test && git diff` still packs).
+ */
+export const RETRIEVAL_BASH_COMMAND =
+	/(?:^|[;&|\n]|&&|\|\|)\s*(?:git\s+(?:diff|show|log|blame|grep|status)\b|(?:rg|grep|egrep|fgrep|ag)\b|find\s|sed\s+-n\b|(?:cat|head|tail|less|bat|nl)\s)/iu;
+
+export function isRetrievalBash(command: string): boolean {
+	return RETRIEVAL_BASH_COMMAND.test(command);
+}
+
+export function shouldReplaceObservationAtBirth(toolName: string, command?: string): boolean {
+	if (!(IMMEDIATE_REPLACE_TOOL_NAMES as readonly string[]).includes(toolName)) return false;
+	if (toolName !== "bash" || command === undefined || command.length === 0) return true;
+	if (DIAGNOSTIC_COMMAND.test(command)) return true;
+	return !isRetrievalBash(command);
 }
 
 const CHARS_PER_TOKEN = 4;

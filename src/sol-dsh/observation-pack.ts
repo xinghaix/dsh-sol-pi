@@ -16,6 +16,7 @@ import {
 	contentFromDecision,
 	executionAgent,
 	listenPostExecute,
+	recordValue,
 	textOf,
 } from "./host.ts";
 import { solDshRuntimeRoot } from "./runtime-root.ts";
@@ -23,6 +24,16 @@ import { solDshRuntimeRoot } from "./runtime-root.ts";
 function retrieveHint(path: string, locator: string | undefined): string {
 	if (locator) return `read or grep the spill locator ${locator}`;
 	return `read ${path} with offset 0; continue from the returned window`;
+}
+
+function dumpCommand(exec: ToolExecution): string | undefined {
+	if (exec.name === "bash") {
+		const command = recordValue(exec.args, "command");
+		return typeof command === "string" && command.length > 0 ? command : undefined;
+	}
+	if (exec.name !== "edit" && exec.name !== "write") return undefined;
+	const command = recordValue(recordValue(exec.args, "then_run"), "command");
+	return typeof command === "string" && command.length > 0 ? command : undefined;
 }
 
 export async function packObservation(
@@ -37,7 +48,7 @@ export async function packObservation(
 	if (!text) return undefined;
 	// Immediate dialect cannot give FULL_SENDS of the original. Do not replace
 	// read/grep/knowledge results the model still needs this turn.
-	if (config.mode === "immediate" && !shouldReplaceObservationAtBirth(exec.name)) {
+	if (config.mode === "immediate" && !shouldReplaceObservationAtBirth(exec.name, dumpCommand(exec))) {
 		return undefined;
 	}
 	const observation = createObservationFromText(

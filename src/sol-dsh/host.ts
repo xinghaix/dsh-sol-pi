@@ -120,10 +120,15 @@ export type DshContext = {
 export type DshAgent = {
 	readonly id?: string;
 	readonly ctx: DshContext;
+	/** DSH `Agent.options` — the live provider/model route. */
+	readonly options?: { readonly provider?: string; readonly model?: string };
 	readonly session?: {
 		readonly id?: string;
 		readonly dir?: string;
 		readonly cwd?: string;
+		readonly provider?: string;
+		readonly modelId?: string;
+		readonly model?: unknown;
 		append?(event: unknown): unknown;
 	};
 	whenIdle?(): Promise<void>;

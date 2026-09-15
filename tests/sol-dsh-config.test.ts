@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { apply } from "../src/sol-dsh/index.ts";
 import { attachActionFusion, extendParameters, hasThenRunParameter } from "../src/sol-dsh/action-fusion.ts";
 import { DEFAULT_SOL_DSH_CONFIG, resolveSolDshConfig } from "../src/sol-dsh/config.ts";
-import { reductionEligibility } from "../src/sol-dsh/epr.ts";
+import { reduceDiagnosticResult, reductionEligibility, resolveReducerRoute } from "../src/sol-dsh/epr.ts";
 import { acceptContent, listenPostExecute, type DshAgent, type ToolDefinition } from "../src/sol-dsh/host.ts";
 import { zh, en } from "../src/sol-dsh/client/locales.ts";
 import { decideCompaction, DEFAULT_COMPACTION_ECONOMICS } from "../src/sol-core/online-context-compact/economics.ts";
@@ -17,7 +17,7 @@ import {
 	shouldReplaceObservationAtBirth,
 } from "../src/sol-core/observation-pack/observation.ts";
 import { packObservation } from "../src/sol-dsh/observation-pack.ts";
-import { mkdtempSync, readdirSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -87,6 +87,48 @@ describe("sol-dsh EPR eligibility", () => {
 		expect(reductionEligibility("pytest", `api_key=abcd\n${"x".repeat(5000)}`, config)).toBe("secret");
 		expect(reductionEligibility("echo hi", `${"line\n".repeat(900)}`, config)).toBe("non-diagnostic");
 	});
+
+	it("treats node --check and vitest as diagnostic", () => {
+		const body = `${"error: boom\n".repeat(500)}`;
+		expect(reductionEligibility("node --check internal/foo.js", body, config)).toBe("reduce");
+		expect(reductionEligibility("vitest run", body, config)).toBe("reduce");
+	});
+
+	it("resolves the live Agent.options route before session.model.id", () => {
+		expect(
+			resolveReducerRoute(config, {
+				ctx: {} as DshAgent["ctx"],
+				options: { provider: "local", model: "grok-4.6" },
+				session: { model: { provider: "wrong", id: "stale" } },
+			}),
+		).toEqual({ provider: "local", model: "grok-4.6" });
+		expect(resolveReducerRoute(config, { ctx: {} as DshAgent["ctx"] })).toEqual({});
+	});
+
+	it("archives a diagnostic log when Agent.options supplies the route", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "sol-dsh-epr-route-"));
+		const agent = {
+			ctx: {} as DshAgent["ctx"],
+			options: { provider: "local", model: "grok-4.6" },
+			session: { id: "session-epr", dir },
+		} as DshAgent;
+		const ctx = {
+			llm: {
+				async *stream() {},
+			},
+		};
+		const body = `${"error: boom\n".repeat(500)}`;
+		await reduceDiagnosticResult(
+			ctx as never,
+			{ name: "bash", args: { command: "go test ./..." } },
+			{ content: [{ type: "text", text: body }] },
+			config,
+			agent,
+		);
+		const objects = join(dir, "dsh-sol-pi", "session-epr", "evidence-preserving-reducer", "objects");
+		expect(existsSync(objects)).toBe(true);
+		expect(readdirSync(objects).length).toBeGreaterThan(0);
+	});
 });
 
 describe("sol-dsh observation placeholder", () => {
@@ -115,6 +157,16 @@ describe("sol-dsh immediate observation replace policy", () => {
 		expect(shouldReplaceObservationAtBirth("skill")).toBe(false);
 	});
 
+	it("keeps retrieval bash inline and still packs tests/builds", () => {
+		expect(shouldReplaceObservationAtBirth("bash", "grep -RniE archive /opt/homebrew/lib")).toBe(false);
+		expect(shouldReplaceObservationAtBirth("bash", "find /opt/homebrew/lib -type f | head -500")).toBe(false);
+		expect(shouldReplaceObservationAtBirth("bash", "git diff -- internal/desktop/bridge_host.go")).toBe(false);
+		expect(shouldReplaceObservationAtBirth("bash", "git show HEAD:pkg/api/foo.go | sed -n '1,220p'")).toBe(false);
+		expect(shouldReplaceObservationAtBirth("bash", "go test ./pkg/services/... -count=1")).toBe(true);
+		expect(shouldReplaceObservationAtBirth("bash", "make swagger\ngit diff --check")).toBe(true);
+		expect(shouldReplaceObservationAtBirth("bash", "ps -axo pid=,command=")).toBe(true);
+	});
+
 	it("packs oversized bash and leaves oversized knowledge pages inline", async () => {
 		const dir = mkdtempSync(join(tmpdir(), "sol-dsh-obs-policy-"));
 		const agent = { session: { id: "session-test", dir } } as DshAgent;
@@ -122,13 +174,21 @@ describe("sol-dsh immediate observation replace policy", () => {
 		const huge = "a".repeat(20_000);
 
 		const packed = await packObservation(
-			{ name: "bash", args: {}, id: "call-bash" },
+			{ name: "bash", args: { command: "go test ./..." }, id: "call-bash" },
 			{ content: [{ type: "text", text: huge }] },
 			config,
 			agent,
 		);
 		expect(packed?.content?.[0]).toMatchObject({ type: "text" });
 		expect(String((packed?.content?.[0] as { text: string }).text)).toContain("large tool result stored");
+
+		const retrieval = await packObservation(
+			{ name: "bash", args: { command: "git diff -- README.md" }, id: "call-diff" },
+			{ content: [{ type: "text", text: huge }] },
+			config,
+			agent,
+		);
+		expect(retrieval).toBeUndefined();
 
 		const skipped = await packObservation(
 			{ name: "hindsight_read_knowledge_page", args: {}, id: "call-kp" },
