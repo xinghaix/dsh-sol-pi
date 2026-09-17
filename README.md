@@ -41,6 +41,8 @@ Then open **Settings → 插件**. Language follows **Settings → 通用设置 
 | Delegation | **Evidence-Preserving Reducer** | Long diagnostic logs may become a verified local receipt (uses the current agent model unless you pin a reducer route). |
 | Context | **Online Context Compact** | Policy on official `ctx.compaction` (`todo_write` boundaries + `compactNow`). **Not** a second compression engine — `dsh-compaction-basic` still owns how compaction runs. |
 
+**Native Function Calling is this plugin's main win.** Under DSH **PTC / Code mode** (`dsh-tools` `mode: ptc`, or a Code agent preset) the model already batches `edit`+`bash` inside one `run_code` program, and inner sub-results never enter the next prompt. `then_run` is then almost unused. What remains is packing an oversized **outer** `run_code` dump and OCC's compaction policy — both overlap DSH spill (50 KB) and `dsh-compaction-basic`. If you live in PTC, this plugin is optional, not a must. Details: [dsh.md](docs/dsh.md#native-vs-ptc).
+
 Shared rules on DSH:
 
 - **No DSH / Pi forks.** Uses public Cordis seams (`ctx.tools`, `ctx.llm.stream`, `ctx.compaction`).

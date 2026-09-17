@@ -41,6 +41,8 @@ dsh web
 | 委派 | **证据保留归约 (EPR)** | 很长的诊断日志可收成可核对的本地回执（默认跟当前 Agent 模型；也可钉专用归约路由）。 |
 | 上下文 | **在线上下文压缩 (OCC)** | 挂在官方 `ctx.compaction` 上的策略（`todo_write` 边界 + `compactNow`）。**不是**第二套压缩引擎——怎么压仍由 `dsh-compaction-basic` 负责。 |
 
+**本插件的主场是 native Function Calling。** DSH **PTC / Code 模式**（`dsh-tools` 的 `mode: ptc`，或 Code 类 Agent 预设）下，模型已经在一轮 `run_code` 里连续调用 `edit`+`bash`，子结果也不进下一轮 prompt。此时 `then_run` 几乎用不上。剩下的是：把过大的 **外层** `run_code` 输出打成预览，以及 OCC 的压缩策略——这两块和 DSH 自带的 50KB spill、`dsh-compaction-basic` 重叠更大。若日常都走 PTC，这个插件是锦上添花，不是刚需。详见 [dsh.md](docs/dsh.md#native-vs-ptc)。
+
 DSH 上的共同约定：
 
 - **不 fork DSH / Pi。** 只用公开 Cordis 接缝（`ctx.tools`、`ctx.llm.stream`、`ctx.compaction`）。

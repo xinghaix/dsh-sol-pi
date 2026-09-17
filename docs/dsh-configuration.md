@@ -77,7 +77,7 @@ If the user’s dshweb is English, SoL’s card is English. If it is 中文, the
 
 | Mechanism | Default | Why this is the DSH best |
 |---|---|---|
-| Action Fusion | **on** | Local, schema-stable for the session, saves a round-trip. PTC/code mode already fuses; native mode needs this. |
+| Action Fusion | **on** | Local, schema-stable for the session, saves a round-trip. **Native Function Calling is the reason this is on.** PTC/Code mode already fuses inside `run_code`; `then_run` is then almost unused. |
 | ObservationPack | **on**, mode `immediate` | Shrink test/build dumps at birth (append-only). Immediate replace is `bash` / fused `edit`/`write` **except** retrieval bash (`git diff/show`, `grep`/`rg`/`find`). `read`, `grep`, and knowledge pages stay inline until native spill. `fullSends: 0`. Evidence stays in `ctx.spillStore` / `read`+`grep`. |
 | Evidence-Preserving Reducer | **on**, reducer = current agent route | Unique SoL value. Fail-open. Diagnostic-command + likely-secret filters. Uses the model the user already configured — not `openai-codex` / `gpt-5.6-luna`. |
 | Online Context Compact | **on**, `cacheWriteReadRatio: 50` | Priced replace. DeepSeek Flash peak cache **miss/hit = 0.30 / 0.006 = 50** ([Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing), checked 2026-09-14). Conservative: prefers not to bust a 50× cache. Window protection still fires. |
@@ -172,6 +172,8 @@ OCC still does **not** mount a second `CompactionEngine`. These numbers only dec
 ### Action Fusion
 
 No extra metrics in v1. `enabled` is the only switch. Timeout of `then_run` stays per-call (`then_run.timeout`), same as Pi (no implicit default).
+
+`then_run` is a **native-mode** schema field on `edit`/`write`. Under PTC (`dsh-tools` `mode: ptc`, or a Code agent preset) the model only sees `run_code`, so it cannot pass `then_run`. ObservationPack also skips nested PTC sub-dispatches (`exec.parent`). Leftover PTC value is packing/reducing an oversized **outer** `run_code` result plus OCC policy — see [Native vs PTC](dsh.md#native-vs-ptc). Daily PTC users can turn `actionFusion.enabled` off; it will not change what the model calls.
 
 ## Suggested overrides
 

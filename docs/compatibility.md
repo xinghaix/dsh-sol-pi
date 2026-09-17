@@ -64,6 +64,7 @@ The standalone entry passes `cacheWriteReadRatio` from `sol-pi.json` directly in
 | `update_plan` | `todo_write` status transitions |
 | `ExtensionContext.compact()` | `ctx.compaction.compactNow` while idle |
 | reducer `openai-codex` / `gpt-5.6-luna` | empty route = current agent model; `purpose` unset |
+| (Pi has no PTC collapse) | PTC / Code mode already fuses inside `run_code`; `then_run` is then almost unused. Native FC is the plugin's main win. |
 
 Do not fork or vendor DSH. Pin a DSH release the same way Pi is pinned to 0.84.2. User-facing install: [dsh.md](dsh.md).
 

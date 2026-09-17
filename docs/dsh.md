@@ -96,6 +96,21 @@ Override in **Settings → 插件**, or in the profile / `$DSH_HOME/cordis.patch
 
 Do not put API keys, URLs, or a language field in this namespace.
 
+## Native vs PTC
+
+This plugin's distinctive win is **native** Function Calling (`dsh-tools` default `mode: native`): one model-visible `edit`/`write`/`bash` per decision, so `then_run` actually saves a round-trip.
+
+**PTC / Code mode** (`mode: ptc`, or a Code agent preset) is a different shape. The model sees `run_code` plus a generated SDK. It already fuses `tools.edit()` then `tools.bash()` inside one program. Inner sub-dispatches carry a `parent` and stay execution-local: they do not enter the next provider request. In that mode:
+
+| Mechanism | Under PTC |
+|---|---|
+| Action Fusion `then_run` | **Almost unused.** The model never sees the `edit`/`write` schema, so it cannot pass `then_run`. The round-trip saving is already `run_code`. |
+| ObservationPack | **Outer dump only.** Nested `bash`/`edit` are skipped (`exec.parent`). A huge `run_code` print can still become a preview. |
+| Evidence-Preserving Reducer | **Weaker.** Inner diagnostic logs are log-only; reducing them does not shrink the next prompt. An oversized outer `run_code` result may still reduce. |
+| Online Context Compact | **Unchanged** (`todo_write` + window pressure), and it still only *when* to call `dsh-compaction-basic`. |
+
+So under PTC the leftover value is mostly **packing/reducing the outer `run_code` dump** and OCC's compaction policy. Both overlap DSH's 50 KB spill and `dsh-compaction-basic` more than they do in native mode. Daily PTC users can skip this plugin; native sessions are the reason to install it.
+
 ## Native seams (why install is not enough by itself)
 
 DSH does not ship `then_run`. The plugin must **put it on the model-facing `edit`/`write` schema** via a scoped `tools.register` shadow, and must speak DSH contracts:

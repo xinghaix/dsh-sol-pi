@@ -23,7 +23,7 @@ export const zh = {
 	readonly: "本部署的设置为只读。",
 	actionFusion: "动作融合",
 	actionFusionHelp:
-		"打开后，编辑或写入文件时必须用 then_run 带上立刻要跑的 format/test/build，结果和文件改动写在同一次观察里，不要再单独开一轮 bash。",
+		"打开后，编辑或写入文件时必须用 then_run 带上立刻要跑的 format/test/build，结果和文件改动写在同一次观察里，不要再单独开一轮 bash。PTC / Code 模式下模型只看见 run_code，then_run 几乎用不上。",
 	observationPack: "ObservationPack",
 	observationPackHelp:
 		"立即模式只把测试/构建这类命令转储落盘成预览；read、grep、git diff/show、知识页保持全文。需要转储全文时用 read / grep，不要发明 obs_recall。",
@@ -97,7 +97,7 @@ export const en = {
 	readonly: "This deployment stores settings read-only.",
 	actionFusion: "Action fusion",
 	actionFusionHelp:
-		"When on, edit/write MUST pass then_run for the immediate format/test/build so it shares one observation — do not follow with a separate bash turn.",
+		"When on, edit/write MUST pass then_run for the immediate format/test/build so it shares one observation — do not follow with a separate bash turn. Under PTC / Code mode the model only sees run_code, so then_run is almost unused.",
 	observationPack: "ObservationPack",
 	observationPackHelp:
 		"Immediate mode previews only test/build dumps. read, grep, git diff/show, and knowledge pages stay in full. Fetch a dump with read/grep — do not invent obs_recall.",
