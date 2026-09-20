@@ -453,11 +453,12 @@ function ReducerRouteFold(props: {
 	);
 }
 
-/**
- * Settings → 插件 → 插件配置 card, chrome aligned with first-party PluginCard.
- */
-export function SolDshCard(props: SolDshCardProps) {
-	const [open, setOpen] = useState(false);
+/** Plugin manager owns the title, description and navigation chrome. */
+export function SolDshCard(props: SolDshCardProps & { readonly view: "summary" | "page" }) {
+	return props.view === "summary" ? props.t("description") : <SolDshForm {...props} />;
+}
+
+function SolDshForm(props: SolDshCardProps) {
 	const [draft, setDraft] = useState(() => cloneConfig(DEFAULT_SOL_DSH_CONFIG));
 	const [loaded, setLoaded] = useState(DEFAULT_SOL_DSH_CONFIG);
 	const [base, setBase] = useState(DEFAULT_SOL_DSH_CONFIG);
@@ -471,7 +472,7 @@ export function SolDshCard(props: SolDshCardProps) {
 	const [error, setError] = useState<string | undefined>();
 	const [catalog, setCatalog] = useState<readonly ModelCatalogProvider[]>([]);
 	const [catalogStatus, setCatalogStatus] = useState<"idle" | "loading" | "ready" | "empty">("idle");
-	const saveStarted = useRef(false);
+	const active = useRef(false);
 
 	const ensureCatalog = () => {
 		if (catalogStatus === "loading" || catalogStatus === "ready" || catalogStatus === "empty") return;
@@ -482,10 +483,12 @@ export function SolDshCard(props: SolDshCardProps) {
 		setCatalogStatus("loading");
 		void props.loadModelCatalog().then(
 			(groups) => {
+				if (!active.current) return;
 				setCatalog(groups);
 				setCatalogStatus(groups.length > 0 ? "ready" : "empty");
 			},
 			() => {
+				if (!active.current) return;
 				setCatalog([]);
 				setCatalogStatus("empty");
 			},
@@ -508,20 +511,15 @@ export function SolDshCard(props: SolDshCardProps) {
 	// Host slot inject() rebuilds the props object on parent renders. Depending on
 	// `props` here reloads the snapshot and wipes in-progress Menu edits.
 	useEffect(() => {
-		void props.load().then(syncFromSnapshot);
+		active.current = true;
+		let cancelled = false;
+		void props.load().then(
+			(snapshot) => { if (!cancelled) syncFromSnapshot(snapshot); },
+			() => { if (!cancelled) setFailed(true); },
+		);
+		return () => { cancelled = true; active.current = false; };
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only hydrate
 	}, []);
-
-	useEffect(() => {
-		if (saving) {
-			saveStarted.current = true;
-			return;
-		}
-		if (!saveStarted.current) return;
-		saveStarted.current = false;
-		if (!sameConfig(draft, loaded) || clears.size > 0) return;
-		if (!failed) setOpen(false);
-	}, [saving, draft, loaded, clears, failed]);
 
 	const dirty = useMemo(() => !sameConfig(draft, loaded) || clears.size > 0, [draft, loaded, clears]);
 	const t = props.t;
@@ -673,17 +671,18 @@ export function SolDshCard(props: SolDshCardProps) {
 		try {
 			const resolved = resolveSolDshConfig(parsed.value);
 			await props.onSave(resolved, revision, base, user);
+			if (!active.current) return;
 			const snapshot = await props.load();
-			syncFromSnapshot(snapshot);
+			if (active.current) syncFromSnapshot(snapshot);
 		} catch (failure) {
+			if (!active.current) return;
 			setFailed(true);
 			setError(failure instanceof Error ? failure.message : t("saveFailed"));
 		} finally {
-			setSaving(false);
+			if (active.current) setSaving(false);
 		}
 	};
 
-	const title = t("title");
 	const common = {
 		disabled,
 		overriddenLabel: t("overridden"),
@@ -692,28 +691,8 @@ export function SolDshCard(props: SolDshCardProps) {
 	};
 
 	return (
-		<li className={`${styles.card}${open ? ` ${styles.cardOpen}` : ""}`} data-plugin="dsh-sol-pi">
-			<button
-				type="button"
-				className={styles.header}
-				aria-expanded={open}
-				aria-label={`${t(open ? "collapse" : "expand")}: ${title}`}
-				onClick={() => setOpen((value) => !value)}
-			>
-				<span className={styles.headText}>
-					<span className={styles.name}>{title}</span>
-					<span className={styles.description}>{t("description")}</span>
-				</span>
-				{dirty ? (
-					<Tag tone="neutral" className={styles.pending}>
-						{t("unsaved")}
-					</Tag>
-				) : null}
-				<IconChevronDownOutline14 className={`${styles.chevron}${open ? ` ${styles.chevronOpen}` : ""}`} />
-			</button>
-
-			{open ? (
-				<div className={styles.body}>
+		<section data-plugin="dsh-sol-pi">
+			<div className={styles.body}>
 					{!writable ? (
 						<p className={styles.readOnly} role="status">
 							{t("readonly")}
@@ -987,7 +966,6 @@ export function SolDshCard(props: SolDshCardProps) {
 						</button>
 					</div>
 				</div>
-			) : null}
-		</li>
+		</section>
 	);
 }

@@ -11,7 +11,7 @@ Configuration contract: [dsh-configuration.md](dsh-configuration.md). Research: 
 | Area | State |
 |---|---|
 | Host plugin | Shipped. Named exports `name` / `inject` / `apply` / `Config`. No `export default`. |
-| Settings card | Shipped. **Settings → 插件 → 插件配置**. zh + en, follows **通用设置 → 语言**. No SoL language field. |
+| Settings card | Shipped. **侧栏 Plugins / 插件 → Installed / 已安装 → dsh-sol-pi**. zh + en, follows **通用设置 → 语言**. No SoL language field. |
 | Action Fusion | Shadows agent-scoped `edit`/`write` with optional `then_run` (session-start, created, and already-live agents). DSH has no first-party `then_run`. |
 | ObservationPack | `tools/post-execute` returns `{ kind: "accept", content }`. Immediate dialect replaces test/build dumps (`go test`, `make`, fused `then_run`). `read` / `grep` / `git diff` / `git show` stay full. No `obs_recall`. |
 | Evidence-Preserving Reducer | Registers **before** ObservationPack. Same post-execute decision shape + `ctx.llm.stream` (`purpose` unset) on `Agent.options` route. Fail-open. |
@@ -19,7 +19,7 @@ Configuration contract: [dsh-configuration.md](dsh-configuration.md). Research: 
 | Tests | `npm test` and `npm run check:dsh` cover config, locales, packaging, and the plugin export shape. |
 | Upstream Pi | Unmodified. Do not fork Pi or DSH. |
 
-Tested against DSH **0.1.5-rc.2** and Pi **0.84.2**. DSH is developer preview; public seams can move.
+The Web configuration targets the plugin-manager contract in DSH **0.1.6-alpha.2**; the former Settings plugin-card slot is no longer used. Older DSH versions exposing only `settings.plugin.item` are not supported by this Web configuration UI. Pi remains **0.84.2**. Source/build regression checks cover this migration; live browser/WebView acceptance has not been performed. DSH is developer preview; public seams can move.
 
 ## Install (Web)
 
@@ -35,7 +35,7 @@ dsh --profile web --dump-config    # composed tree must include a dsh-sol-pi row
 dsh web                            # or: dsh --profile web
 ```
 
-Then open **Settings → 插件**. The SoL card uses the same expandable chrome as bash / agent-loop. Language follows **Settings → 通用设置 → 语言**.
+Then open **侧栏 Plugins / 插件 → Installed / 已安装 → dsh-sol-pi**. The plugin manager supplies the title and navigation; SoL renders its always-open form with explicit Save / Discard. Leaving the page discards unsaved edits. Language follows **Settings → 通用设置 → 语言**.
 
 ### From a local checkout
 
@@ -49,7 +49,7 @@ dsh --profile web --dump-config
 dsh web
 ```
 
-`build:dsh` regenerates `dist/sol-dsh/index.js` (Host) and `dist/sol-dsh/client.js` (Web settings card). GitHub installs use the committed `dist/` copies. The settings card registers at boot (`dsh.client.immediately`) into **Settings → 插件**.
+`build:dsh` regenerates `dist/sol-dsh/index.js` (Host) and `dist/sol-dsh/client.js` (Web settings card). GitHub installs use the committed `dist/` copies. The settings card registers at boot (`dsh.client.immediately`) into **侧栏 Plugins / 插件 → Installed / 已安装 → dsh-sol-pi**.
 
 ### Other profiles
 
@@ -83,7 +83,7 @@ Installing the plugin enables:
 - Evidence-Preserving Reducer **on**, reducer = current agent route
 - Online Context Compact **on**, `cacheWriteReadRatio: 50`
 
-Override in **Settings → 插件**, or in the profile / `$DSH_HOME/cordis.patch.yml`:
+Override in **侧栏 Plugins / 插件 → Installed / 已安装 → dsh-sol-pi**, or in the profile / `$DSH_HOME/cordis.patch.yml`:
 
 ```yaml
 - id: dsh-sol-pi

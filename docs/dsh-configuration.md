@@ -6,7 +6,7 @@ Native DeepSeek Harness contract. **Do not shape this after Pi.** No `sol-pi.jso
 
 - Installing the bundle with `dsh plugin --profile <name> add …` **is** the opt-in.
 - After install, omitted fields take **SoL’s DSH best defaults** (Schemastery `.default()`).
-- Users change values in **Settings → 插件 → Plugin configuration** (same shell as bash / agent-loop cards), or by a partial `cordis.patch.yml` override.
+- Users change values in **侧栏 Plugins / 插件 → Installed / 已安装 → dsh-sol-pi** (DSH 0.1.6-alpha.2 plugin manager), or by a partial `cordis.patch.yml` override.
 - Invalid values fail plugin load. Unknown keys fail load (strict object).
 - No environment variables. No credentials. Reducer route, when set, uses DSH-managed auth.
 - **No `locale` / `language` field** in SoL config. UI language is Settings → 通用设置 → 语言 (`ctx.locale`).
@@ -41,20 +41,20 @@ Runtime edits go through `ctx.settings.installSection` so the Web card and the H
 
 ## Settings UI (must look and behave like dshweb)
 
-The card lives only in **设置 → 插件 → 插件配置**, keyed as `settings.plugin.item` / namespace `dsh-sol-pi`. It must not invent a sidebar item, a second Settings app, or a Pi-like JSON editor.
+The configuration lives in **侧栏 Plugins / 插件 → Installed / 已安装 → dsh-sol-pi**, registered at `plugins.bundle.config` with the exact package key `dsh-sol-pi`; the settings namespace remains `dsh-sol-pi`. Settings → 内置插件 is the read-only inventory, not this form. It must not invent a sidebar item, a second Settings app, or a Pi-like JSON editor.
 
-Follow first-party plugin cards (`dsh-client-ui-settings-plugins`):
+Follow the `dsh-client-ui-plugin-manager` slot contract (DSH 0.1.6-alpha.2):
 
 | Interaction | Required behavior |
 |---|---|
-| Layout | One expandable card among bash / agent-loop / … Same section chrome, not a custom page. |
-| Edit model | Stage locally until **保存**. **丢弃** drops drafts. Header shows unsaved state while collapsed. |
+| Layout | The manager owns title, icon and breadcrumbs. `summary` is description text only; `page` mounts a separate always-expanded form between bundle description and rows. |
+| Edit model | Stage locally until **保存**. **丢弃** drops drafts. Leaving the page drops drafts; parent rerenders do not reload them. |
 | Reset | Stages the composed default; does not write until save. Overridden fields follow DSH (presence in the user layer, not value inequality). |
-| Concurrency | Writes fenced with `expectedRevision`. Stale save is rejected, drafts kept. |
+| Concurrency | Writes fenced with `expectedRevision`. After mutation settlement, verify authoritative effective values and set/unset user overrides before clearing drafts: DSH can recover a rejected write without throwing. Unconfirmed writes keep drafts. |
 | Controls | Same widgets as General: switch, select, numeric+unit (like 字号 `14` `px`), helper caption under the title. |
 | Secrets | None in v1. Never put keys in this namespace. |
 | Copy | `ctx.locale.bind('settings.solDsh')` (or equivalent ns). No hardcoded UI strings. |
-| Packaging | Host `src/` + browser `src/client/` as `./client`, `dsh.client.platform: 'web'`, `inject` includes `@deepseek-ai/dsh-client-ui-settings-plugins`. Card **owns its chrome** (first-party cards cannot be value-imported). |
+| Packaging | Host `src/` + browser `src/client/` as `./client`, `dsh.client.platform: 'web'`, `inject` includes `@deepseek-ai/dsh-client-ui-plugin-manager`. Form owns Save / Discard, not page chrome; no runtime import of the manager. |
 
 Do not port Pi `renderCall` / `ui.notify` / lightning TUI into Web. Optional later: `tool.call.toolview` for savings, still using locale dictionaries.
 
@@ -215,7 +215,7 @@ Do not put these in SoL config: API keys, provider URLs, main model, sandbox mod
 | Config file | `sol-pi.json` | settings namespace + optional patch; **no JSON sidecar** |
 | Missing keys | all mechanisms **false** | best profile **on** |
 | Opt-in moment | writing `sol-pi.json` | `dsh plugin add` |
-| Settings UI | none (TUI notify only) | Settings → 插件 card, dshweb widgets |
+| Settings UI | none (TUI notify only) | Sidebar Plugins → Installed → dsh-sol-pi form, dshweb widgets |
 | Language | n/a | follow 通用设置 → 语言; zh+en dicts; miss → en |
 | `cacheWriteReadRatio` | 12.5 (GPT-5.6 OpenAI Standard, 2026-08-21) | 50 (DeepSeek Flash miss/hit, 2026-09-14) |
 | EPR reducer | `openai-codex` / `gpt-5.6-luna` | empty = routed agent model |

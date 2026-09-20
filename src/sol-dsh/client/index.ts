@@ -181,7 +181,7 @@ async function loadCatalogFromDirectories(directories: ModelDirectories | undefi
 }
 
 /**
- * Settings → 插件 → 插件配置 card.
+ * Sidebar Plugins → dsh-sol-pi bundle configuration.
  * Reads/writes through `ctx.settingsScope` (same path as first-party cards).
  */
 export function apply(ctx: ClientContext): void {
@@ -218,10 +218,10 @@ export function apply(ctx: ClientContext): void {
 		void scope.dispose?.();
 	}, "dsh-sol-pi: settings scope");
 
-	ctx.slots.inject("settings.plugin.item", () =>
+	ctx.slots.inject("plugins.bundle.config", () =>
 		ctx.slots.register(
 			{
-				name: "settings.plugin.item",
+				name: "plugins.bundle.config",
 				key: SOL_DSH_SETTINGS_NAMESPACE,
 				locale: SOL_DSH_LOCALE_NS,
 				inject: () => ({
@@ -253,7 +253,20 @@ export function apply(ctx: ClientContext): void {
 								ops.push({ op: "set", path: [key], value: next });
 							}
 						}
-						if (ops.length > 0) await scope.mutate(ops, expectedRevision);
+						if (ops.length > 0) {
+							await scope.mutate(ops, expectedRevision);
+							// DSH resolves mutate() after ok:false recovery too. Only clear
+							// drafts when the authoritative snapshot reflects the requested state.
+							const settled = await whenSettled(scope);
+							const value = decodeSection(settled.value);
+							const settledUser = asUserLayer(settled.user);
+							if (settled.status !== "ready" || !value || !deepEqual(value, patch) ||
+								ops.some((op) => op.op === "unset"
+									? settledUser && Object.prototype.hasOwnProperty.call(settledUser, op.path[0]!)
+									: !deepEqual(settledUser?.[op.path[0]!], op.value))) {
+								throw new Error(t("saveFailed"));
+							}
+						}
 					},
 				}),
 			},

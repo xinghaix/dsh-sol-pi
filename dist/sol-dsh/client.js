@@ -990,10 +990,10 @@ var import_react = require("react");
 if (typeof document !== "undefined" && !document.getElementById("sol-dsh-css")) {
   const s = document.createElement("style");
   s.id = "sol-dsh-css";
-  s.textContent = "/* Match @deepseek-ai/dsh-client-ui-settings-plugins PluginCard + fields + Subagent toggle. */\n\n.solDsh_card {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	border-radius: 16px;\n	list-style: none;\n	transition: border-color 0.16s, background 0.16s;\n}\n\n.solDsh_card:hover {\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_cardOpen {\n	background: var(--dsw-alias-bg-layer-2);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_header {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 12px;\n	align-items: center;\n	gap: 12px;\n	padding: 14px 16px;\n	display: flex;\n}\n\n.solDsh_header:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: -2px;\n}\n\n.solDsh_headText {\n	flex-direction: column;\n	flex: 1;\n	gap: 4px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_name {\n	color: var(--dsw-alias-label-primary);\n	font-size: 15px;\n	font-weight: 600;\n	line-height: 1.4;\n}\n\n.solDsh_description {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_pending {\n	flex: none;\n}\n\n.solDsh_chevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_chevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_body {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	margin: 0 16px;\n	padding-bottom: 8px;\n}\n\n.solDsh_readOnly {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 12px 0 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_footer {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	justify-content: flex-end;\n	align-items: center;\n	gap: 8px;\n	padding: 12px 0 4px;\n	display: flex;\n}\n\n.solDsh_failed {\n	min-width: 0;\n	color: var(--dsw-alias-label-error);\n	flex: 1;\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_discard,\n.solDsh_save {\n	appearance: none;\n	font: inherit;\n	cursor: pointer;\n	border: 1px solid transparent;\n	border-radius: 8px;\n	padding: 5px 14px;\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_discard {\n	border-color: var(--dsw-alias-border-l2);\n	color: var(--dsw-alias-label-secondary);\n	background: 0 0;\n}\n\n.solDsh_discard:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_save {\n	background: var(--dsw-alias-label-primary);\n	color: var(--dsw-alias-bg-layer-3);\n}\n\n.solDsh_discard:disabled,\n.solDsh_save:disabled {\n	opacity: 0.4;\n	cursor: default;\n}\n\n.solDsh_discard:focus-visible,\n.solDsh_save:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 1px;\n}\n\n.solDsh_field {\n	flex-direction: column;\n	gap: 6px;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_head {\n	align-items: center;\n	gap: 8px;\n	display: flex;\n}\n\n.solDsh_label {\n	min-width: 0;\n	color: var(--dsw-alias-label-primary);\n	flex: 1;\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_hint {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_input {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	border-radius: 8px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	width: 100%;\n	box-sizing: border-box;\n}\n\n.solDsh_input:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_input:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n/* Permission-row style trigger; menu chrome comes from primitives.solDsh_Menu */\n.solDsh_selector {\n	appearance: none;\n	width: 100%;\n	box-sizing: border-box;\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	cursor: pointer;\n	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	border-radius: 8px;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: inline-flex;\n}\n\n.solDsh_selector:hover:not(:disabled) {\n	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));\n}\n\n.solDsh_selector:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n.solDsh_selector:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_selectorLabel {\n	min-width: 0;\n	overflow: hidden;\n	text-overflow: ellipsis;\n	white-space: nowrap;\n	flex: 1;\n	text-align: left;\n}\n\n.solDsh_selectorChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_selectorChevronOpen {\n	transform: rotate(180deg);\n}\n\n/* SubagentModelSelectionCard.solDsh_toggleRow */\n.solDsh_toggleRow {\n	color: var(--dsw-alias-label-primary);\n	justify-content: space-between;\n	align-items: flex-start;\n	gap: 16px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: flex;\n}\n\n.solDsh_toggleLabel {\n	flex: 1;\n	min-width: 0;\n	font-weight: 500;\n}\n\n.solDsh_badges {\n	align-items: center;\n	gap: 8px;\n	display: inline-flex;\n	flex: none;\n	padding-top: 1px;\n}\n\n.solDsh_reset {\n	font: inherit;\n	color: var(--dsw-alias-label-secondary);\n	cursor: pointer;\n	background: 0 0;\n	border: none;\n	padding: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_reset:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n}\n\n.solDsh_reset:disabled {\n	cursor: default;\n}\n\n.solDsh_inputInvalid {\n	border-color: var(--dsw-alias-label-error);\n}\n\n.solDsh_invalid {\n	color: var(--dsw-alias-label-error);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_fold {\n	flex-direction: column;\n	gap: 0;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_fold,\n.solDsh_fold + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_foldHeader {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 8px;\n	align-items: center;\n	gap: 8px;\n	padding: 0;\n	display: flex;\n}\n\n.solDsh_foldHeader:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 2px;\n}\n\n.solDsh_foldText {\n	flex-direction: column;\n	flex: 1;\n	gap: 2px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_foldTitle {\n	color: var(--dsw-alias-label-primary);\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_foldSummary {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_foldChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_foldChevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_foldBody {\n	flex-direction: column;\n	gap: 0;\n	margin-top: 8px;\n	display: flex;\n}\n\n.solDsh_stackField {\n	flex-direction: column;\n	gap: 6px;\n	padding: 10px 0 0;\n	display: flex;\n}\n\n.solDsh_stackLabel {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n";
+  s.textContent = "/* Plugin-manager form fields; the owner supplies page chrome. */\n\n.solDsh_body {\n	padding-bottom: 8px;\n}\n\n.solDsh_readOnly {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 12px 0 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_footer {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	justify-content: flex-end;\n	align-items: center;\n	gap: 8px;\n	padding: 12px 0 4px;\n	display: flex;\n}\n\n.solDsh_failed {\n	min-width: 0;\n	color: var(--dsw-alias-label-error);\n	flex: 1;\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_discard,\n.solDsh_save {\n	appearance: none;\n	font: inherit;\n	cursor: pointer;\n	border: 1px solid transparent;\n	border-radius: 8px;\n	padding: 5px 14px;\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_discard {\n	border-color: var(--dsw-alias-border-l2);\n	color: var(--dsw-alias-label-secondary);\n	background: 0 0;\n}\n\n.solDsh_discard:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_save {\n	background: var(--dsw-alias-label-primary);\n	color: var(--dsw-alias-bg-layer-3);\n}\n\n.solDsh_discard:disabled,\n.solDsh_save:disabled {\n	opacity: 0.4;\n	cursor: default;\n}\n\n.solDsh_discard:focus-visible,\n.solDsh_save:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 1px;\n}\n\n.solDsh_field {\n	flex-direction: column;\n	gap: 6px;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_head {\n	align-items: center;\n	gap: 8px;\n	display: flex;\n}\n\n.solDsh_label {\n	min-width: 0;\n	color: var(--dsw-alias-label-primary);\n	flex: 1;\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_hint {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_input {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	border-radius: 8px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	width: 100%;\n	box-sizing: border-box;\n}\n\n.solDsh_input:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_input:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n/* Permission-row style trigger; menu chrome comes from primitives.solDsh_Menu */\n.solDsh_selector {\n	appearance: none;\n	width: 100%;\n	box-sizing: border-box;\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	cursor: pointer;\n	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	border-radius: 8px;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: inline-flex;\n}\n\n.solDsh_selector:hover:not(:disabled) {\n	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));\n}\n\n.solDsh_selector:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n.solDsh_selector:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_selectorLabel {\n	min-width: 0;\n	overflow: hidden;\n	text-overflow: ellipsis;\n	white-space: nowrap;\n	flex: 1;\n	text-align: left;\n}\n\n.solDsh_selectorChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_selectorChevronOpen {\n	transform: rotate(180deg);\n}\n\n/* SubagentModelSelectionCard.solDsh_toggleRow */\n.solDsh_toggleRow {\n	color: var(--dsw-alias-label-primary);\n	justify-content: space-between;\n	align-items: flex-start;\n	gap: 16px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: flex;\n}\n\n.solDsh_toggleLabel {\n	flex: 1;\n	min-width: 0;\n	font-weight: 500;\n}\n\n.solDsh_badges {\n	align-items: center;\n	gap: 8px;\n	display: inline-flex;\n	flex: none;\n	padding-top: 1px;\n}\n\n.solDsh_reset {\n	font: inherit;\n	color: var(--dsw-alias-label-secondary);\n	cursor: pointer;\n	background: 0 0;\n	border: none;\n	padding: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_reset:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n}\n\n.solDsh_reset:disabled {\n	cursor: default;\n}\n\n.solDsh_inputInvalid {\n	border-color: var(--dsw-alias-label-error);\n}\n\n.solDsh_invalid {\n	color: var(--dsw-alias-label-error);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_fold {\n	flex-direction: column;\n	gap: 0;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_fold,\n.solDsh_fold + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_foldHeader {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 8px;\n	align-items: center;\n	gap: 8px;\n	padding: 0;\n	display: flex;\n}\n\n.solDsh_foldHeader:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 2px;\n}\n\n.solDsh_foldText {\n	flex-direction: column;\n	flex: 1;\n	gap: 2px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_foldTitle {\n	color: var(--dsw-alias-label-primary);\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_foldSummary {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_foldChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_foldChevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_foldBody {\n	flex-direction: column;\n	gap: 0;\n	margin-top: 8px;\n	display: flex;\n}\n\n.solDsh_stackField {\n	flex-direction: column;\n	gap: 6px;\n	padding: 10px 0 0;\n	display: flex;\n}\n\n.solDsh_stackLabel {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n";
   document.head.appendChild(s);
 }
-var card_default = { "card": "solDsh_card", "cardOpen": "solDsh_cardOpen", "header": "solDsh_header", "headText": "solDsh_headText", "name": "solDsh_name", "description": "solDsh_description", "pending": "solDsh_pending", "chevron": "solDsh_chevron", "chevronOpen": "solDsh_chevronOpen", "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "input": "solDsh_input", "selector": "solDsh_selector", "selectorLabel": "solDsh_selectorLabel", "selectorChevron": "solDsh_selectorChevron", "selectorChevronOpen": "solDsh_selectorChevronOpen", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "badges": "solDsh_badges", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid", "fold": "solDsh_fold", "foldHeader": "solDsh_foldHeader", "foldText": "solDsh_foldText", "foldTitle": "solDsh_foldTitle", "foldSummary": "solDsh_foldSummary", "foldChevron": "solDsh_foldChevron", "foldChevronOpen": "solDsh_foldChevronOpen", "foldBody": "solDsh_foldBody", "stackField": "solDsh_stackField", "stackLabel": "solDsh_stackLabel" };
+var card_default = { "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "input": "solDsh_input", "selector": "solDsh_selector", "selectorLabel": "solDsh_selectorLabel", "selectorChevron": "solDsh_selectorChevron", "selectorChevronOpen": "solDsh_selectorChevronOpen", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "badges": "solDsh_badges", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid", "fold": "solDsh_fold", "foldHeader": "solDsh_foldHeader", "foldText": "solDsh_foldText", "foldTitle": "solDsh_foldTitle", "foldSummary": "solDsh_foldSummary", "foldChevron": "solDsh_foldChevron", "foldChevronOpen": "solDsh_foldChevronOpen", "foldBody": "solDsh_foldBody", "stackField": "solDsh_stackField", "stackLabel": "solDsh_stackLabel" };
 
 // src/sol-dsh/client/card.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
@@ -1310,7 +1310,9 @@ function ReducerRouteFold(props) {
   ] });
 }
 function SolDshCard(props) {
-  const [open, setOpen] = (0, import_react.useState)(false);
+  return props.view === "summary" ? props.t("description") : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SolDshForm, { ...props });
+}
+function SolDshForm(props) {
   const [draft, setDraft] = (0, import_react.useState)(() => cloneConfig(DEFAULT_SOL_DSH_CONFIG));
   const [loaded, setLoaded] = (0, import_react.useState)(DEFAULT_SOL_DSH_CONFIG);
   const [base, setBase] = (0, import_react.useState)(DEFAULT_SOL_DSH_CONFIG);
@@ -1324,7 +1326,7 @@ function SolDshCard(props) {
   const [error, setError] = (0, import_react.useState)();
   const [catalog, setCatalog] = (0, import_react.useState)([]);
   const [catalogStatus, setCatalogStatus] = (0, import_react.useState)("idle");
-  const saveStarted = (0, import_react.useRef)(false);
+  const active = (0, import_react.useRef)(false);
   const ensureCatalog = () => {
     if (catalogStatus === "loading" || catalogStatus === "ready" || catalogStatus === "empty") return;
     if (!props.loadModelCatalog) {
@@ -1334,10 +1336,12 @@ function SolDshCard(props) {
     setCatalogStatus("loading");
     void props.loadModelCatalog().then(
       (groups) => {
+        if (!active.current) return;
         setCatalog(groups);
         setCatalogStatus(groups.length > 0 ? "ready" : "empty");
       },
       () => {
+        if (!active.current) return;
         setCatalog([]);
         setCatalogStatus("empty");
       }
@@ -1356,18 +1360,21 @@ function SolDshCard(props) {
     setError(void 0);
   };
   (0, import_react.useEffect)(() => {
-    void props.load().then(syncFromSnapshot);
+    active.current = true;
+    let cancelled = false;
+    void props.load().then(
+      (snapshot) => {
+        if (!cancelled) syncFromSnapshot(snapshot);
+      },
+      () => {
+        if (!cancelled) setFailed(true);
+      }
+    );
+    return () => {
+      cancelled = true;
+      active.current = false;
+    };
   }, []);
-  (0, import_react.useEffect)(() => {
-    if (saving) {
-      saveStarted.current = true;
-      return;
-    }
-    if (!saveStarted.current) return;
-    saveStarted.current = false;
-    if (!sameConfig(draft, loaded) || clears.size > 0) return;
-    if (!failed) setOpen(false);
-  }, [saving, draft, loaded, clears, failed]);
   const dirty = (0, import_react.useMemo)(() => !sameConfig(draft, loaded) || clears.size > 0, [draft, loaded, clears]);
   const t = props.t;
   const disabled = !writable || saving;
@@ -1506,351 +1513,332 @@ function SolDshCard(props) {
     try {
       const resolved = resolveSolDshConfig(parsed.value);
       await props.onSave(resolved, revision, base, user);
+      if (!active.current) return;
       const snapshot = await props.load();
-      syncFromSnapshot(snapshot);
+      if (active.current) syncFromSnapshot(snapshot);
     } catch (failure) {
+      if (!active.current) return;
       setFailed(true);
       setError(failure instanceof Error ? failure.message : t("saveFailed"));
     } finally {
-      setSaving(false);
+      if (active.current) setSaving(false);
     }
   };
-  const title = t("title");
   const common = {
     disabled,
     overriddenLabel: t("overridden"),
     resetLabel: t("reset"),
     invalidLabel: t("invalidNumber")
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { className: `${card_default.card}${open ? ` ${card_default.cardOpen}` : ""}`, "data-plugin": "dsh-sol-pi", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-      "button",
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", { "data-plugin": "dsh-sol-pi", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.body, children: [
+    !writable ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.readOnly, role: "status", children: t("readonly") }) : null,
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      SwitchRow,
       {
-        type: "button",
-        className: card_default.header,
-        "aria-expanded": open,
-        "aria-label": `${t(open ? "collapse" : "expand")}: ${title}`,
-        onClick: () => setOpen((value) => !value),
-        children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.headText, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.name, children: title }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.description, children: t("description") })
-          ] }),
-          dirty ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.Tag, { tone: "neutral", className: card_default.pending, children: t("unsaved") }) : null,
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.IconChevronDownOutline14, { className: `${card_default.chevron}${open ? ` ${card_default.chevronOpen}` : ""}` })
-        ]
+        ...common,
+        label: t("actionFusion"),
+        hint: t("actionFusionHelp"),
+        checked: draft.actionFusion.enabled,
+        overridden: overridden(["actionFusion", "enabled"]),
+        onChange: (checked) => editValue(["actionFusion", "enabled"], checked),
+        onReset: () => resetPath(["actionFusion", "enabled"])
       }
     ),
-    open ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.body, children: [
-      !writable ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.readOnly, role: "status", children: t("readonly") }) : null,
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        SwitchRow,
-        {
-          ...common,
-          label: t("actionFusion"),
-          hint: t("actionFusionHelp"),
-          checked: draft.actionFusion.enabled,
-          overridden: overridden(["actionFusion", "enabled"]),
-          onChange: (checked) => editValue(["actionFusion", "enabled"], checked),
-          onReset: () => resetPath(["actionFusion", "enabled"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        SwitchRow,
-        {
-          ...common,
-          label: t("observationPack"),
-          hint: t("observationPackHelp"),
-          checked: draft.observationPack.enabled,
-          overridden: overridden(["observationPack", "enabled"]),
-          onChange: (checked) => editValue(["observationPack", "enabled"], checked),
-          onReset: () => resetPath(["observationPack", "enabled"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        SelectRow,
-        {
-          ...common,
-          id: "sol-obs-mode",
-          label: t("mode"),
-          hint: t("modeHelp"),
-          detail: draft.observationPack.mode === "delayed" ? t("modeDelayedHint") : t("modeImmediateHint"),
-          value: draft.observationPack.mode,
-          options: [
-            { id: "immediate", label: t("modeImmediate") },
-            { id: "delayed", label: t("modeDelayed") }
-          ],
-          overridden: overridden(["observationPack", "mode"]),
-          onChange: (value) => {
-            editValue(["observationPack", "mode"], value === "delayed" ? "delayed" : "immediate");
-            if (value === "delayed" && draft.observationPack.fullSends < 2) {
-              editValue(["observationPack", "fullSends"], 2);
-            }
-            if (value === "immediate") editValue(["observationPack", "fullSends"], 0);
-          },
-          onReset: () => resetPath(["observationPack", "mode"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-obs-threshold",
-          label: t("thresholdBytes"),
-          hint: t("thresholdBytesHelp"),
-          numeric: true,
-          text: textOf(["observationPack", "thresholdBytes"], draft.observationPack.thresholdBytes),
-          invalid: invalidNumeric(["observationPack", "thresholdBytes"]),
-          overridden: overridden(["observationPack", "thresholdBytes"]),
-          onEdit: (text) => editText(["observationPack", "thresholdBytes"], text),
-          onReset: () => resetPath(["observationPack", "thresholdBytes"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-obs-fullsends",
-          label: t("fullSends"),
-          hint: t("fullSendsHelp"),
-          numeric: true,
-          text: textOf(["observationPack", "fullSends"], draft.observationPack.fullSends),
-          invalid: invalidNumeric(["observationPack", "fullSends"]),
-          overridden: overridden(["observationPack", "fullSends"]),
-          onEdit: (text) => editText(["observationPack", "fullSends"], text),
-          onReset: () => resetPath(["observationPack", "fullSends"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-obs-excerpt",
-          label: t("placeholderExcerptBytes"),
-          hint: t("placeholderExcerptBytesHelp"),
-          numeric: true,
-          text: textOf(["observationPack", "placeholderExcerptBytes"], draft.observationPack.placeholderExcerptBytes),
-          invalid: invalidNumeric(["observationPack", "placeholderExcerptBytes"]),
-          overridden: overridden(["observationPack", "placeholderExcerptBytes"]),
-          onEdit: (text) => editText(["observationPack", "placeholderExcerptBytes"], text),
-          onReset: () => resetPath(["observationPack", "placeholderExcerptBytes"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        SwitchRow,
-        {
-          ...common,
-          label: t("epr"),
-          hint: t("eprHelp"),
-          checked: draft.evidencePreservingReducer.enabled,
-          overridden: overridden(["evidencePreservingReducer", "enabled"]),
-          onChange: (checked) => editValue(["evidencePreservingReducer", "enabled"], checked),
-          onReset: () => resetPath(["evidencePreservingReducer", "enabled"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-epr-min",
-          label: t("minBytes"),
-          hint: t("minBytesHelp"),
-          numeric: true,
-          text: textOf(["evidencePreservingReducer", "minBytes"], draft.evidencePreservingReducer.minBytes),
-          invalid: invalidNumeric(["evidencePreservingReducer", "minBytes"]),
-          overridden: overridden(["evidencePreservingReducer", "minBytes"]),
-          onEdit: (text) => editText(["evidencePreservingReducer", "minBytes"], text),
-          onReset: () => resetPath(["evidencePreservingReducer", "minBytes"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-epr-maxchars",
-          label: t("maxChars"),
-          hint: t("maxCharsHelp"),
-          numeric: true,
-          text: textOf(["evidencePreservingReducer", "maxChars"], draft.evidencePreservingReducer.maxChars),
-          invalid: invalidNumeric(["evidencePreservingReducer", "maxChars"]),
-          overridden: overridden(["evidencePreservingReducer", "maxChars"]),
-          onEdit: (text) => editText(["evidencePreservingReducer", "maxChars"], text),
-          onReset: () => resetPath(["evidencePreservingReducer", "maxChars"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-epr-out",
-          label: t("maxOutputTokens"),
-          hint: t("maxOutputTokensHelp"),
-          numeric: true,
-          text: textOf(["evidencePreservingReducer", "maxOutputTokens"], draft.evidencePreservingReducer.maxOutputTokens),
-          invalid: invalidNumeric(["evidencePreservingReducer", "maxOutputTokens"]),
-          overridden: overridden(["evidencePreservingReducer", "maxOutputTokens"]),
-          onEdit: (text) => editText(["evidencePreservingReducer", "maxOutputTokens"], text),
-          onReset: () => resetPath(["evidencePreservingReducer", "maxOutputTokens"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-epr-timeout",
-          label: t("timeoutMs"),
-          hint: t("timeoutMsHelp"),
-          numeric: true,
-          text: textOf(["evidencePreservingReducer", "timeoutMs"], draft.evidencePreservingReducer.timeoutMs),
-          invalid: invalidNumeric(["evidencePreservingReducer", "timeoutMs"]),
-          overridden: overridden(["evidencePreservingReducer", "timeoutMs"]),
-          onEdit: (text) => editText(["evidencePreservingReducer", "timeoutMs"], text),
-          onReset: () => resetPath(["evidencePreservingReducer", "timeoutMs"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ReducerRouteFold,
-        {
-          t,
-          disabled,
-          provider: draft.evidencePreservingReducer.reducerProvider,
-          model: draft.evidencePreservingReducer.reducerModel,
-          catalog,
-          catalogStatus,
-          overridden: overridden(["evidencePreservingReducer", "reducerProvider"]) || overridden(["evidencePreservingReducer", "reducerModel"]),
-          overriddenLabel: t("overridden"),
-          resetLabel: t("reset"),
-          onOpen: ensureCatalog,
-          onRoute: editReducerRoute,
-          onReset: () => {
-            editReducerRoute("", "");
-            setClears((current) => {
-              const next = new Set(current);
-              next.add("evidencePreservingReducer.reducerProvider");
-              next.add("evidencePreservingReducer.reducerModel");
-              return next;
-            });
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      SwitchRow,
+      {
+        ...common,
+        label: t("observationPack"),
+        hint: t("observationPackHelp"),
+        checked: draft.observationPack.enabled,
+        overridden: overridden(["observationPack", "enabled"]),
+        onChange: (checked) => editValue(["observationPack", "enabled"], checked),
+        onReset: () => resetPath(["observationPack", "enabled"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      SelectRow,
+      {
+        ...common,
+        id: "sol-obs-mode",
+        label: t("mode"),
+        hint: t("modeHelp"),
+        detail: draft.observationPack.mode === "delayed" ? t("modeDelayedHint") : t("modeImmediateHint"),
+        value: draft.observationPack.mode,
+        options: [
+          { id: "immediate", label: t("modeImmediate") },
+          { id: "delayed", label: t("modeDelayed") }
+        ],
+        overridden: overridden(["observationPack", "mode"]),
+        onChange: (value) => {
+          editValue(["observationPack", "mode"], value === "delayed" ? "delayed" : "immediate");
+          if (value === "delayed" && draft.observationPack.fullSends < 2) {
+            editValue(["observationPack", "fullSends"], 2);
           }
+          if (value === "immediate") editValue(["observationPack", "fullSends"], 0);
+        },
+        onReset: () => resetPath(["observationPack", "mode"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-obs-threshold",
+        label: t("thresholdBytes"),
+        hint: t("thresholdBytesHelp"),
+        numeric: true,
+        text: textOf(["observationPack", "thresholdBytes"], draft.observationPack.thresholdBytes),
+        invalid: invalidNumeric(["observationPack", "thresholdBytes"]),
+        overridden: overridden(["observationPack", "thresholdBytes"]),
+        onEdit: (text) => editText(["observationPack", "thresholdBytes"], text),
+        onReset: () => resetPath(["observationPack", "thresholdBytes"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-obs-fullsends",
+        label: t("fullSends"),
+        hint: t("fullSendsHelp"),
+        numeric: true,
+        text: textOf(["observationPack", "fullSends"], draft.observationPack.fullSends),
+        invalid: invalidNumeric(["observationPack", "fullSends"]),
+        overridden: overridden(["observationPack", "fullSends"]),
+        onEdit: (text) => editText(["observationPack", "fullSends"], text),
+        onReset: () => resetPath(["observationPack", "fullSends"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-obs-excerpt",
+        label: t("placeholderExcerptBytes"),
+        hint: t("placeholderExcerptBytesHelp"),
+        numeric: true,
+        text: textOf(["observationPack", "placeholderExcerptBytes"], draft.observationPack.placeholderExcerptBytes),
+        invalid: invalidNumeric(["observationPack", "placeholderExcerptBytes"]),
+        overridden: overridden(["observationPack", "placeholderExcerptBytes"]),
+        onEdit: (text) => editText(["observationPack", "placeholderExcerptBytes"], text),
+        onReset: () => resetPath(["observationPack", "placeholderExcerptBytes"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      SwitchRow,
+      {
+        ...common,
+        label: t("epr"),
+        hint: t("eprHelp"),
+        checked: draft.evidencePreservingReducer.enabled,
+        overridden: overridden(["evidencePreservingReducer", "enabled"]),
+        onChange: (checked) => editValue(["evidencePreservingReducer", "enabled"], checked),
+        onReset: () => resetPath(["evidencePreservingReducer", "enabled"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-epr-min",
+        label: t("minBytes"),
+        hint: t("minBytesHelp"),
+        numeric: true,
+        text: textOf(["evidencePreservingReducer", "minBytes"], draft.evidencePreservingReducer.minBytes),
+        invalid: invalidNumeric(["evidencePreservingReducer", "minBytes"]),
+        overridden: overridden(["evidencePreservingReducer", "minBytes"]),
+        onEdit: (text) => editText(["evidencePreservingReducer", "minBytes"], text),
+        onReset: () => resetPath(["evidencePreservingReducer", "minBytes"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-epr-maxchars",
+        label: t("maxChars"),
+        hint: t("maxCharsHelp"),
+        numeric: true,
+        text: textOf(["evidencePreservingReducer", "maxChars"], draft.evidencePreservingReducer.maxChars),
+        invalid: invalidNumeric(["evidencePreservingReducer", "maxChars"]),
+        overridden: overridden(["evidencePreservingReducer", "maxChars"]),
+        onEdit: (text) => editText(["evidencePreservingReducer", "maxChars"], text),
+        onReset: () => resetPath(["evidencePreservingReducer", "maxChars"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-epr-out",
+        label: t("maxOutputTokens"),
+        hint: t("maxOutputTokensHelp"),
+        numeric: true,
+        text: textOf(["evidencePreservingReducer", "maxOutputTokens"], draft.evidencePreservingReducer.maxOutputTokens),
+        invalid: invalidNumeric(["evidencePreservingReducer", "maxOutputTokens"]),
+        overridden: overridden(["evidencePreservingReducer", "maxOutputTokens"]),
+        onEdit: (text) => editText(["evidencePreservingReducer", "maxOutputTokens"], text),
+        onReset: () => resetPath(["evidencePreservingReducer", "maxOutputTokens"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-epr-timeout",
+        label: t("timeoutMs"),
+        hint: t("timeoutMsHelp"),
+        numeric: true,
+        text: textOf(["evidencePreservingReducer", "timeoutMs"], draft.evidencePreservingReducer.timeoutMs),
+        invalid: invalidNumeric(["evidencePreservingReducer", "timeoutMs"]),
+        overridden: overridden(["evidencePreservingReducer", "timeoutMs"]),
+        onEdit: (text) => editText(["evidencePreservingReducer", "timeoutMs"], text),
+        onReset: () => resetPath(["evidencePreservingReducer", "timeoutMs"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ReducerRouteFold,
+      {
+        t,
+        disabled,
+        provider: draft.evidencePreservingReducer.reducerProvider,
+        model: draft.evidencePreservingReducer.reducerModel,
+        catalog,
+        catalogStatus,
+        overridden: overridden(["evidencePreservingReducer", "reducerProvider"]) || overridden(["evidencePreservingReducer", "reducerModel"]),
+        overriddenLabel: t("overridden"),
+        resetLabel: t("reset"),
+        onOpen: ensureCatalog,
+        onRoute: editReducerRoute,
+        onReset: () => {
+          editReducerRoute("", "");
+          setClears((current) => {
+            const next = new Set(current);
+            next.add("evidencePreservingReducer.reducerProvider");
+            next.add("evidencePreservingReducer.reducerModel");
+            return next;
+          });
         }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        SwitchRow,
-        {
-          ...common,
-          label: t("occ"),
-          hint: t("occHelp"),
-          checked: draft.onlineContextCompact.enabled,
-          overridden: overridden(["onlineContextCompact", "enabled"]),
-          onChange: (checked) => editValue(["onlineContextCompact", "enabled"], checked),
-          onReset: () => resetPath(["onlineContextCompact", "enabled"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-occ-ratio",
-          label: t("cacheWriteReadRatio"),
-          hint: t("cacheWriteReadRatioHelp"),
-          numeric: true,
-          text: textOf(["onlineContextCompact", "cacheWriteReadRatio"], draft.onlineContextCompact.cacheWriteReadRatio),
-          invalid: invalidNumeric(["onlineContextCompact", "cacheWriteReadRatio"]),
-          overridden: overridden(["onlineContextCompact", "cacheWriteReadRatio"]),
-          onEdit: (text) => editText(["onlineContextCompact", "cacheWriteReadRatio"], text),
-          onReset: () => resetPath(["onlineContextCompact", "cacheWriteReadRatio"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-occ-keep",
-          label: t("keepRecentTokens"),
-          hint: t("keepRecentTokensHelp"),
-          numeric: true,
-          text: textOf(["onlineContextCompact", "keepRecentTokens"], draft.onlineContextCompact.keepRecentTokens),
-          invalid: invalidNumeric(["onlineContextCompact", "keepRecentTokens"]),
-          overridden: overridden(["onlineContextCompact", "keepRecentTokens"]),
-          onEdit: (text) => editText(["onlineContextCompact", "keepRecentTokens"], text),
-          onReset: () => resetPath(["onlineContextCompact", "keepRecentTokens"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-occ-summary",
-          label: t("nativeSummaryTokenEstimate"),
-          hint: t("nativeSummaryTokenEstimateHelp"),
-          numeric: true,
-          text: textOf(
-            ["onlineContextCompact", "nativeSummaryTokenEstimate"],
-            draft.onlineContextCompact.nativeSummaryTokenEstimate
-          ),
-          invalid: invalidNumeric(["onlineContextCompact", "nativeSummaryTokenEstimate"]),
-          overridden: overridden(["onlineContextCompact", "nativeSummaryTokenEstimate"]),
-          onEdit: (text) => editText(["onlineContextCompact", "nativeSummaryTokenEstimate"], text),
-          onReset: () => resetPath(["onlineContextCompact", "nativeSummaryTokenEstimate"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-occ-reserve",
-          label: t("windowReserveTokens"),
-          hint: t("windowReserveTokensHelp"),
-          numeric: true,
-          text: textOf(["onlineContextCompact", "windowReserveTokens"], draft.onlineContextCompact.windowReserveTokens),
-          invalid: invalidNumeric(["onlineContextCompact", "windowReserveTokens"]),
-          overridden: overridden(["onlineContextCompact", "windowReserveTokens"]),
-          onEdit: (text) => editText(["onlineContextCompact", "windowReserveTokens"], text),
-          onReset: () => resetPath(["onlineContextCompact", "windowReserveTokens"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-occ-first",
-          label: t("firstCompactionRequestScale"),
-          hint: t("firstCompactionRequestScaleHelp"),
-          numeric: true,
-          text: textOf(
-            ["onlineContextCompact", "firstCompactionRequestScale"],
-            draft.onlineContextCompact.firstCompactionRequestScale
-          ),
-          invalid: invalidNumeric(["onlineContextCompact", "firstCompactionRequestScale"]),
-          overridden: overridden(["onlineContextCompact", "firstCompactionRequestScale"]),
-          onEdit: (text) => editText(["onlineContextCompact", "firstCompactionRequestScale"], text),
-          onReset: () => resetPath(["onlineContextCompact", "firstCompactionRequestScale"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        ValueRow,
-        {
-          ...common,
-          id: "sol-occ-margin",
-          label: t("subsequentCompactionMargin"),
-          hint: t("subsequentCompactionMarginHelp"),
-          numeric: true,
-          text: textOf(
-            ["onlineContextCompact", "subsequentCompactionMargin"],
-            draft.onlineContextCompact.subsequentCompactionMargin
-          ),
-          invalid: invalidNumeric(["onlineContextCompact", "subsequentCompactionMargin"]),
-          overridden: overridden(["onlineContextCompact", "subsequentCompactionMargin"]),
-          onEdit: (text) => editText(["onlineContextCompact", "subsequentCompactionMargin"], text),
-          onReset: () => resetPath(["onlineContextCompact", "subsequentCompactionMargin"])
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.footer, children: [
-        failed || error ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.failed, role: "status", children: error ?? t("saveFailed") }) : null,
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.discard, disabled: discardDisabled, onClick: onDiscard, children: t("discard") }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.save, disabled: saveDisabled, onClick: () => void onSave(), children: t(saving ? "saving" : "save") })
-      ] })
-    ] }) : null
-  ] });
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      SwitchRow,
+      {
+        ...common,
+        label: t("occ"),
+        hint: t("occHelp"),
+        checked: draft.onlineContextCompact.enabled,
+        overridden: overridden(["onlineContextCompact", "enabled"]),
+        onChange: (checked) => editValue(["onlineContextCompact", "enabled"], checked),
+        onReset: () => resetPath(["onlineContextCompact", "enabled"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-occ-ratio",
+        label: t("cacheWriteReadRatio"),
+        hint: t("cacheWriteReadRatioHelp"),
+        numeric: true,
+        text: textOf(["onlineContextCompact", "cacheWriteReadRatio"], draft.onlineContextCompact.cacheWriteReadRatio),
+        invalid: invalidNumeric(["onlineContextCompact", "cacheWriteReadRatio"]),
+        overridden: overridden(["onlineContextCompact", "cacheWriteReadRatio"]),
+        onEdit: (text) => editText(["onlineContextCompact", "cacheWriteReadRatio"], text),
+        onReset: () => resetPath(["onlineContextCompact", "cacheWriteReadRatio"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-occ-keep",
+        label: t("keepRecentTokens"),
+        hint: t("keepRecentTokensHelp"),
+        numeric: true,
+        text: textOf(["onlineContextCompact", "keepRecentTokens"], draft.onlineContextCompact.keepRecentTokens),
+        invalid: invalidNumeric(["onlineContextCompact", "keepRecentTokens"]),
+        overridden: overridden(["onlineContextCompact", "keepRecentTokens"]),
+        onEdit: (text) => editText(["onlineContextCompact", "keepRecentTokens"], text),
+        onReset: () => resetPath(["onlineContextCompact", "keepRecentTokens"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-occ-summary",
+        label: t("nativeSummaryTokenEstimate"),
+        hint: t("nativeSummaryTokenEstimateHelp"),
+        numeric: true,
+        text: textOf(
+          ["onlineContextCompact", "nativeSummaryTokenEstimate"],
+          draft.onlineContextCompact.nativeSummaryTokenEstimate
+        ),
+        invalid: invalidNumeric(["onlineContextCompact", "nativeSummaryTokenEstimate"]),
+        overridden: overridden(["onlineContextCompact", "nativeSummaryTokenEstimate"]),
+        onEdit: (text) => editText(["onlineContextCompact", "nativeSummaryTokenEstimate"], text),
+        onReset: () => resetPath(["onlineContextCompact", "nativeSummaryTokenEstimate"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-occ-reserve",
+        label: t("windowReserveTokens"),
+        hint: t("windowReserveTokensHelp"),
+        numeric: true,
+        text: textOf(["onlineContextCompact", "windowReserveTokens"], draft.onlineContextCompact.windowReserveTokens),
+        invalid: invalidNumeric(["onlineContextCompact", "windowReserveTokens"]),
+        overridden: overridden(["onlineContextCompact", "windowReserveTokens"]),
+        onEdit: (text) => editText(["onlineContextCompact", "windowReserveTokens"], text),
+        onReset: () => resetPath(["onlineContextCompact", "windowReserveTokens"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-occ-first",
+        label: t("firstCompactionRequestScale"),
+        hint: t("firstCompactionRequestScaleHelp"),
+        numeric: true,
+        text: textOf(
+          ["onlineContextCompact", "firstCompactionRequestScale"],
+          draft.onlineContextCompact.firstCompactionRequestScale
+        ),
+        invalid: invalidNumeric(["onlineContextCompact", "firstCompactionRequestScale"]),
+        overridden: overridden(["onlineContextCompact", "firstCompactionRequestScale"]),
+        onEdit: (text) => editText(["onlineContextCompact", "firstCompactionRequestScale"], text),
+        onReset: () => resetPath(["onlineContextCompact", "firstCompactionRequestScale"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      ValueRow,
+      {
+        ...common,
+        id: "sol-occ-margin",
+        label: t("subsequentCompactionMargin"),
+        hint: t("subsequentCompactionMarginHelp"),
+        numeric: true,
+        text: textOf(
+          ["onlineContextCompact", "subsequentCompactionMargin"],
+          draft.onlineContextCompact.subsequentCompactionMargin
+        ),
+        invalid: invalidNumeric(["onlineContextCompact", "subsequentCompactionMargin"]),
+        overridden: overridden(["onlineContextCompact", "subsequentCompactionMargin"]),
+        onEdit: (text) => editText(["onlineContextCompact", "subsequentCompactionMargin"], text),
+        onReset: () => resetPath(["onlineContextCompact", "subsequentCompactionMargin"])
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.footer, children: [
+      failed || error ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.failed, role: "status", children: error ?? t("saveFailed") }) : null,
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.discard, disabled: discardDisabled, onClick: onDiscard, children: t("discard") }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.save, disabled: saveDisabled, onClick: () => void onSave(), children: t(saving ? "saving" : "save") })
+    ] })
+  ] }) });
 }
 
 // src/sol-dsh/client/locales.ts
@@ -2118,10 +2106,10 @@ function apply(ctx) {
     void scope.dispose?.();
   }, "dsh-sol-pi: settings scope");
   ctx.slots.inject(
-    "settings.plugin.item",
+    "plugins.bundle.config",
     () => ctx.slots.register(
       {
-        name: "settings.plugin.item",
+        name: "plugins.bundle.config",
         key: SOL_DSH_SETTINGS_NAMESPACE,
         locale: SOL_DSH_LOCALE_NS,
         inject: () => ({
@@ -2153,7 +2141,15 @@ function apply(ctx) {
                 ops.push({ op: "set", path: [key], value: next });
               }
             }
-            if (ops.length > 0) await scope.mutate(ops, expectedRevision);
+            if (ops.length > 0) {
+              await scope.mutate(ops, expectedRevision);
+              const settled = await whenSettled(scope);
+              const value = decodeSection(settled.value);
+              const settledUser = asUserLayer(settled.user);
+              if (settled.status !== "ready" || !value || !deepEqual2(value, patch) || ops.some((op) => op.op === "unset" ? settledUser && Object.prototype.hasOwnProperty.call(settledUser, op.path[0]) : !deepEqual2(settledUser?.[op.path[0]], op.value))) {
+                throw new Error(t("saveFailed"));
+              }
+            }
           }
         })
       },
