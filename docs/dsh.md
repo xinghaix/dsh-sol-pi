@@ -49,7 +49,7 @@ dsh --profile web --dump-config
 dsh web
 ```
 
-`build:dsh` regenerates `dist/sol-dsh/index.js` (Host) and `dist/sol-dsh/client.js` (Web settings card). GitHub installs use the committed `dist/` copies. The settings card registers at boot (`dsh.client.immediately`) into **侧栏 Plugins / 插件 → Installed / 已安装 → dsh-sol-pi**.
+`build:dsh` regenerates `dist/sol-dsh/index.js` (Host) and `dist/sol-dsh/client.js` (Web settings card). GitHub installs use the committed `dist/` copies. The settings card registers into **侧栏 Plugins / 插件 → Installed / 已安装 → dsh-sol-pi** via `plugins.bundle.config` (same pattern as first-party / allowlist plugins; not `dsh.client.immediately`).
 
 ### Other profiles
 

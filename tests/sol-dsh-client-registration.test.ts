@@ -106,7 +106,10 @@ describe("DSH plugin manager configuration", () => {
   it("declares the new owner package dependency", () => {
     const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
     expect(manifest.dsh.client.inject).toContain("@deepseek-ai/dsh-client-ui-plugin-manager");
+    expect(manifest.dsh.client.inject).toContain("@deepseek-ai/dsh-client-ui-settings");
     expect(manifest.dsh.client.inject).not.toContain("@deepseek-ai/dsh-client-ui-settings-plugins");
+    expect(manifest.dsh.client.inject).not.toContain("@deepseek-ai/dsh-client-ui-model-selection");
+    expect(manifest.dsh.client.immediately).not.toBe(true);
   });
   it("renders summary as text and the settings page without an accordion", async () => {
     const h = harness(); h.declare(); const entry = h.entry(); const props = entry.spec.inject();

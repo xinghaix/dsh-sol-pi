@@ -7,6 +7,12 @@
 
 English: [CHANGELOG.md](./CHANGELOG.md)
 
+## [0.2.3] - 2026-09-24
+
+### 修复
+
+- DSH 0.1.7-rc.1 插件详情页设置区消失：`dsh.client.immediately` 加上对 `@deepseek-ai/dsh-client-ui-model-selection` 的硬 inject，可能让客户端 fiber 一直 pending，导致 `plugins.bundle.config` 从未写入 plugin-manager ledger（`configured` 恒为 false）。与 `dsh-web-fetch-allowlist` 对齐：去掉 `immediately`、去掉 model-selection 包级 inject，并在可选的 `modelDirectories` soft-inject 之前先注册槽位。
+
 ## [0.2.2] - 2026-09-24
 
 ### 修复
@@ -48,6 +54,7 @@ English: [CHANGELOG.md](./CHANGELOG.md)
 
 更早的历史（Pi 双宿主移植、原生 DSH 接缝、ObservationPack / EPR / OCC / Action Fusion）见 git 记录，自 `sol-dsh` / `dsh-sol-pi` 品牌化提交起。主要主题：原生 Cordis 插件、plugin-manager 槽位上的 Web 设置卡，以及 DSH 0.1.5–0.1.6 时代的 `settingsScope` + `installSection`（已在 0.2.0 取代）。
 
+[0.2.3]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.3
 [0.2.2]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.2
 [0.2.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.1
 [0.2.0]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.0

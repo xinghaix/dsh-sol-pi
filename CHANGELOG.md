@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 中文版：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
 
+## [0.2.3] - 2026-09-24
+
+### Fixed
+
+- Settings card missing on the DSH 0.1.7-rc.1 plugin detail page: `dsh.client.immediately` plus a hard `dsh.client.inject` on `@deepseek-ai/dsh-client-ui-model-selection` could leave the client fiber pending, so `plugins.bundle.config` never entered the plugin-manager ledger (`configured` stayed false). Align with `dsh-web-fetch-allowlist`: drop `immediately`, drop the model-selection package inject, and register the slot before the optional `modelDirectories` soft-inject.
+
 ## [0.2.2] - 2026-09-24
 
 ### Fixed
@@ -48,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Earlier history (Pi dual-host port, native DSH seams, ObservationPack / EPR / OCC / Action Fusion) lives in git history starting from the `sol-dsh` / `dsh-sol-pi` rebrand commits. Notable themes: native Cordis plugin, Web settings card on the plugin-manager slot, and DSH 0.1.5–0.1.6-era `settingsScope` + `installSection` (superseded in 0.2.0).
 
+[0.2.3]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.3
 [0.2.2]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.2
 [0.2.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.1
 [0.2.0]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.0

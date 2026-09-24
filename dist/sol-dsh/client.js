@@ -2167,26 +2167,13 @@ async function loadCatalogFromDirectories(directories) {
 function apply(ctx) {
   ctx.effect?.(() => ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales), "dsh-sol-pi: locale dictionaries");
   if (!ctx.effect) ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales);
-  let directories;
-  const directoriesReady = new Promise((resolve2) => {
-    if (typeof ctx.inject !== "function") {
-      resolve2(void 0);
-      return;
-    }
-    let settled = false;
-    const finish = () => {
-      if (settled) return;
-      settled = true;
-      resolve2(directories);
-    };
-    ctx.inject(["modelDirectories"], (scope2) => {
-      directories = scope2.modelDirectories;
-      finish();
-    });
-    setTimeout(finish, 4e3);
-  });
   const t = translator(ctx);
   const scope = ctx.configForms.get(SOL_DSH_SETTINGS_NAMESPACE);
+  let directories;
+  let resolveDirectories;
+  const directoriesReady = new Promise((resolve2) => {
+    resolveDirectories = resolve2;
+  });
   ctx.slots.inject(
     "plugins.bundle.config",
     () => ctx.slots.register(
@@ -2241,6 +2228,26 @@ function apply(ctx) {
       SolDshCard
     )
   );
+  if (typeof ctx.inject === "function") {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolveDirectories(directories);
+    };
+    try {
+      ctx.inject(["modelDirectories"], (scope2) => {
+        directories = scope2.modelDirectories;
+        finish();
+      });
+    } catch {
+      finish();
+      return;
+    }
+    setTimeout(finish, 4e3);
+  } else {
+    resolveDirectories(void 0);
+  }
 }
 
 return module.exports;

@@ -188,29 +188,19 @@ export function apply(ctx: ClientContext): void {
 	ctx.effect?.(() => ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales), "dsh-sol-pi: locale dictionaries");
 	if (!ctx.effect) ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales);
 
-	// Cordis throws on undeclared ctx.modelDirectories — only touch it inside inject().
-	let directories: ModelDirectories | undefined;
-	const directoriesReady = new Promise<ModelDirectories | undefined>((resolve) => {
-		if (typeof ctx.inject !== "function") {
-			resolve(undefined);
-			return;
-		}
-		let settled = false;
-		const finish = () => {
-			if (settled) return;
-			settled = true;
-			resolve(directories);
-		};
-		ctx.inject(["modelDirectories"], (scope) => {
-			directories = scope.modelDirectories;
-			finish();
-		});
-		// Settings card can open before the service attaches; don't hang the menu forever.
-		setTimeout(finish, 4_000);
-	});
-
 	const t = translator(ctx);
 	const scope = ctx.configForms.get(SOL_DSH_SETTINGS_NAMESPACE);
+
+	// Register the plugin-manager settings slot first. PackageDetail only shows
+	// the form when ledger.bundles has this package name; that ledger is the
+	// keys of plugins.bundle.config. Soft modelDirectories inject must not run
+	// before this — and must not be a package.json dsh.client.inject hard dep
+	// (immediately + model-selection left this fiber pending on DSH 0.1.7-rc.1).
+	let directories: ModelDirectories | undefined;
+	let resolveDirectories!: (value: ModelDirectories | undefined) => void;
+	const directoriesReady = new Promise<ModelDirectories | undefined>((resolve) => {
+		resolveDirectories = resolve;
+	});
 
 	ctx.slots.inject("plugins.bundle.config", () =>
 		ctx.slots.register(
@@ -270,4 +260,26 @@ export function apply(ctx: ClientContext): void {
 			SolDshCard,
 		),
 	);
+
+	// Cordis throws on undeclared ctx.modelDirectories — only touch it inside inject().
+	if (typeof ctx.inject === "function") {
+		let settled = false;
+		const finish = () => {
+			if (settled) return;
+			settled = true;
+			resolveDirectories(directories);
+		};
+		try {
+			ctx.inject(["modelDirectories"], (scope) => {
+				directories = scope.modelDirectories;
+				finish();
+			});
+		} catch {
+			finish();
+			return;
+		}
+		setTimeout(finish, 4_000);
+	} else {
+		resolveDirectories(undefined);
+	}
 }
