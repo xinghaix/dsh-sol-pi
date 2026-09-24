@@ -1,0 +1,32 @@
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Action Fusion weld column -->
+  <path d="M8.4 9.2H12.9V26.8H8.4V9.2Z" fill="url(#sol_weld)"/>
+  <!-- Twin tool notches (edit / run) bonding into the weld -->
+  <path d="M5.2 11.15H8.4V14.05H5.2V11.15ZM5.2 16.35H8.4V19.25H5.2V16.35Z" fill="#F2AF63"/>
+  <!-- ObservationPack density cascade: same left edge, shortening right edge -->
+  <path d="M12.9 9.2H30.4C31.12 9.2 31.7 9.78 31.7 10.5V13.55H12.9V9.2Z" fill="url(#sol_s1)"/>
+  <path d="M12.9 15.05H27.55C28.27 15.05 28.85 15.63 28.85 16.35V19.75H12.9V15.05Z" fill="url(#sol_s2)"/>
+  <path d="M12.9 21.25H24.7C25.42 21.25 26 21.83 26 22.55V26.8H12.9V21.25Z" fill="url(#sol_s3)"/>
+  <!-- OCC pinch marks on the shortening edge -->
+  <path d="M31.7 10.5L34.15 12.05V11.1L31.7 9.2V10.5ZM28.85 16.35L34.15 18.55V17.2L28.85 15.05V16.35ZM26 22.55L34.15 26.05V24.35L26 21.25V22.55Z" fill="#45D9E7"/>
+  <!-- EPR evidence receipt preserved on the densest slab -->
+  <path d="M15.05 22.85H23.55V25.35H15.05V22.85Z" fill="#FFFFFF" fill-opacity="0.92"/>
+  <defs>
+    <linearGradient id="sol_weld" x1="8.4" y1="9.2" x2="12.9" y2="26.8" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7CB7FF"/>
+      <stop offset="1" stop-color="#145AF3"/>
+    </linearGradient>
+    <linearGradient id="sol_s1" x1="12.9" y1="9.2" x2="31.7" y2="13.55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67C7FE"/>
+      <stop offset="1" stop-color="#3F77D8"/>
+    </linearGradient>
+    <linearGradient id="sol_s2" x1="12.9" y1="15.05" x2="28.85" y2="19.75" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7CB7FF"/>
+      <stop offset="1" stop-color="#145AF3"/>
+    </linearGradient>
+    <linearGradient id="sol_s3" x1="12.9" y1="21.25" x2="26" y2="26.8" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67C7FE"/>
+      <stop offset="1" stop-color="#3F77D8"/>
+    </linearGradient>
+  </defs>
+</svg>

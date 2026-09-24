@@ -22,6 +22,10 @@
 <details>
 <summary>Changelog</summary>
 
+### [0.2.1] — 2026-09-24
+
+- Plugin manager `icon.svg` (Action Fusion / ObservationPack / OCC / EPR mark; official DSH palette).
+
 ### [0.2.0] — 2026-09-24
 
 - **Breaking (DSH 0.1.7-rc.1):** Client inject `settingsScope` → `configForms`; Host drops `settings.installSection` for Schemastery `.volatile()` live config.

@@ -7,6 +7,12 @@
 
 English: [CHANGELOG.md](./CHANGELOG.md)
 
+## [0.2.1] - 2026-09-24
+
+### 新增
+
+- 插件管理器图标：根目录 `icon.svg`（36×36，官方 DSH 配色），经 package.json `icon` 声明。造型对应动作融合（琥珀双槽 + 焊柱）、ObservationPack/OCC 变密层叠，以及 EPR 证据回执——避免插头 / 齿轮 / Wi‑Fi 等大众符号。
+
 ## [0.2.0] - 2026-09-24
 
 ### 变更
@@ -31,5 +37,6 @@ English: [CHANGELOG.md](./CHANGELOG.md)
 
 更早的历史（Pi 双宿主移植、原生 DSH 接缝、ObservationPack / EPR / OCC / Action Fusion）见 git 记录，自 `sol-dsh` / `dsh-sol-pi` 品牌化提交起。主要主题：原生 Cordis 插件、plugin-manager 槽位上的 Web 设置卡，以及 DSH 0.1.5–0.1.6 时代的 `settingsScope` + `installSection`（已在 0.2.0 取代）。
 
+[0.2.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.1
 [0.2.0]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.0
 [0.1.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.1.1

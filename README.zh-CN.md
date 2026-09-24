@@ -22,6 +22,10 @@
 <details>
 <summary>更新日志</summary>
 
+### [0.2.1] — 2026-09-24
+
+- 插件管理器 `icon.svg`（动作融合 / ObservationPack / OCC / EPR 造型；官方 DSH 配色）。
+
 ### [0.2.0] — 2026-09-24
 
 - **破坏性（DSH 0.1.7-rc.1）：** 客户端 inject 由 `settingsScope` 改为 `configForms`；Host 去掉 `settings.installSection`，改用 Schemastery `.volatile()` 实时配置。
