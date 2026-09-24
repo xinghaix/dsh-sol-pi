@@ -7,6 +7,12 @@
 
 English: [CHANGELOG.md](./CHANGELOG.md)
 
+## [0.2.7] - 2026-09-24
+
+### Fixed
+- 改数字字段（如「全文发送次数」「保留近期 token」）后底部「保存」「放弃修改」无效：`dirty` 未计入 ValueRow 暂存的 `texts`，按钮保持 disabled，但「已覆盖」仍会亮起。现将待提交文本编辑计入 dirty；「放弃修改」会清空暂存。
+- 去掉 ui-primitives 后底部按钮缺少 hover/active 反馈：补齐 CSS（不重新引入 ModuleLoader 依赖）。
+
 ## [0.2.6] - 2026-09-24
 
 ### 修复

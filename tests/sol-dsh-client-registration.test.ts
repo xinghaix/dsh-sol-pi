@@ -164,6 +164,38 @@ describe("DSH plugin manager configuration", () => {
     expect(nodes(page, node => node.type?.name === "SwitchRow")[0].props.checked).toBe(!first.props.checked);
     expect(nodes(page, node => node.type === "p" && node.props.children === props.t("saveFailed"))).toHaveLength(1);
   });
+  it("treats pending numeric text edits as dirty so Save persists and Discard clears", async () => {
+    // Use keepRecentTokens (not fullSends): default mode is immediate, which rejects fullSends > 0.
+    const h = harness(); h.declare(); const entry = h.entry(); const props = entry.spec.inject();
+    h.render(entry, props); await h.mount();
+    let page = h.render(entry, props);
+    const saveBtn = () => nodes(page, node => node.type === "button" && node.props.children === props.t("save"))[0];
+    const discardBtn = () => nodes(page, node => node.type === "button" && node.props.children === props.t("discard"))[0];
+    const keep = () => nodes(page, node => node.type?.name === "ValueRow" && node.props.id === "sol-occ-keep")[0];
+    expect(saveBtn().props.disabled).toBe(true);
+    const before = keep().props.text;
+    keep().props.onEdit("1");
+    page = h.render(entry, props);
+    expect(keep().props.text).toBe("1");
+    expect(keep().props.overridden).toBe(true);
+    expect(saveBtn().props.disabled).toBe(false);
+    expect(discardBtn().props.disabled).toBe(false);
+    discardBtn().props.onClick();
+    page = h.render(entry, props);
+    expect(keep().props.text).toBe(before);
+    expect(saveBtn().props.disabled).toBe(true);
+    expect(h.writes).toHaveLength(0);
+    keep().props.onEdit("1");
+    page = h.render(entry, props);
+    saveBtn().props.onClick();
+    await flush();
+    expect(h.writes).toHaveLength(1);
+    const ops = h.writes[0].ops;
+    expect(ops.some((op: any) => op.op === "set" && op.path[0] === "onlineContextCompact" && op.value?.keepRecentTokens === 1)).toBe(true);
+    page = h.render(entry, props);
+    expect(saveBtn().props.disabled).toBe(true);
+  });
+
   it("confirms successful writes and Discard never writes", async () => {
     const h = harness(); h.declare(); const entry = h.entry(); const props = entry.spec.inject();
     h.render(entry, props); await h.mount(); let page = h.render(entry, props);

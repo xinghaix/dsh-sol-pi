@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 中文版：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
 
+## [0.2.7] - 2026-09-24
+
+### Fixed
+- Settings Save/Discard no-op after editing numeric fields (e.g. fullSends / keepRecentTokens): `dirty` ignored pending `texts` staging used by plain ValueRow inputs, so the footer buttons stayed disabled while 「已覆盖」still appeared. Dirty now includes pending text edits; Discard clears them.
+- Footer 「放弃修改」/「保存」lacked hover/active feedback after dropping ui-primitives — add CSS hover/active/focus transitions without reintroducing ModuleLoader deps.
+
 ## [0.2.6] - 2026-09-24
 
 ### Fixed

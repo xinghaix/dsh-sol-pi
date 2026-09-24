@@ -39,6 +39,8 @@
 	padding: 5px 14px;
 	font-size: 13px;
 	line-height: 1.5;
+	transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease,
+		filter 0.12s ease, opacity 0.12s ease, transform 0.08s ease;
 }
 
 .discard {
@@ -50,11 +52,26 @@
 .discard:hover:not(:disabled) {
 	color: var(--dsw-alias-label-primary);
 	border-color: var(--dsw-alias-label-dimmed);
+	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));
+}
+
+.discard:active:not(:disabled) {
+	background: var(--dsw-alias-bg-layer-2);
+	transform: translateY(0.5px);
 }
 
 .save {
 	background: var(--dsw-alias-label-primary);
 	color: var(--dsw-alias-bg-layer-3);
+}
+
+.save:hover:not(:disabled) {
+	filter: brightness(1.1);
+}
+
+.save:active:not(:disabled) {
+	filter: brightness(0.9);
+	transform: translateY(0.5px);
 }
 
 .discard:disabled,

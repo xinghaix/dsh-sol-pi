@@ -24,6 +24,10 @@
 <details>
 <summary>Changelog</summary>
 
+### [0.2.7] — 2026-09-24
+
+- Fix Settings Save/Discard for numeric fields (dirty ignored pending `texts`); add footer button hover/active styles.
+
 ### [0.2.6] — 2026-09-24
 
 - Settings restore: drop `@deepseek-ai/dsh-client-ui-primitives` (seed miss aborted factory); client uses seed-only `react` / `jsx-runtime` and plain controls.

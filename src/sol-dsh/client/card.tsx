@@ -485,7 +485,12 @@ function SolDshForm(props: SolDshCardProps) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only hydrate
 	}, []);
 
-	const dirty = useMemo(() => !sameConfig(draft, loaded) || clears.size > 0, [draft, loaded, clears]);
+	// Numeric ValueRows stage edits in `texts` until Save; omit that and Save stays
+	// disabled while the overridden badge still lights up (overridden() reads texts).
+	const dirty = useMemo(
+		() => !sameConfig(draft, loaded) || clears.size > 0 || Object.keys(texts).length > 0,
+		[draft, loaded, clears, texts],
+	);
 	const t = props.t;
 	const disabled = !writable || saving;
 

@@ -24,6 +24,10 @@
 <details>
 <summary>更新日志</summary>
 
+### [0.2.7] — 2026-09-24
+
+- 修复数字字段改完后「保存/放弃修改」无效（dirty 未计入暂存 `texts`）；底部按钮补齐 hover/active。
+
 ### [0.2.6] — 2026-09-24
 
 - 恢复 Settings：去掉 `@deepseek-ai/dsh-client-ui-primitives`（seed 未命中会中止工厂）；客户端仅依赖 seed 的 `react` / `jsx-runtime` 与原生控件。
