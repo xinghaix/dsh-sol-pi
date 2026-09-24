@@ -7,6 +7,11 @@
 
 English: [CHANGELOG.md](./CHANGELOG.md)
 
+## [0.2.6] - 2026-09-24
+
+### 修复
+- Settings 缺失：客户端 require 了 `@deepseek-ai/dsh-client-ui-primitives`，可能未命中 ModuleLoader seed 表 → 工厂中止 → 未注册 `plugins.bundle.config` → 无 Settings。修复：仅依赖 seed 模块（`react` / `react/jsx-runtime`），`SolDshCard` 改用原生 checkbox/select/badge；客户端构建不再 externalize primitives。可选保留工厂 `console.info` 便于调试。
+
 ## [0.2.5] - 2026-09-24
 
 ### 修复
@@ -64,6 +69,7 @@ English: [CHANGELOG.md](./CHANGELOG.md)
 
 更早的历史（Pi 双宿主移植、原生 DSH 接缝、ObservationPack / EPR / OCC / Action Fusion）见 git 记录，自 `sol-dsh` / `dsh-sol-pi` 品牌化提交起。主要主题：原生 Cordis 插件、plugin-manager 槽位上的 Web 设置卡，以及 DSH 0.1.5–0.1.6 时代的 `settingsScope` + `installSection`（已在 0.2.0 取代）。
 
+[0.2.6]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.6
 [0.2.3]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.3
 [0.2.2]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.2
 [0.2.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.1

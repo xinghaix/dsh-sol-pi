@@ -11,7 +11,7 @@ beforeAll(async () => {
   const result = await build({
     entryPoints: [fileURLToPath(new URL("../src/sol-dsh/client/index.ts", import.meta.url))],
     bundle: true, write: false, format: "cjs", platform: "browser", jsx: "automatic",
-    external: ["react", "react/jsx-runtime", "@deepseek-ai/dsh-client-ui-primitives"],
+    external: ["react", "react/jsx-runtime", "@deepseek-ai/dsh-client-store"],
     plugins: [{ name: "test-css", setup(plugin) { plugin.onLoad({ filter: /\.css$/ }, () => ({ contents: "export default {}", loader: "js" })); } }],
   });
   source = result.outputFiles[0]!.text;
@@ -43,7 +43,7 @@ function harness() {
   const context = vm.createContext({ exports, module: { exports }, structuredClone, Error, setTimeout, clearTimeout, require(name: string) {
     if (name === "react") return hooks;
     if (name === "react/jsx-runtime") return { jsx, jsxs: jsx };
-    if (name === "@deepseek-ai/dsh-client-ui-primitives") return { Menu: () => null, Switch: () => null, Tag: () => null, IconChevronDownOutline14: () => null };
+    if (name === "@deepseek-ai/dsh-client-store") return { createSnapshotStore: () => ({}) };
     throw new Error(name);
   } });
   vm.runInContext(source!, context);
@@ -220,6 +220,32 @@ describe("DSH client bundle registration invariants", () => {
     expect(artifact).not.toContain("modelDirectories");
   });
 
+  it("does not require dsh-client-ui-primitives (seed-table miss aborts materialize)", () => {
+    const artifact = readFileSync(new URL("../dist/sol-dsh/client.js", import.meta.url), "utf8");
+    expect(artifact).not.toContain("@deepseek-ai/dsh-client-ui-primitives");
+    expect(artifact).toContain('require("react")');
+    expect(artifact).toContain('require("react/jsx-runtime")');
+
+    // Live ModuleLoader makeRequire: non-seed require throws and aborts factory.
+    let loaded: { id: string; factory: (require: (name: string) => unknown) => any } | undefined;
+    const sandbox = {
+      window: { __ModuleLoader__: { load(def: typeof loaded) { loaded = def!; } } },
+      document: { getElementById: () => null, createElement: () => ({ id: "", textContent: "" }), head: { appendChild() {} } },
+      console: { info() {}, error() {}, warn() {} },
+      Object, Array, Error, Promise, setTimeout, clearTimeout, JSON, Map, Set,
+    };
+    vm.runInNewContext(artifact, sandbox);
+    const seed = new Map<string, unknown>([
+      ["react", { useState: () => [null, () => {}], useEffect: () => {}, useMemo: (f: () => unknown) => f(), useRef: (v: unknown) => ({ current: v }), createElement: () => null }],
+      ["react/jsx-runtime", { jsx: () => null, jsxs: () => null }],
+    ]);
+    const mod = loaded!.factory((name: string) => {
+      if (seed.has(name)) return seed.get(name);
+      throw new Error(`client-modules: require("${name}") missed the module table`);
+    });
+    expect(typeof mod.apply).toBe("function");
+  });
+
   it("assigns exports.apply and exports.inject for ModuleLoader/Cordis", () => {
     // Regression: esbuild CJS emitted module.exports = __toCommonJS(...) (getters +
     // __esModule) without exports.apply = apply. Cordis then never received apply,
@@ -245,7 +271,7 @@ describe("DSH client bundle registration invariants", () => {
       if (name === "react") return { useState: () => [null, () => {}], useEffect: () => {}, useMemo: (f: () => unknown) => f(), useRef: (v: unknown) => ({ current: v }), createElement: () => null };
       if (name === "react/jsx-runtime") return { jsx: () => null, jsxs: () => null };
       if (name === "react-dom" || name === "react-dom/client") return {};
-      if (name.startsWith("@deepseek-ai/")) return {};
+      if (name === "@deepseek-ai/dsh-client-store") return { createSnapshotStore: () => ({}) };
       throw new Error(name);
     });
     const applyDesc = Object.getOwnPropertyDescriptor(mod, "apply");

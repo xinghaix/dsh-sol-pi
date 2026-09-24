@@ -109,6 +109,7 @@ function deepEqual(left: unknown, right: unknown): boolean {
  * no nested `ctx.inject` and no Schemastery in this module graph.
  */
 export function apply(ctx: ClientContext): void {
+	try { console.info("[dsh-sol-pi] apply() registering plugins.bundle.config"); } catch { /* ignore */ }
 	ctx.effect?.(() => ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales), "dsh-sol-pi: locale dictionaries");
 	if (!ctx.effect) ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales);
 

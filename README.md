@@ -24,6 +24,10 @@
 <details>
 <summary>Changelog</summary>
 
+### [0.2.6] — 2026-09-24
+
+- Settings restore: drop `@deepseek-ai/dsh-client-ui-primitives` (seed miss aborted factory); client uses seed-only `react` / `jsx-runtime` and plain controls.
+
 ### [0.2.2] — 2026-09-24
 
 - Synced Action Fusion Unicode-space + Windows shell path normalization from upstream into `sol-core`.

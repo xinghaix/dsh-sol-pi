@@ -28,7 +28,6 @@ const CLIENT_EXTERNALS = [
 	"react-dom/client",
 	"@deepseek-ai/cordis",
 	"@deepseek-ai/dsh-client-ui-slots",
-	"@deepseek-ai/dsh-client-ui-primitives",
 	"@deepseek-ai/dsh-client-store",
 ];
 
@@ -71,19 +70,21 @@ await build({
 });
 
 const artifact = readFileSync(outfile, "utf8");
-// DSH ModuleLoader materializes factory(require) → exports, then Cordis looks for
-// own-property apply/inject (see dsh-web-fetch-allowlist). esbuild CJS emits
-// `module.exports = __toCommonJS(...)` (getter bag + __esModule) and never
-// writes `exports.apply = apply` / `exports.inject = inject`, so Cordis never
-// receives apply → plugins.bundle.config never registers → ledger.bundles
-// lacks dsh-sol-pi → Settings stays hidden. Re-home onto the factory exports.
+// DSH ModuleLoader materializes factory(require) → exports. Two live-Desktop
+// traps this wrapper defends: (1) esbuild CJS `module.exports = __toCommonJS`
+// drops own-property apply/inject for Cordis; (2) requiring non-seed modules
+// (e.g. @deepseek-ai/dsh-client-ui-primitives) throws "missed the module table"
+// and aborts materialize before apply runs — keep the client on seed-only
+// requires (react / jsx-runtime / dsh-client-store), matching allowlist.
 const wrapped = `window.__ModuleLoader__.load({ id: "dsh-sol-pi", factory: function (require) {
 const module = { exports: {} };
 const exports = module.exports;
+try { console.info("[dsh-sol-pi] client factory start"); } catch (_) {}
 ${artifact}
 exports.apply = apply;
 exports.inject = inject;
 module.exports = exports;
+try { console.info("[dsh-sol-pi] client factory ok apply="+typeof exports.apply); } catch (_) {}
 return module.exports;
 } });
 `;

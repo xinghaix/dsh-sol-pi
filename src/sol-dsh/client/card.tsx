@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { IconChevronDownOutline14, Menu, Switch, Tag } from "@deepseek-ai/dsh-client-ui-primitives";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SolDshConfig } from "../config.ts";
 import { DEFAULT_SOL_DSH_CONFIG, resolveSolDshConfig } from "../config.ts";
@@ -106,7 +105,7 @@ function FieldHead(props: {
 			)}
 			{props.overridden ? (
 				<span className={styles.badges}>
-					<Tag tone="neutral">{props.overriddenLabel}</Tag>
+					<span className={styles.badge}>{props.overriddenLabel}</span>
 					{props.onReset ? (
 						<button type="button" className={styles.reset} disabled={props.disabled} onClick={props.onReset}>
 							{props.resetLabel}
@@ -135,17 +134,20 @@ function SwitchRow(props: {
 				<span className={styles.toggleLabel}>{props.label}</span>
 				{props.overridden ? (
 					<span className={styles.badges}>
-						<Tag tone="neutral">{props.overriddenLabel}</Tag>
+						<span className={styles.badge}>{props.overriddenLabel}</span>
 						<button type="button" className={styles.reset} disabled={props.disabled} onClick={props.onReset}>
 							{props.resetLabel}
 						</button>
 					</span>
 				) : null}
-				<Switch
+				<input
+					type="checkbox"
+					role="switch"
+					aria-label={props.label}
+					className={styles.switch}
 					checked={props.checked}
-					label={props.label}
 					disabled={props.disabled}
-					onChange={props.onChange}
+					onChange={(event) => props.onChange(event.target.checked)}
 				/>
 			</div>
 			{props.hint ? <p className={styles.hint}>{props.hint}</p> : null}
@@ -212,10 +214,6 @@ function SelectRow(props: {
 	onChange: (value: string) => void;
 	onReset: () => void;
 }) {
-	const [open, setOpen] = useState(false);
-	const selected = props.options.find((option) => option.id === props.value);
-	const triggerLabel = selected?.label ?? props.value;
-
 	return (
 		<div className={styles.field}>
 			<FieldHead
@@ -227,42 +225,27 @@ function SelectRow(props: {
 				resetLabel={props.resetLabel}
 				onReset={props.onReset}
 			/>
-			<Menu
-				open={open}
-				onClose={() => setOpen(false)}
-				items={props.options}
-				selectedId={props.value}
-				align="start"
-				portal
-				onSelect={(id) => {
-					setOpen(false);
-					if (id === props.value) return;
-					props.onChange(id);
-				}}
-				anchor={
-					<button
-						type="button"
-						id={props.id}
-						className={styles.selector}
-						aria-haspopup="menu"
-						aria-expanded={open}
-						disabled={props.disabled}
-						onClick={() => setOpen((value) => !value)}
-					>
-						<span className={styles.selectorLabel}>{triggerLabel}</span>
-						<IconChevronDownOutline14
-							className={`${styles.selectorChevron}${open ? ` ${styles.selectorChevronOpen}` : ""}`}
-						/>
-					</button>
-				}
-			/>
+			<select
+				id={props.id}
+				className={styles.input}
+				value={props.value}
+				disabled={props.disabled}
+				onChange={(event) => props.onChange(event.target.value)}
+				aria-label={props.label}
+			>
+				{props.options.map((option) => (
+					<option key={option.id} value={option.id}>
+						{option.label}
+					</option>
+				))}
+			</select>
 			{props.hint ? <p className={styles.hint}>{props.hint}</p> : null}
 			{props.detail ? <p className={styles.hint}>{props.detail}</p> : null}
 		</div>
 	);
 }
 
-/** Menu-safe sentinel — empty string breaks selectedId in primitives.Menu. */
+/** Empty-string sentinel for native <select> follow-agent options. */
 const FOLLOW = "__follow__" as const;
 
 function toMenuId(value: string): string {
@@ -282,44 +265,25 @@ function StackSelect(props: {
 	disabled: boolean;
 	onChange: (value: string) => void;
 }) {
-	const [open, setOpen] = useState(false);
-	const selected = props.options.find((option) => option.id === props.value);
-	const triggerLabel = selected?.label ?? (props.value || props.placeholder);
-
 	return (
 		<div className={styles.stackField}>
 			<span className={styles.stackLabel} id={`${props.id}-label`}>
 				{props.label}
 			</span>
-			<Menu
-				open={open}
-				onClose={() => setOpen(false)}
-				items={props.options}
-				selectedId={props.value}
-				align="start"
-				portal
-				onSelect={(id) => {
-					setOpen(false);
-					props.onChange(id);
-				}}
-				anchor={
-					<button
-						type="button"
-						id={props.id}
-						className={styles.selector}
-						aria-labelledby={`${props.id}-label`}
-						aria-haspopup="menu"
-						aria-expanded={open}
-						disabled={props.disabled}
-						onClick={() => setOpen((value) => !value)}
-					>
-						<span className={styles.selectorLabel}>{triggerLabel}</span>
-						<IconChevronDownOutline14
-							className={`${styles.selectorChevron}${open ? ` ${styles.selectorChevronOpen}` : ""}`}
-						/>
-					</button>
-				}
-			/>
+			<select
+				id={props.id}
+				className={styles.input}
+				value={props.value}
+				disabled={props.disabled}
+				onChange={(event) => props.onChange(event.target.value)}
+				aria-labelledby={`${props.id}-label`}
+			>
+				{props.options.map((option) => (
+					<option key={option.id} value={option.id}>
+						{option.label}
+					</option>
+				))}
+			</select>
 		</div>
 	);
 }
@@ -379,7 +343,7 @@ function ReducerRouteFold(props: {
 				</span>
 				{props.overridden ? (
 					<span className={styles.badges}>
-						<Tag tone="neutral">{props.overriddenLabel}</Tag>
+						<span className={styles.badge}>{props.overriddenLabel}</span>
 						<button
 							type="button"
 							className={styles.reset}
@@ -393,7 +357,7 @@ function ReducerRouteFold(props: {
 						</button>
 					</span>
 				) : null}
-				<IconChevronDownOutline14 className={`${styles.foldChevron}${open ? ` ${styles.foldChevronOpen}` : ""}`} />
+				<span className={`${styles.foldChevron}${open ? ` ${styles.foldChevronOpen}` : ""}`} aria-hidden="true">▾</span>
 			</button>
 			{open ? (
 				<div className={styles.foldBody}>

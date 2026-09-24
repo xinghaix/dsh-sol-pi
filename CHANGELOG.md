@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 中文版：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
 
+## [0.2.6] - 2026-09-24
+
+### Fixed
+- Settings missing because the client required `@deepseek-ai/dsh-client-ui-primitives`, which can miss the ModuleLoader seed table → factory aborts → no `plugins.bundle.config` → no Settings. Fix: seed-only deps (`react` / `react/jsx-runtime`) plus plain checkbox/select/badge controls in `SolDshCard`; drop primitives from the client build. Optional factory `console.info` logs remain for debug.
+
 ## [0.2.5] - 2026-09-24
 
 ### Fixed
@@ -64,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Earlier history (Pi dual-host port, native DSH seams, ObservationPack / EPR / OCC / Action Fusion) lives in git history starting from the `sol-dsh` / `dsh-sol-pi` rebrand commits. Notable themes: native Cordis plugin, Web settings card on the plugin-manager slot, and DSH 0.1.5–0.1.6-era `settingsScope` + `installSection` (superseded in 0.2.0).
 
+[0.2.6]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.6
 [0.2.3]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.3
 [0.2.2]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.2
 [0.2.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.1

@@ -1,6 +1,7 @@
 window.__ModuleLoader__.load({ id: "dsh-sol-pi", factory: function (require) {
 const module = { exports: {} };
 const exports = module.exports;
+try { console.info("[dsh-sol-pi] client factory start"); } catch (_) {}
 "use strict";
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -233,17 +234,16 @@ function resolveSolDshConfig(raw = {}) {
 var DEFAULT_SOL_DSH_CONFIG = resolveSolDshConfig({});
 
 // src/sol-dsh/client/card.tsx
-var import_dsh_client_ui_primitives = require("@deepseek-ai/dsh-client-ui-primitives");
 var import_react = require("react");
 
 // sol-dsh-css:/Users/xing/Projects/github/dsh-sol-pi/src/sol-dsh/client/card.module.css
 if (typeof document !== "undefined" && !document.getElementById("sol-dsh-css")) {
   const s = document.createElement("style");
   s.id = "sol-dsh-css";
-  s.textContent = "/* Plugin-manager form fields; the owner supplies page chrome. */\n\n.solDsh_body {\n	padding-bottom: 8px;\n}\n\n.solDsh_readOnly {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 12px 0 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_footer {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	justify-content: flex-end;\n	align-items: center;\n	gap: 8px;\n	padding: 12px 0 4px;\n	display: flex;\n}\n\n.solDsh_failed {\n	min-width: 0;\n	color: var(--dsw-alias-label-error);\n	flex: 1;\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_discard,\n.solDsh_save {\n	appearance: none;\n	font: inherit;\n	cursor: pointer;\n	border: 1px solid transparent;\n	border-radius: 8px;\n	padding: 5px 14px;\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_discard {\n	border-color: var(--dsw-alias-border-l2);\n	color: var(--dsw-alias-label-secondary);\n	background: 0 0;\n}\n\n.solDsh_discard:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_save {\n	background: var(--dsw-alias-label-primary);\n	color: var(--dsw-alias-bg-layer-3);\n}\n\n.solDsh_discard:disabled,\n.solDsh_save:disabled {\n	opacity: 0.4;\n	cursor: default;\n}\n\n.solDsh_discard:focus-visible,\n.solDsh_save:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 1px;\n}\n\n.solDsh_field {\n	flex-direction: column;\n	gap: 6px;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_head {\n	align-items: center;\n	gap: 8px;\n	display: flex;\n}\n\n.solDsh_label {\n	min-width: 0;\n	color: var(--dsw-alias-label-primary);\n	flex: 1;\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_hint {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_input {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	border-radius: 8px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	width: 100%;\n	box-sizing: border-box;\n}\n\n.solDsh_input:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_input:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n/* Permission-row style trigger; menu chrome comes from primitives.solDsh_Menu */\n.solDsh_selector {\n	appearance: none;\n	width: 100%;\n	box-sizing: border-box;\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	cursor: pointer;\n	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	border-radius: 8px;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: inline-flex;\n}\n\n.solDsh_selector:hover:not(:disabled) {\n	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));\n}\n\n.solDsh_selector:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n.solDsh_selector:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_selectorLabel {\n	min-width: 0;\n	overflow: hidden;\n	text-overflow: ellipsis;\n	white-space: nowrap;\n	flex: 1;\n	text-align: left;\n}\n\n.solDsh_selectorChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_selectorChevronOpen {\n	transform: rotate(180deg);\n}\n\n/* SubagentModelSelectionCard.solDsh_toggleRow */\n.solDsh_toggleRow {\n	color: var(--dsw-alias-label-primary);\n	justify-content: space-between;\n	align-items: flex-start;\n	gap: 16px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: flex;\n}\n\n.solDsh_toggleLabel {\n	flex: 1;\n	min-width: 0;\n	font-weight: 500;\n}\n\n.solDsh_badges {\n	align-items: center;\n	gap: 8px;\n	display: inline-flex;\n	flex: none;\n	padding-top: 1px;\n}\n\n.solDsh_reset {\n	font: inherit;\n	color: var(--dsw-alias-label-secondary);\n	cursor: pointer;\n	background: 0 0;\n	border: none;\n	padding: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_reset:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n}\n\n.solDsh_reset:disabled {\n	cursor: default;\n}\n\n.solDsh_inputInvalid {\n	border-color: var(--dsw-alias-label-error);\n}\n\n.solDsh_invalid {\n	color: var(--dsw-alias-label-error);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_fold {\n	flex-direction: column;\n	gap: 0;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_fold,\n.solDsh_fold + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_foldHeader {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 8px;\n	align-items: center;\n	gap: 8px;\n	padding: 0;\n	display: flex;\n}\n\n.solDsh_foldHeader:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 2px;\n}\n\n.solDsh_foldText {\n	flex-direction: column;\n	flex: 1;\n	gap: 2px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_foldTitle {\n	color: var(--dsw-alias-label-primary);\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_foldSummary {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_foldChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_foldChevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_foldBody {\n	flex-direction: column;\n	gap: 0;\n	margin-top: 8px;\n	display: flex;\n}\n\n.solDsh_stackField {\n	flex-direction: column;\n	gap: 6px;\n	padding: 10px 0 0;\n	display: flex;\n}\n\n.solDsh_stackLabel {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n";
+  s.textContent = "/* Plugin-manager form fields; the owner supplies page chrome. */\n\n.solDsh_body {\n	padding-bottom: 8px;\n}\n\n.solDsh_readOnly {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 12px 0 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_footer {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n	justify-content: flex-end;\n	align-items: center;\n	gap: 8px;\n	padding: 12px 0 4px;\n	display: flex;\n}\n\n.solDsh_failed {\n	min-width: 0;\n	color: var(--dsw-alias-label-error);\n	flex: 1;\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_discard,\n.solDsh_save {\n	appearance: none;\n	font: inherit;\n	cursor: pointer;\n	border: 1px solid transparent;\n	border-radius: 8px;\n	padding: 5px 14px;\n	font-size: 13px;\n	line-height: 1.5;\n}\n\n.solDsh_discard {\n	border-color: var(--dsw-alias-border-l2);\n	color: var(--dsw-alias-label-secondary);\n	background: 0 0;\n}\n\n.solDsh_discard:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n	border-color: var(--dsw-alias-label-dimmed);\n}\n\n.solDsh_save {\n	background: var(--dsw-alias-label-primary);\n	color: var(--dsw-alias-bg-layer-3);\n}\n\n.solDsh_discard:disabled,\n.solDsh_save:disabled {\n	opacity: 0.4;\n	cursor: default;\n}\n\n.solDsh_discard:focus-visible,\n.solDsh_save:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 1px;\n}\n\n.solDsh_field {\n	flex-direction: column;\n	gap: 6px;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_head {\n	align-items: center;\n	gap: 8px;\n	display: flex;\n}\n\n.solDsh_label {\n	min-width: 0;\n	color: var(--dsw-alias-label-primary);\n	flex: 1;\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_hint {\n	color: var(--dsw-alias-label-tertiary);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_input {\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	background: var(--dsw-alias-bg-layer-3);\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	border-radius: 8px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	width: 100%;\n	box-sizing: border-box;\n}\n\n.solDsh_input:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_input:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n/* Permission-row style trigger; menu chrome comes from primitives.solDsh_Menu */\n.solDsh_selector {\n	appearance: none;\n	width: 100%;\n	box-sizing: border-box;\n	height: 34px;\n	font: inherit;\n	color: var(--dsw-alias-label-primary);\n	cursor: pointer;\n	background: var(--dsw-alias-bg-module-platform, var(--dsw-alias-bg-layer-1));\n	border: 0.5px solid var(--dsw-alias-border-l4);\n	border-radius: 8px;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	padding: 0 12px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: inline-flex;\n}\n\n.solDsh_selector:hover:not(:disabled) {\n	background: var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2));\n}\n\n.solDsh_selector:disabled {\n	color: var(--dsw-alias-label-tertiary);\n	cursor: default;\n}\n\n.solDsh_selector:focus-visible {\n	border-color: var(--dsw-alias-brand-primary);\n	outline: none;\n}\n\n.solDsh_selectorLabel {\n	min-width: 0;\n	overflow: hidden;\n	text-overflow: ellipsis;\n	white-space: nowrap;\n	flex: 1;\n	text-align: left;\n}\n\n.solDsh_selectorChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_selectorChevronOpen {\n	transform: rotate(180deg);\n}\n\n/* SubagentModelSelectionCard.solDsh_toggleRow */\n.solDsh_toggleRow {\n	color: var(--dsw-alias-label-primary);\n	justify-content: space-between;\n	align-items: flex-start;\n	gap: 16px;\n	font-size: 13px;\n	line-height: 1.5;\n	display: flex;\n}\n\n.solDsh_toggleLabel {\n	flex: 1;\n	min-width: 0;\n	font-weight: 500;\n}\n\n.solDsh_badges {\n	align-items: center;\n	gap: 8px;\n	display: inline-flex;\n	flex: none;\n	padding-top: 1px;\n}\n\n.solDsh_badge {\n	display: inline-flex;\n	align-items: center;\n	border-radius: 999px;\n	padding: 0 8px;\n	height: 20px;\n	font-size: 11px;\n	line-height: 1;\n	color: var(--dsw-alias-label-secondary);\n	background: var(--dsw-alias-bg-layer-2);\n	border: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_switch {\n	width: 18px;\n	height: 18px;\n	accent-color: var(--dsw-alias-brand-primary);\n	flex: none;\n	cursor: pointer;\n}\n\n.solDsh_switch:disabled {\n	cursor: default;\n	opacity: 0.5;\n}\n\n.solDsh_reset {\n	font: inherit;\n	color: var(--dsw-alias-label-secondary);\n	cursor: pointer;\n	background: 0 0;\n	border: none;\n	padding: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_reset:hover:not(:disabled) {\n	color: var(--dsw-alias-label-primary);\n}\n\n.solDsh_reset:disabled {\n	cursor: default;\n}\n\n.solDsh_inputInvalid {\n	border-color: var(--dsw-alias-label-error);\n}\n\n.solDsh_invalid {\n	color: var(--dsw-alias-label-error);\n	margin: 0;\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_fold {\n	flex-direction: column;\n	gap: 0;\n	padding: 12px 0;\n	display: flex;\n}\n\n.solDsh_field + .solDsh_fold,\n.solDsh_fold + .solDsh_field {\n	border-top: 0.5px solid var(--dsw-alias-border-l2);\n}\n\n.solDsh_foldHeader {\n	appearance: none;\n	width: 100%;\n	font: inherit;\n	color: inherit;\n	text-align: left;\n	cursor: pointer;\n	background: 0 0;\n	border: 0;\n	border-radius: 8px;\n	align-items: center;\n	gap: 8px;\n	padding: 0;\n	display: flex;\n}\n\n.solDsh_foldHeader:focus-visible {\n	outline: 2px solid var(--dsw-alias-brand-primary);\n	outline-offset: 2px;\n}\n\n.solDsh_foldText {\n	flex-direction: column;\n	flex: 1;\n	gap: 2px;\n	min-width: 0;\n	display: flex;\n}\n\n.solDsh_foldTitle {\n	color: var(--dsw-alias-label-primary);\n	font-size: 13px;\n	font-weight: 500;\n	line-height: 1.5;\n}\n\n.solDsh_foldSummary {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n\n.solDsh_foldChevron {\n	color: var(--dsw-alias-label-tertiary);\n	flex: none;\n	transition: transform 0.16s;\n}\n\n.solDsh_foldChevronOpen {\n	transform: rotate(180deg);\n}\n\n.solDsh_foldBody {\n	flex-direction: column;\n	gap: 0;\n	margin-top: 8px;\n	display: flex;\n}\n\n.solDsh_stackField {\n	flex-direction: column;\n	gap: 6px;\n	padding: 10px 0 0;\n	display: flex;\n}\n\n.solDsh_stackLabel {\n	color: var(--dsw-alias-label-tertiary);\n	font-size: 12px;\n	line-height: 1.5;\n}\n";
   document.head.appendChild(s);
 }
-var card_default = { "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "input": "solDsh_input", "selector": "solDsh_selector", "selectorLabel": "solDsh_selectorLabel", "selectorChevron": "solDsh_selectorChevron", "selectorChevronOpen": "solDsh_selectorChevronOpen", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "badges": "solDsh_badges", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid", "fold": "solDsh_fold", "foldHeader": "solDsh_foldHeader", "foldText": "solDsh_foldText", "foldTitle": "solDsh_foldTitle", "foldSummary": "solDsh_foldSummary", "foldChevron": "solDsh_foldChevron", "foldChevronOpen": "solDsh_foldChevronOpen", "foldBody": "solDsh_foldBody", "stackField": "solDsh_stackField", "stackLabel": "solDsh_stackLabel" };
+var card_default = { "body": "solDsh_body", "readOnly": "solDsh_readOnly", "footer": "solDsh_footer", "failed": "solDsh_failed", "save": "solDsh_save", "discard": "solDsh_discard", "field": "solDsh_field", "head": "solDsh_head", "label": "solDsh_label", "hint": "solDsh_hint", "input": "solDsh_input", "selector": "solDsh_selector", "selectorLabel": "solDsh_selectorLabel", "selectorChevron": "solDsh_selectorChevron", "selectorChevronOpen": "solDsh_selectorChevronOpen", "toggleRow": "solDsh_toggleRow", "toggleLabel": "solDsh_toggleLabel", "badges": "solDsh_badges", "badge": "solDsh_badge", "switch": "solDsh_switch", "reset": "solDsh_reset", "inputInvalid": "solDsh_inputInvalid", "invalid": "solDsh_invalid", "fold": "solDsh_fold", "foldHeader": "solDsh_foldHeader", "foldText": "solDsh_foldText", "foldTitle": "solDsh_foldTitle", "foldSummary": "solDsh_foldSummary", "foldChevron": "solDsh_foldChevron", "foldChevronOpen": "solDsh_foldChevronOpen", "foldBody": "solDsh_foldBody", "stackField": "solDsh_stackField", "stackLabel": "solDsh_stackLabel" };
 
 // src/sol-dsh/client/card.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
@@ -290,7 +290,7 @@ function FieldHead(props) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.head, children: [
     props.id ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: card_default.label, htmlFor: props.id, children: props.label }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.label, children: props.label }),
     props.overridden ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.badges, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.Tag, { tone: "neutral", children: props.overriddenLabel }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.badge, children: props.overriddenLabel }),
       props.onReset ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.reset, disabled: props.disabled, onClick: props.onReset, children: props.resetLabel }) : null
     ] }) : null
   ] });
@@ -300,16 +300,19 @@ function SwitchRow(props) {
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.toggleRow, children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.toggleLabel, children: props.label }),
       props.overridden ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.badges, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.Tag, { tone: "neutral", children: props.overriddenLabel }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.badge, children: props.overriddenLabel }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", className: card_default.reset, disabled: props.disabled, onClick: props.onReset, children: props.resetLabel })
       ] }) : null,
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-        import_dsh_client_ui_primitives.Switch,
+        "input",
         {
+          type: "checkbox",
+          role: "switch",
+          "aria-label": props.label,
+          className: card_default.switch,
           checked: props.checked,
-          label: props.label,
           disabled: props.disabled,
-          onChange: props.onChange
+          onChange: (event) => props.onChange(event.target.checked)
         }
       )
     ] }),
@@ -347,9 +350,6 @@ function ValueRow(props) {
   ] });
 }
 function SelectRow(props) {
-  const [open, setOpen] = (0, import_react.useState)(false);
-  const selected = props.options.find((option) => option.id === props.value);
-  const triggerLabel = selected?.label ?? props.value;
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.field, children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
       FieldHead,
@@ -364,40 +364,15 @@ function SelectRow(props) {
       }
     ),
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-      import_dsh_client_ui_primitives.Menu,
+      "select",
       {
-        open,
-        onClose: () => setOpen(false),
-        items: props.options,
-        selectedId: props.value,
-        align: "start",
-        portal: true,
-        onSelect: (id) => {
-          setOpen(false);
-          if (id === props.value) return;
-          props.onChange(id);
-        },
-        anchor: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-          "button",
-          {
-            type: "button",
-            id: props.id,
-            className: card_default.selector,
-            "aria-haspopup": "menu",
-            "aria-expanded": open,
-            disabled: props.disabled,
-            onClick: () => setOpen((value) => !value),
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.selectorLabel, children: triggerLabel }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                import_dsh_client_ui_primitives.IconChevronDownOutline14,
-                {
-                  className: `${card_default.selectorChevron}${open ? ` ${card_default.selectorChevronOpen}` : ""}`
-                }
-              )
-            ]
-          }
-        )
+        id: props.id,
+        className: card_default.input,
+        value: props.value,
+        disabled: props.disabled,
+        onChange: (event) => props.onChange(event.target.value),
+        "aria-label": props.label,
+        children: props.options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: option.id, children: option.label }, option.id))
       }
     ),
     props.hint ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: card_default.hint, children: props.hint }) : null,
@@ -412,46 +387,18 @@ function fromMenuId(value) {
   return value === FOLLOW ? "" : value;
 }
 function StackSelect(props) {
-  const [open, setOpen] = (0, import_react.useState)(false);
-  const selected = props.options.find((option) => option.id === props.value);
-  const triggerLabel = selected?.label ?? (props.value || props.placeholder);
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: card_default.stackField, children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.stackLabel, id: `${props.id}-label`, children: props.label }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-      import_dsh_client_ui_primitives.Menu,
+      "select",
       {
-        open,
-        onClose: () => setOpen(false),
-        items: props.options,
-        selectedId: props.value,
-        align: "start",
-        portal: true,
-        onSelect: (id) => {
-          setOpen(false);
-          props.onChange(id);
-        },
-        anchor: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-          "button",
-          {
-            type: "button",
-            id: props.id,
-            className: card_default.selector,
-            "aria-labelledby": `${props.id}-label`,
-            "aria-haspopup": "menu",
-            "aria-expanded": open,
-            disabled: props.disabled,
-            onClick: () => setOpen((value) => !value),
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.selectorLabel, children: triggerLabel }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                import_dsh_client_ui_primitives.IconChevronDownOutline14,
-                {
-                  className: `${card_default.selectorChevron}${open ? ` ${card_default.selectorChevronOpen}` : ""}`
-                }
-              )
-            ]
-          }
-        )
+        id: props.id,
+        className: card_default.input,
+        value: props.value,
+        disabled: props.disabled,
+        onChange: (event) => props.onChange(event.target.value),
+        "aria-labelledby": `${props.id}-label`,
+        children: props.options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: option.id, children: option.label }, option.id))
       }
     )
   ] });
@@ -493,7 +440,7 @@ function ReducerRouteFold(props) {
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.foldSummary, children: summary })
           ] }),
           props.overridden ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: card_default.badges, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.Tag, { tone: "neutral", children: props.overriddenLabel }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: card_default.badge, children: props.overriddenLabel }),
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
               "button",
               {
@@ -508,7 +455,7 @@ function ReducerRouteFold(props) {
               }
             )
           ] }) : null,
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.IconChevronDownOutline14, { className: `${card_default.foldChevron}${open ? ` ${card_default.foldChevronOpen}` : ""}` })
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: `${card_default.foldChevron}${open ? ` ${card_default.foldChevronOpen}` : ""}`, "aria-hidden": "true", children: "\u25BE" })
         ]
       }
     ),
@@ -1276,6 +1223,10 @@ function deepEqual(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 function apply(ctx) {
+  try {
+    console.info("[dsh-sol-pi] apply() registering plugins.bundle.config");
+  } catch {
+  }
   ctx.effect?.(() => ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales), "dsh-sol-pi: locale dictionaries");
   if (!ctx.effect) ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales);
   const t = translator(ctx);
@@ -1340,5 +1291,6 @@ function apply(ctx) {
 exports.apply = apply;
 exports.inject = inject;
 module.exports = exports;
+try { console.info("[dsh-sol-pi] client factory ok apply="+typeof exports.apply); } catch (_) {}
 return module.exports;
 } });

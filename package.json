@@ -1,6 +1,6 @@
 {
   "name": "dsh-sol-pi",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Native DeepSeek Harness plugin for SoL context and tool-efficiency mechanisms (Pi adapter included)",
   "type": "module",
   "private": true,

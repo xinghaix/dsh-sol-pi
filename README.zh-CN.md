@@ -24,6 +24,10 @@
 <details>
 <summary>更新日志</summary>
 
+### [0.2.6] — 2026-09-24
+
+- 恢复 Settings：去掉 `@deepseek-ai/dsh-client-ui-primitives`（seed 未命中会中止工厂）；客户端仅依赖 seed 的 `react` / `jsx-runtime` 与原生控件。
+
 ### [0.2.2] — 2026-09-24
 
 - 从上游同步 Action Fusion 的 Unicode 空格与 Windows shell 路径归一化到 `sol-core`。
