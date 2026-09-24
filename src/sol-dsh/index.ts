@@ -4,12 +4,12 @@
  */
 
 import { registerActionFusion } from "./action-fusion.ts";
-import { Config, resolveSolDshConfig, type SolDshConfig } from "./config.ts";
+import { Config, type SolDshConfig } from "./config.ts";
 import { registerEvidencePreservingReducer } from "./epr.ts";
 import type { DshContext } from "./host.ts";
 import { registerOnlineContextCompact } from "./occ.ts";
 import { registerObservationPack } from "./observation-pack.ts";
-import { installSolDshSettings } from "./settings.ts";
+import { liveSolDshConfig } from "./settings.ts";
 
 export const name = "dsh-sol-pi";
 
@@ -24,10 +24,9 @@ export type { SolDshConfig };
  * drop `inject` in Cordis `unwrapExports`.
  */
 export function apply(ctx: DshContext, config: SolDshConfig | Record<string, unknown> = {}): void {
-	let live = resolveSolDshConfig(config);
-	const source = installSolDshSettings(ctx, live, (next) => {
-		live = next;
-	});
+	// Entry config is the settings document (id dsh-sol-pi). Live edits arrive
+	// via Schemastery volatile refs — installSection was removed in 0.1.7.
+	const source = liveSolDshConfig(config);
 
 	// EPR must register first (inner prepend) so diagnostic logs reduce before
 	// ObservationPack replaces them with a preview that looks "too small".

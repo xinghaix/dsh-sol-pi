@@ -1,6 +1,6 @@
 {
 	"name": "dsh-sol-pi",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "Native DeepSeek Harness plugin for SoL context and tool-efficiency mechanisms (Pi adapter included)",
 	"type": "module",
 	"private": true,
@@ -53,6 +53,9 @@
 			],
 			"platform": "web",
 			"immediately": true
+		},
+		"engines": {
+			"dsh": ">=0.1.7-rc.1"
 		}
 	},
 	"keywords": [
@@ -68,6 +71,7 @@
 		]
 	},
 	"peerDependencies": {
+		"@deepseek-ai/dsh-settings": "^0.1.7-rc.1",
 		"@earendil-works/pi-agent-core": "*",
 		"@earendil-works/pi-ai": "*",
 		"@earendil-works/pi-coding-agent": "*",
@@ -99,7 +103,7 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"@deepseek-ai/schemastery": "^3.18.2"
+		"@deepseek-ai/schemastery": "^3.18.4"
 	},
 	"allowScripts": {
 		"esbuild@0.28.2": true

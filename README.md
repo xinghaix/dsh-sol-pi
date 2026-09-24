@@ -18,6 +18,20 @@
 > [!NOTE]
 > **`dsh-sol-pi`** is a **native [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Cordis plugin**. It packages the four SoL efficiency mechanisms for DSH Web / TUI / headless. Algorithms live in `src/sol-core/`; the DSH adapter is `src/sol-dsh/`. This is not an official DeepSeek or NVIDIA distribution. Upstream research and the original Pi extension live at [NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi); this repo also keeps a Pi adapter for that path.
 
+
+<details>
+<summary>Changelog</summary>
+
+### [0.2.0] — 2026-09-24
+
+- **Breaking (DSH 0.1.7-rc.1):** Client inject `settingsScope` → `configForms`; Host drops `settings.installSection` for Schemastery `.volatile()` live config.
+- Peers/engines: `dsh.engines.dsh >=0.1.7-rc.1`, `@deepseek-ai/schemastery ^3.18.4`.
+- Fixes boot pending on `waiting for service: settingsScope`. Custom `SolDshCard` UX kept on `plugins.bundle.config`.
+
+Full history: [CHANGELOG.md](./CHANGELOG.md) · 中文：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
+
+</details>
+
 ## TL;DR
 
 **Spend less without making the agent do less useful work.**
@@ -52,7 +66,7 @@ Shared rules on DSH:
 
 ## Install
 
-Requirements: Node.js 22.19+, a working `dsh` CLI, profile `web` (or another profile that loads `dsh-base`). Tested on DSH **0.1.5-rc.2**.
+Requirements: Node.js 22.19+, a working `dsh` CLI, profile `web` (or another profile that loads `dsh-base`). Tested on DSH **0.1.7-rc.1**.
 
 ### From GitHub (typical)
 
@@ -160,7 +174,7 @@ This checkout still includes the original Pi extension under `src/sol-pi/`. On P
 
 ## Project status
 
-- **DSH:** Cordis plugin `dsh-sol-pi`, Web settings card, tested on **0.1.5-rc.2**.
+- **DSH:** Cordis plugin `dsh-sol-pi`, Web settings card, tested on **0.1.7-rc.1**.
 - **Pi:** Opt-in via `sol-pi.json`, defaults all false, tested on **0.84.2**.
 - Known DSH limits: ObservationPack `delayed` only archives (no silent projection hook); OCC uses `todo_write` boundaries rather than Pi’s `update_plan`.
 

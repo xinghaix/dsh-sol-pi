@@ -87,19 +87,6 @@ export type DshContext = {
 		compactIfNeeded(agent: unknown, trigger: string, signal?: AbortSignal): Promise<unknown>;
 		compactNow(agent: unknown, signal?: AbortSignal): Promise<unknown>;
 	};
-	settings?: {
-		installSection(
-			owner: DshContext,
-			ns: string,
-			schema: unknown,
-			entry: unknown,
-			hooks: {
-				setSource(source: () => unknown): void;
-				onChange(): void;
-				validate?(value: unknown): void;
-			},
-		): void;
-	};
 	spillStore?: {
 		saveText(input: { text: string; mediaType?: string }): Promise<{
 			locator: string;

@@ -61,7 +61,7 @@ must(pkg.dsh?.client?.immediately === true, "dsh.client.immediately must be true
 must(pkg.exports?.["./client"], "package.json must export ./client for the settings card");
 must(Array.isArray(pkg.dsh?.client?.inject) && pkg.dsh.client.inject.every((item) => typeof item === "string" && item.includes("/")), "package.json dsh.client.inject must list package rows (e.g. @deepseek-ai/...), not Cordis service names");
 must(pkg.dsh?.client?.inject?.includes("@deepseek-ai/dsh-client-ui-plugin-manager"), "package.json dsh.client.inject must include @deepseek-ai/dsh-client-ui-plugin-manager so the plugins.bundle.config slot exists first");
-must(pkg.dsh?.client?.inject?.includes("@deepseek-ai/dsh-client-ui-settings"), "package.json dsh.client.inject must include @deepseek-ai/dsh-client-ui-settings for settingsScope");
+must(pkg.dsh?.client?.inject?.includes("@deepseek-ai/dsh-client-ui-settings"), "package.json dsh.client.inject must include @deepseek-ai/dsh-client-ui-settings for configForms");
 must(!pkg.dsh?.client?.inject?.some((item) => String(item).includes("pi-")), "dsh.client.inject must not name Pi packages");
 must(pkg.main === "./dist/sol-dsh/index.js", "package.json main must point at built dist/sol-dsh/index.js (Node cannot strip types under node_modules)");
 must(pkg.exports?.["."] === "./dist/sol-dsh/index.js", "package.json exports[\".\"] must point at built dist/sol-dsh/index.js");
@@ -71,7 +71,13 @@ must(/export const zh =/.test(locales) && /export const en =/.test(locales), "cl
 must(!/setLocale/.test(read("src/sol-dsh/client/index.ts")), "SoL must not write dshweb locale preference");
 
 const clientInject = read("src/sol-dsh/client/index.ts").match(/export const inject = \[[\s\S]*?\]/)?.[0] ?? "";
-must(clientInject.includes('"slots"') && clientInject.includes('"locale"') && clientInject.includes('"settingsScope"'), "client inject must declare slots, locale, and settingsScope");
+must(clientInject.includes('"slots"') && clientInject.includes('"locale"') && clientInject.includes('"configForms"'), "client inject must declare slots, locale, and configForms");
+must(!clientInject.includes('"settingsScope"'), "client inject must not declare removed settingsScope");
+must(pkg.dsh?.engines?.dsh === ">=0.1.7-rc.1" || String(pkg.dsh?.engines?.dsh ?? "").includes("0.1.7"), "package.json dsh.engines.dsh must require >=0.1.7-rc.1");
+must(!/\.installSection\s*\(/.test(read("src/sol-dsh/settings.ts")), "settings.ts must not call installSection");
+must(!/installSection\s*\(/.test(read("src/sol-dsh/host.ts")), "host.ts must not type installSection");
+must(read("src/sol-dsh/config.ts").includes(".volatile()"), "Config schema must mark live fields volatile");
+must(/configForms\.get\s*\(/.test(read("src/sol-dsh/client/index.ts")), "client must use configForms.get");
 must(!clientInject.includes("@deepseek-ai/"), "client fiber inject must not list @deepseek-ai/* package names");
 must(read("src/sol-dsh/client/index.ts").includes('ctx.slots.register'), "client must register plugins.bundle.config via ctx.slots.register");
 must(/export\s*\{[^}]*\bname\b/.test(read("dist/sol-dsh/index.js")) && /\binject\b/.test(read("dist/sol-dsh/index.js")) && /\bapply\b/.test(read("dist/sol-dsh/index.js")), "dist/sol-dsh/index.js must export name/inject/apply");

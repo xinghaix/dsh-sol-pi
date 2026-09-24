@@ -18,6 +18,20 @@
 > [!NOTE]
 > **`dsh-sol-pi`** 是面向 **[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)** 的 **原生 Cordis 插件**。它把四套 SoL 效率机制接到 DSH Web / TUI / headless。算法在 `src/sol-core/`，DSH 适配在 `src/sol-dsh/`。这不是 DeepSeek 或 NVIDIA 的官方发行版。上游研究与原始 Pi 扩展见 [NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi)；本仓库仍保留 Pi 适配路径。
 
+
+<details>
+<summary>更新日志</summary>
+
+### [0.2.0] — 2026-09-24
+
+- **破坏性（DSH 0.1.7-rc.1）：** 客户端 inject 由 `settingsScope` 改为 `configForms`；Host 去掉 `settings.installSection`，改用 Schemastery `.volatile()` 实时配置。
+- peers/engines：`dsh.engines.dsh >=0.1.7-rc.1`，`@deepseek-ai/schemastery ^3.18.4`。
+- 修复启动卡在 `waiting for service: settingsScope`。自定义 `SolDshCard` 仍挂在 `plugins.bundle.config`。
+
+完整历史：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md) · English：[CHANGELOG.md](./CHANGELOG.md)
+
+</details>
+
 ## 一句话
 
 **少花钱，也不少干有用的活。**
@@ -52,7 +66,7 @@ DSH 上的共同约定：
 
 ## 安装
 
-要求：Node.js 22.19+、可用的 `dsh` CLI、`web` profile（或其它加载了 `dsh-base` 的 profile）。已在 DSH **0.1.5-rc.2** 验证。
+要求：Node.js 22.19+、可用的 `dsh` CLI、`web` profile（或其它加载了 `dsh-base` 的 profile）。已在 DSH **0.1.7-rc.1** 验证。
 
 ### 从 GitHub 安装（常用）
 
@@ -160,7 +174,7 @@ npm run build:dsh      # dist/sol-dsh/{index,client}.js
 
 ## 项目状态
 
-- **DSH：** Cordis 插件 `dsh-sol-pi`，带 Web 设置卡，已在 **0.1.5-rc.2** 验证。
+- **DSH：** Cordis 插件 `dsh-sol-pi`，带 Web 设置卡，已在 **0.1.7-rc.1** 验证。
 - **Pi：** 通过 `sol-pi.json` opt-in，默认全关，已在 **0.84.2** 验证。
 - DSH 已知限制：ObservationPack 的 `delayed` 只做归档（无静默投影钩子）；OCC 用 `todo_write` 边界，而不是 Pi 的 `update_plan`。
 

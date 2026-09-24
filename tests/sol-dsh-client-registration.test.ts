@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import { build } from "esbuild";
 import { beforeAll, describe, expect, it } from "vitest";
+import { resolveSolDshConfig } from "../src/sol-dsh/config.ts";
 
 // Bundle the real entry and form in memory so host-only tsconfig stays host-only.
 let source: string;
@@ -54,21 +55,23 @@ function harness() {
       inject(name: string, callback: () => any) { waiting.push({ name, callback }); },
       register(spec: any, component: any) { entries.set(spec.key, { spec, component }); return () => entries.delete(spec.key); },
     },
-    settingsScope: { bind(spec: any) {
-      expect(spec.namespace).toBe("dsh-sol-pi");
+    configForms: { get(entryId: string) {
+      expect(entryId).toBe("dsh-sol-pi");
       return {
         getSnapshot: () => ({ status: "ready", value: saved, base: {}, user, revision, writable: !readOnly }),
-        subscribe: () => () => {}, dispose() {},
+        subscribe: () => () => {},
         async mutate(ops: any, expectedRevision: number) {
           if (rejectSave) throw new Error("stale revision");
           writes.push({ ops, revision: expectedRevision });
-          if (recoverSave) return; // Real DSH recovers and resolves on remote ok:false.
+          if (recoverSave) return false; // Real DSH recovers and resolves false on remote ok:false.
           for (const op of ops) {
             if (op.op === "unset") delete user[op.path[0]];
             else user[op.path[0]] = structuredClone(op.value);
           }
-          saved = spec.decode(user);
+          // Decode via resolve path — configForms.get has no decode hook.
+          try { saved = resolveSolDshConfig(user); } catch { saved = undefined; }
           revision += 1;
+          return true;
         },
       };
     } },

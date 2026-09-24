@@ -3,48 +3,45 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { Config, resolveSolDshConfig, SOL_DSH_SETTINGS_NAMESPACE, type SolDshConfig } from "./config.ts";
-import type { DshContext } from "./host.ts";
+import { resolveSolDshConfig, type SolDshConfig } from "./config.ts";
 
 export type ConfigSource = () => SolDshConfig;
 
+type VolatileRef<T> = { get(): T };
+
+function isVolatileRef(value: unknown): value is VolatileRef<unknown> {
+	return typeof value === "object" && value !== null && typeof (value as VolatileRef<unknown>).get === "function";
+}
+
+function sectionValue(value: unknown): unknown {
+	return isVolatileRef(value) ? value.get() : value;
+}
+
 /**
- * Register the `dsh-sol-pi` settings namespace when a settings service exists.
- * The plugin-row config is the composition base. Missing service = entry only.
+ * Live config reader for DSH 0.1.7+.
+ *
+ * Cordis passes Schemastery volatile refs for each top-level section; `.get()`
+ * always returns the current Host value (no `settings.installSection`). Plain
+ * objects (unit tests) still resolve through `resolveSolDshConfig`.
  */
-export function installSolDshSettings(ctx: DshContext, entry: SolDshConfig, onLive: (config: SolDshConfig) => void): ConfigSource {
-	let current = entry;
-	let sourceThunk: () => unknown = () => current;
-	onLive(current);
-	const source = () => current;
-
-	const readLive = () => {
-		try {
-			current = resolveSolDshConfig(sourceThunk());
-		} catch {
-			current = entry;
+export function liveSolDshConfig(config: unknown = {}): ConfigSource {
+	return () => {
+		if (config && typeof config === "object") {
+			const record = config as Record<string, unknown>;
+			if (
+				isVolatileRef(record.actionFusion) ||
+				isVolatileRef(record.observationPack) ||
+				isVolatileRef(record.evidencePreservingReducer) ||
+				isVolatileRef(record.onlineContextCompact)
+			) {
+				return resolveSolDshConfig({
+					actionFusion: sectionValue(record.actionFusion),
+					observationPack: sectionValue(record.observationPack),
+					evidencePreservingReducer: sectionValue(record.evidencePreservingReducer),
+					onlineContextCompact: sectionValue(record.onlineContextCompact),
+				});
+			}
 		}
-		onLive(current);
+		return resolveSolDshConfig(config ?? {});
 	};
-
-	const attach = (host: DshContext) => {
-		if (!host.settings?.installSection) return;
-		host.settings.installSection(host, SOL_DSH_SETTINGS_NAMESPACE, Config, entry, {
-			setSource: (next) => {
-				sourceThunk = next;
-			},
-			onChange: readLive,
-			validate: (value) => {
-				resolveSolDshConfig(value);
-			},
-		});
-	};
-
-	if (typeof ctx.inject === "function") {
-		ctx.inject(["settings"], (child) => attach(child));
-	} else {
-		attach(ctx);
-	}
-
-	return source;
 }

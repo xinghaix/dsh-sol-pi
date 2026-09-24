@@ -37,7 +37,7 @@ A DSH patch replaces the row’s `config` **object** as a whole, then Schemaster
 
 HMR: changing the patch reloads the plugin; registrations unwind.
 
-Runtime edits go through `ctx.settings.installSection` so the Web card and the Host plugin share one namespace (join key `dsh-sol-pi`). Composition `base` = schema best defaults (+ any patch). User layer = settings card overrides. `unset` returns a field to the composed default.
+Runtime edits go through Schemastery **volatile** fields on the entry Config (DSH 0.1.7+; `settings.installSection` was removed). The Web card reads/writes via `ctx.configForms.get("dsh-sol-pi")`. Composition `base` = schema best defaults (+ any patch). User layer = settings card overrides. `unset` returns a field to the composed default.
 
 ## Settings UI (must look and behave like dshweb)
 

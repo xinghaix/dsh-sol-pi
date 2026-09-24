@@ -102,57 +102,77 @@ export interface SolDshConfig {
 const positiveInt = (fallback: number) => Schema.number().step(1).min(1).default(fallback);
 const nonNegativeInt = (fallback: number) => Schema.number().step(1).min(0).default(fallback);
 
+const actionFusionSchema = Schema.object({
+	enabled: Schema.boolean().default(true),
+}).default({ enabled: true });
+
+const observationPackSchema = Schema.object({
+	enabled: Schema.boolean().default(true),
+	mode: Schema.union(["immediate", "delayed"] as const).default("immediate"),
+	thresholdBytes: positiveInt(10_240),
+	fullSends: nonNegativeInt(0),
+	placeholderExcerptBytes: positiveInt(1024),
+}).default({
+	enabled: true,
+	mode: "immediate",
+	thresholdBytes: 10_240,
+	fullSends: 0,
+	placeholderExcerptBytes: 1024,
+});
+
+const evidencePreservingReducerSchema = Schema.object({
+	enabled: Schema.boolean().default(true),
+	minBytes: positiveInt(4096),
+	maxChars: positiveInt(600_000),
+	maxOutputTokens: positiveInt(2048),
+	timeoutMs: positiveInt(90_000),
+	reducerProvider: Schema.string().default(""),
+	reducerModel: Schema.string().default(""),
+}).default({
+	enabled: true,
+	minBytes: 4096,
+	maxChars: 600_000,
+	maxOutputTokens: 2048,
+	timeoutMs: 90_000,
+	reducerProvider: "",
+	reducerModel: "",
+});
+
+const onlineContextCompactSchema = Schema.object({
+	enabled: Schema.boolean().default(true),
+	cacheWriteReadRatio: Schema.number().min(0).default(50),
+	keepRecentTokens: nonNegativeInt(0),
+	nativeSummaryTokenEstimate: positiveInt(1000),
+	windowReserveTokens: positiveInt(16_384),
+	firstCompactionRequestScale: Schema.number().min(0).default(2),
+	subsequentCompactionMargin: Schema.number().min(1).default(1.5),
+}).default({
+	enabled: true,
+	cacheWriteReadRatio: 50,
+	keepRecentTokens: 0,
+	nativeSummaryTokenEstimate: 1000,
+	windowReserveTokens: 16_384,
+	firstCompactionRequestScale: 2,
+	subsequentCompactionMargin: 1.5,
+});
+
+/**
+ * Cordis Host Config — top-level sections are volatile so Plugins-card edits
+ * apply in place (DSH 0.1.7+; `settings.installSection` was removed).
+ */
 export const Config = Schema.object({
-	actionFusion: Schema.object({
-		enabled: Schema.boolean().default(true),
-	}).default({ enabled: true }),
-	observationPack: Schema.object({
-		enabled: Schema.boolean().default(true),
-		mode: Schema.union(["immediate", "delayed"] as const).default("immediate"),
-		thresholdBytes: positiveInt(10_240),
-		fullSends: nonNegativeInt(0),
-		placeholderExcerptBytes: positiveInt(1024),
-	}).default({
-		enabled: true,
-		mode: "immediate",
-		thresholdBytes: 10_240,
-		fullSends: 0,
-		placeholderExcerptBytes: 1024,
-	}),
-	evidencePreservingReducer: Schema.object({
-		enabled: Schema.boolean().default(true),
-		minBytes: positiveInt(4096),
-		maxChars: positiveInt(600_000),
-		maxOutputTokens: positiveInt(2048),
-		timeoutMs: positiveInt(90_000),
-		reducerProvider: Schema.string().default(""),
-		reducerModel: Schema.string().default(""),
-	}).default({
-		enabled: true,
-		minBytes: 4096,
-		maxChars: 600_000,
-		maxOutputTokens: 2048,
-		timeoutMs: 90_000,
-		reducerProvider: "",
-		reducerModel: "",
-	}),
-	onlineContextCompact: Schema.object({
-		enabled: Schema.boolean().default(true),
-		cacheWriteReadRatio: Schema.number().min(0).default(50),
-		keepRecentTokens: nonNegativeInt(0),
-		nativeSummaryTokenEstimate: positiveInt(1000),
-		windowReserveTokens: positiveInt(16_384),
-		firstCompactionRequestScale: Schema.number().min(0).default(2),
-		subsequentCompactionMargin: Schema.number().min(1).default(1.5),
-	}).default({
-		enabled: true,
-		cacheWriteReadRatio: 50,
-		keepRecentTokens: 0,
-		nativeSummaryTokenEstimate: 1000,
-		windowReserveTokens: 16_384,
-		firstCompactionRequestScale: 2,
-		subsequentCompactionMargin: 1.5,
-	}),
+	actionFusion: actionFusionSchema.volatile(),
+	observationPack: observationPackSchema.volatile(),
+	evidencePreservingReducer: evidencePreservingReducerSchema.volatile(),
+	onlineContextCompact: onlineContextCompactSchema.volatile(),
+});
+
+/** Plain schema for resolveSolDshConfig / defaults (no volatile refs). */
+const PlainConfig = Schema.object({
+	actionFusion: actionFusionSchema,
+	observationPack: observationPackSchema,
+	evidencePreservingReducer: evidencePreservingReducerSchema,
+	onlineContextCompact: onlineContextCompactSchema,
 });
 
 function assertPlainObject(value: unknown, label: string): asserts value is Record<string, unknown> {
@@ -197,7 +217,7 @@ export function resolveSolDshConfig(raw: unknown = {}): SolDshConfig {
 		rejectForbiddenAndUnknown(raw.onlineContextCompact, OCC_KEYS, "onlineContextCompact.");
 	}
 
-	const config = Config(raw) as SolDshConfig;
+	const config = PlainConfig(raw) as SolDshConfig;
 	if (config.observationPack.mode === "immediate" && config.observationPack.fullSends > 0) {
 		throw new Error("dsh-sol-pi: observationPack.mode immediate requires fullSends = 0");
 	}

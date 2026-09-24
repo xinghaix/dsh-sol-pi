@@ -7,7 +7,7 @@ import { DEFAULT_SOL_DSH_CONFIG, resolveSolDshConfig, SOL_DSH_SETTINGS_NAMESPACE
 import { SolDshCard } from "./card.tsx";
 import { SOL_DSH_LOCALE_NS, solDshLocales, type SolDshLocaleKey } from "./locales.ts";
 
-type SettingsScopeSnapshot = {
+type ConfigFormSnapshot = {
 	status: "loading" | "ready" | "unavailable";
 	value: SolDshConfig | undefined;
 	base: unknown;
@@ -16,15 +16,15 @@ type SettingsScopeSnapshot = {
 	writable: boolean;
 };
 
-type SettingsScope = {
-	getSnapshot(): SettingsScopeSnapshot;
+/** DSH 0.1.7+ `configForms.get` face — mutate resolves to false after refused write + recovery. */
+type ConfigForm = {
+	getSnapshot(): ConfigFormSnapshot;
 	subscribe(listener: () => void): () => void;
-	mutate(ops: readonly { op: "set" | "unset"; path: string[]; value?: unknown }[], expectedRevision?: number): Promise<void>;
-	dispose?(): Promise<void>;
+	mutate(ops: readonly { op: "set" | "unset"; path: string[]; value?: unknown }[], expectedRevision?: number): Promise<boolean>;
 };
 
-type SettingsScopeBinder = {
-	bind(spec: { namespace: string; decode?: (section: unknown) => SolDshConfig | undefined }): SettingsScope;
+type ConfigFormsService = {
+	get(entryId: string): ConfigForm;
 };
 
 type ModelCatalogProvider = {
@@ -62,13 +62,13 @@ type ClientContext = {
 		inject(slot: string, callback: () => unknown): () => void;
 		register(options: Record<string, unknown>, component: unknown): () => void;
 	};
-	settingsScope: SettingsScopeBinder;
+	configForms: ConfigFormsService;
 	inject?(deps: string[], callback: (scope: ClientContext & { modelDirectories?: ModelDirectories }) => void): void;
 	effect?(callback: () => void | (() => void), label?: string): void;
 };
 
 /** Cordis fiber services — package rows belong in package.json dsh.client.inject. */
-export const inject = ["slots", "locale", "settingsScope"];
+export const inject = ["slots", "locale", "configForms"];
 
 export type SolDshSnapshot = {
 	readonly value: SolDshConfig;
@@ -98,7 +98,7 @@ function asUserLayer(value: unknown): Record<string, unknown> | undefined {
 		: undefined;
 }
 
-function whenSettled(scope: SettingsScope, timeoutMs = 8_000): Promise<SettingsScopeSnapshot> {
+function whenSettled(scope: ConfigForm, timeoutMs = 8_000): Promise<ConfigFormSnapshot> {
 	const first = scope.getSnapshot();
 	if (first.status !== "loading") return Promise.resolve(first);
 	return new Promise((resolve) => {
@@ -182,7 +182,7 @@ async function loadCatalogFromDirectories(directories: ModelDirectories | undefi
 
 /**
  * Sidebar Plugins → dsh-sol-pi bundle configuration.
- * Reads/writes through `ctx.settingsScope` (same path as first-party cards).
+ * Reads/writes through `ctx.configForms` (DSH 0.1.7+; settingsScope was removed).
  */
 export function apply(ctx: ClientContext): void {
 	ctx.effect?.(() => ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales), "dsh-sol-pi: locale dictionaries");
@@ -210,13 +210,7 @@ export function apply(ctx: ClientContext): void {
 	});
 
 	const t = translator(ctx);
-	const scope = ctx.settingsScope.bind({
-		namespace: SOL_DSH_SETTINGS_NAMESPACE,
-		decode: decodeSection,
-	});
-	ctx.effect?.(() => () => {
-		void scope.dispose?.();
-	}, "dsh-sol-pi: settings scope");
+	const scope = ctx.configForms.get(SOL_DSH_SETTINGS_NAMESPACE);
 
 	ctx.slots.inject("plugins.bundle.config", () =>
 		ctx.slots.register(
@@ -254,9 +248,12 @@ export function apply(ctx: ClientContext): void {
 							}
 						}
 						if (ops.length > 0) {
-							await scope.mutate(ops, expectedRevision);
-							// DSH resolves mutate() after ok:false recovery too. Only clear
-							// drafts when the authoritative snapshot reflects the requested state.
+							// configForms.mutate resolves to false after a refused write + recovery.
+							const ok = await scope.mutate(ops, expectedRevision);
+							if (!ok) {
+								throw new Error(t("saveFailed"));
+							}
+							// Belt-and-suspenders: confirm the mirrored user layer matches.
 							const settled = await whenSettled(scope);
 							const value = decodeSection(settled.value);
 							const settledUser = asUserLayer(settled.user);

@@ -49,6 +49,32 @@ function pick(source, keys, forced) {
   for (const key of keys) if (forced || source[key] !== void 0) result[key] = source[key];
   return result;
 }
+var write = /* @__PURE__ */ Symbol.for("cosmokit.volatile.write");
+function snapshot(value, ancestors = /* @__PURE__ */ new Set()) {
+  if (typeof value === "function") throw new TypeError("volatile config cannot contain functions");
+  if (value === null || typeof value !== "object") return value;
+  if (ancestors.has(value)) throw new TypeError("volatile config cannot contain cycles");
+  ancestors.add(value);
+  try {
+    if (Array.isArray(value)) return Object.freeze(value.map((item) => snapshot(item, ancestors)));
+    if (Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null) throw new TypeError("volatile config objects must be plain objects or arrays");
+    return Object.freeze(Object.fromEntries(Object.entries(value).map(([key, item]) => [key, snapshot(item, ancestors)])));
+  } finally {
+    ancestors.delete(value);
+  }
+}
+function createVolatile(value) {
+  let current = snapshot(value);
+  return Object.freeze({
+    get: () => current,
+    [write]: (value2) => {
+      current = value2;
+    }
+  });
+}
+function isVolatile(value) {
+  return typeof value === "object" && value !== null && write in value;
+}
 function is(type, value) {
   if (arguments.length === 1) return (value2) => is(type, value2);
   return type in globalThis && value instanceof globalThis[type] || Object.prototype.toString.call(value).slice(8, -1) === type;
@@ -127,24 +153,37 @@ function clone(source, refs = /* @__PURE__ */ new Map()) {
   return result;
 }
 function deepEqual(a, b, strict) {
-  if (a === b) return true;
-  if (!strict && isNullable(a) && isNullable(b)) return true;
-  if (typeof a !== typeof b) return false;
-  if (typeof a !== "object") return false;
-  if (!a || !b) return false;
-  function check(test, then) {
-    return test(a) ? test(b) ? then(a, b) : false : test(b) ? false : void 0;
+  const ancestors = /* @__PURE__ */ new Set();
+  function compare(a2, b2) {
+    if (a2 === b2) return true;
+    if (isVolatile(a2) || isVolatile(b2)) return isVolatile(a2) && isVolatile(b2);
+    if (!strict && isNullable(a2) && isNullable(b2)) return true;
+    if (typeof a2 !== typeof b2 || typeof a2 !== "object" || !a2 || !b2) return false;
+    if (ancestors.has(a2)) return false;
+    function check(test, then) {
+      return test(a2) ? test(b2) ? then(a2, b2) : false : test(b2) ? false : void 0;
+    }
+    ancestors.add(a2);
+    try {
+      return check(Array.isArray, (a3, b3) => {
+        if (a3.length !== b3.length) return false;
+        for (let index = 0; index < a3.length; index++) if (!compare(a3[index], b3[index])) return false;
+        return true;
+      }) ?? check(is("Date"), (a3, b3) => a3.valueOf() === b3.valueOf()) ?? check(is("URL"), (a3, b3) => a3.href === b3.href) ?? check(is("RegExp"), (a3, b3) => a3.source === b3.source && a3.flags === b3.flags) ?? check(isArrayBufferLike, (a3, b3) => {
+        if (a3.byteLength !== b3.byteLength) return false;
+        const viewA = new Uint8Array(a3);
+        const viewB = new Uint8Array(b3);
+        for (let i = 0; i < viewA.length; i++) if (viewA[i] !== viewB[i]) return false;
+        return true;
+      }) ?? ((!strict || [a2, b2].every((value) => Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null)) && Object.keys({
+        ...a2,
+        ...b2
+      }).every((key) => compare(a2[key], b2[key])));
+    } finally {
+      ancestors.delete(a2);
+    }
   }
-  return check(Array.isArray, (a2, b2) => a2.length === b2.length && a2.every((item, index) => deepEqual(item, b2[index]))) ?? check(is("Date"), (a2, b2) => a2.valueOf() === b2.valueOf()) ?? check(is("RegExp"), (a2, b2) => a2.source === b2.source && a2.flags === b2.flags) ?? check(isArrayBufferLike, (a2, b2) => {
-    if (a2.byteLength !== b2.byteLength) return false;
-    const viewA = new Uint8Array(a2);
-    const viewB = new Uint8Array(b2);
-    for (let i = 0; i < viewA.length; i++) if (viewA[i] !== viewB[i]) return false;
-    return true;
-  }) ?? Object.keys({
-    ...a,
-    ...b
-  }).every((key) => deepEqual(a[key], b[key], strict));
+  return compare(a, b);
 }
 var Time;
 (function(Time2) {
@@ -396,6 +435,7 @@ Schema.prototype.pattern = function pattern(regexp) {
   return schema;
 };
 Schema.prototype.simplify = function simplify(value) {
+  if (isVolatile(value)) value = value.get();
   if (deepEqual(value, this.meta.default, this.type === "dict")) return null;
   if (isNullable(value)) return value;
   if (this.type === "object" || this.type === "dict") {
@@ -453,12 +493,49 @@ for (const key of [
   };
   return schema;
 } });
+Schema.prototype.volatile = function volatile() {
+  if (this.meta.volatile) throw new TypeError("volatile schema is already wrapped");
+  return this.extra("volatile", true);
+};
 var resolvers = {};
+var checkedVolatile = /* @__PURE__ */ Symbol("checked-volatile-schema");
+function validateVolatileSchema(schema, path = [], blocked = false, seen = /* @__PURE__ */ new Map()) {
+  const states = seen.get(schema) ?? /* @__PURE__ */ new Set();
+  if (states.has(blocked)) return;
+  states.add(blocked);
+  seen.set(schema, states);
+  if (schema.meta?.volatile && blocked) throw new ValidationError("volatile fields require a fixed object path without an enclosing volatile field", { path });
+  const nested = blocked || !!schema.meta?.volatile;
+  if (schema.dict) for (const [key, child] of Object.entries(schema.dict)) validateVolatileSchema(child, [...path, key], nested, seen);
+  if (schema.sKey) validateVolatileSchema(schema.sKey, [...path, "<key>"], true, seen);
+  if (schema.inner && (schema.type !== "lazy" || schema.inner[kSchema])) validateVolatileSchema(schema.inner, [...path, "*"], true, seen);
+  if (schema.list) for (let index = 0; index < schema.list.length; index++) validateVolatileSchema(schema.list[index], [...path, String(index)], true, seen);
+}
 Schema.extend = function extend(type, resolve2) {
   resolvers[type] = resolve2;
 };
 Schema.resolve = function resolve(data, schema, options = {}, strict = false) {
   if (!schema) return [data];
+  if (!options[checkedVolatile]) {
+    validateVolatileSchema(schema, options.path);
+    options = {
+      ...options,
+      [checkedVolatile]: true
+    };
+  }
+  if (schema.meta?.volatile) {
+    const inner = Schema(schema);
+    inner.meta = {
+      ...schema.meta,
+      volatile: false
+    };
+    const [value, adapted] = Schema.resolve(data, inner, options, strict);
+    try {
+      return [createVolatile(value), adapted];
+    } catch (error) {
+      throw new ValidationError(error instanceof Error ? error.message : String(error), options);
+    }
+  }
   if (options.ignore?.(data, schema)) return [data];
   if (isNullable(data) && schema.type !== "lazy") {
     if (schema.meta.required) throw new ValidationError(`missing required value`, options);
@@ -566,6 +643,7 @@ Schema.extend("lazy", (data, schema, options, strict) => {
       ...schema.meta,
       ...schema.inner.meta
     };
+    validateVolatileSchema(schema.inner, options.path, true);
   }
   return Schema.resolve(data, schema.inner, options, strict);
 });
@@ -665,7 +743,7 @@ function property(data, key, schema, options) {
   } catch (e) {
     if (!options?.autofix) throw e;
     delete data[key];
-    return schema.meta.default;
+    return schema.meta.volatile ? createVolatile(schema.meta.default) : schema.meta.default;
   }
 }
 Schema.extend("array", (data, { inner, meta }, options) => {
@@ -873,57 +951,67 @@ var OCC_KEYS = /* @__PURE__ */ new Set([
 ]);
 var positiveInt = (fallback) => Schema.number().step(1).min(1).default(fallback);
 var nonNegativeInt = (fallback) => Schema.number().step(1).min(0).default(fallback);
+var actionFusionSchema = Schema.object({
+  enabled: Schema.boolean().default(true)
+}).default({ enabled: true });
+var observationPackSchema = Schema.object({
+  enabled: Schema.boolean().default(true),
+  mode: Schema.union(["immediate", "delayed"]).default("immediate"),
+  thresholdBytes: positiveInt(10240),
+  fullSends: nonNegativeInt(0),
+  placeholderExcerptBytes: positiveInt(1024)
+}).default({
+  enabled: true,
+  mode: "immediate",
+  thresholdBytes: 10240,
+  fullSends: 0,
+  placeholderExcerptBytes: 1024
+});
+var evidencePreservingReducerSchema = Schema.object({
+  enabled: Schema.boolean().default(true),
+  minBytes: positiveInt(4096),
+  maxChars: positiveInt(6e5),
+  maxOutputTokens: positiveInt(2048),
+  timeoutMs: positiveInt(9e4),
+  reducerProvider: Schema.string().default(""),
+  reducerModel: Schema.string().default("")
+}).default({
+  enabled: true,
+  minBytes: 4096,
+  maxChars: 6e5,
+  maxOutputTokens: 2048,
+  timeoutMs: 9e4,
+  reducerProvider: "",
+  reducerModel: ""
+});
+var onlineContextCompactSchema = Schema.object({
+  enabled: Schema.boolean().default(true),
+  cacheWriteReadRatio: Schema.number().min(0).default(50),
+  keepRecentTokens: nonNegativeInt(0),
+  nativeSummaryTokenEstimate: positiveInt(1e3),
+  windowReserveTokens: positiveInt(16384),
+  firstCompactionRequestScale: Schema.number().min(0).default(2),
+  subsequentCompactionMargin: Schema.number().min(1).default(1.5)
+}).default({
+  enabled: true,
+  cacheWriteReadRatio: 50,
+  keepRecentTokens: 0,
+  nativeSummaryTokenEstimate: 1e3,
+  windowReserveTokens: 16384,
+  firstCompactionRequestScale: 2,
+  subsequentCompactionMargin: 1.5
+});
 var Config = Schema.object({
-  actionFusion: Schema.object({
-    enabled: Schema.boolean().default(true)
-  }).default({ enabled: true }),
-  observationPack: Schema.object({
-    enabled: Schema.boolean().default(true),
-    mode: Schema.union(["immediate", "delayed"]).default("immediate"),
-    thresholdBytes: positiveInt(10240),
-    fullSends: nonNegativeInt(0),
-    placeholderExcerptBytes: positiveInt(1024)
-  }).default({
-    enabled: true,
-    mode: "immediate",
-    thresholdBytes: 10240,
-    fullSends: 0,
-    placeholderExcerptBytes: 1024
-  }),
-  evidencePreservingReducer: Schema.object({
-    enabled: Schema.boolean().default(true),
-    minBytes: positiveInt(4096),
-    maxChars: positiveInt(6e5),
-    maxOutputTokens: positiveInt(2048),
-    timeoutMs: positiveInt(9e4),
-    reducerProvider: Schema.string().default(""),
-    reducerModel: Schema.string().default("")
-  }).default({
-    enabled: true,
-    minBytes: 4096,
-    maxChars: 6e5,
-    maxOutputTokens: 2048,
-    timeoutMs: 9e4,
-    reducerProvider: "",
-    reducerModel: ""
-  }),
-  onlineContextCompact: Schema.object({
-    enabled: Schema.boolean().default(true),
-    cacheWriteReadRatio: Schema.number().min(0).default(50),
-    keepRecentTokens: nonNegativeInt(0),
-    nativeSummaryTokenEstimate: positiveInt(1e3),
-    windowReserveTokens: positiveInt(16384),
-    firstCompactionRequestScale: Schema.number().min(0).default(2),
-    subsequentCompactionMargin: Schema.number().min(1).default(1.5)
-  }).default({
-    enabled: true,
-    cacheWriteReadRatio: 50,
-    keepRecentTokens: 0,
-    nativeSummaryTokenEstimate: 1e3,
-    windowReserveTokens: 16384,
-    firstCompactionRequestScale: 2,
-    subsequentCompactionMargin: 1.5
-  })
+  actionFusion: actionFusionSchema.volatile(),
+  observationPack: observationPackSchema.volatile(),
+  evidencePreservingReducer: evidencePreservingReducerSchema.volatile(),
+  onlineContextCompact: onlineContextCompactSchema.volatile()
+});
+var PlainConfig = Schema.object({
+  actionFusion: actionFusionSchema,
+  observationPack: observationPackSchema,
+  evidencePreservingReducer: evidencePreservingReducerSchema,
+  onlineContextCompact: onlineContextCompactSchema
 });
 function assertPlainObject(value, label) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -959,7 +1047,7 @@ function resolveSolDshConfig(raw = {}) {
     assertPlainObject(raw.onlineContextCompact, "onlineContextCompact");
     rejectForbiddenAndUnknown(raw.onlineContextCompact, OCC_KEYS, "onlineContextCompact.");
   }
-  const config = Config(raw);
+  const config = PlainConfig(raw);
   if (config.observationPack.mode === "immediate" && config.observationPack.fullSends > 0) {
     throw new Error("dsh-sol-pi: observationPack.mode immediate requires fullSends = 0");
   }
@@ -1347,13 +1435,13 @@ function SolDshForm(props) {
       }
     );
   };
-  const syncFromSnapshot = (snapshot) => {
-    setLoaded(snapshot.value);
-    setDraft(cloneConfig(snapshot.value));
-    setBase(snapshot.base);
-    setUser(snapshot.user);
-    setRevision(snapshot.revision);
-    setWritable(snapshot.writable);
+  const syncFromSnapshot = (snapshot2) => {
+    setLoaded(snapshot2.value);
+    setDraft(cloneConfig(snapshot2.value));
+    setBase(snapshot2.base);
+    setUser(snapshot2.user);
+    setRevision(snapshot2.revision);
+    setWritable(snapshot2.writable);
     setTexts({});
     setClears(/* @__PURE__ */ new Set());
     setFailed(false);
@@ -1363,8 +1451,8 @@ function SolDshForm(props) {
     active.current = true;
     let cancelled = false;
     void props.load().then(
-      (snapshot) => {
-        if (!cancelled) syncFromSnapshot(snapshot);
+      (snapshot2) => {
+        if (!cancelled) syncFromSnapshot(snapshot2);
       },
       () => {
         if (!cancelled) setFailed(true);
@@ -1514,8 +1602,8 @@ function SolDshForm(props) {
       const resolved = resolveSolDshConfig(parsed.value);
       await props.onSave(resolved, revision, base, user);
       if (!active.current) return;
-      const snapshot = await props.load();
-      if (active.current) syncFromSnapshot(snapshot);
+      const snapshot2 = await props.load();
+      if (active.current) syncFromSnapshot(snapshot2);
     } catch (failure) {
       if (!active.current) return;
       setFailed(true);
@@ -1989,7 +2077,7 @@ if (zhKeys.join("\0") !== enKeys.join("\0")) {
 var solDshLocales = { zh, en };
 
 // src/sol-dsh/client/index.ts
-var inject = ["slots", "locale", "settingsScope"];
+var inject = ["slots", "locale", "configForms"];
 function translator(ctx) {
   const bound = ctx.locale.bind?.(SOL_DSH_LOCALE_NS);
   if (bound) return (key) => bound(key);
@@ -2025,8 +2113,8 @@ function whenSettled(scope, timeoutMs = 8e3) {
 function deepEqual2(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
-function normalizeCatalog(snapshot) {
-  const groups = snapshot?.groups;
+function normalizeCatalog(snapshot2) {
+  const groups = snapshot2?.groups;
   if (!Array.isArray(groups)) return [];
   const out = [];
   for (const group of groups) {
@@ -2098,13 +2186,7 @@ function apply(ctx) {
     setTimeout(finish, 4e3);
   });
   const t = translator(ctx);
-  const scope = ctx.settingsScope.bind({
-    namespace: SOL_DSH_SETTINGS_NAMESPACE,
-    decode: decodeSection
-  });
-  ctx.effect?.(() => () => {
-    void scope.dispose?.();
-  }, "dsh-sol-pi: settings scope");
+  const scope = ctx.configForms.get(SOL_DSH_SETTINGS_NAMESPACE);
   ctx.slots.inject(
     "plugins.bundle.config",
     () => ctx.slots.register(
@@ -2142,7 +2224,10 @@ function apply(ctx) {
               }
             }
             if (ops.length > 0) {
-              await scope.mutate(ops, expectedRevision);
+              const ok = await scope.mutate(ops, expectedRevision);
+              if (!ok) {
+                throw new Error(t("saveFailed"));
+              }
               const settled = await whenSettled(scope);
               const value = decodeSection(settled.value);
               const settledUser = asUserLayer(settled.user);

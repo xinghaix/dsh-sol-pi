@@ -322,7 +322,6 @@ function registerActionFusion(ctx, enabled = () => true) {
 
 // src/sol-dsh/config.ts
 import Schema from "@deepseek-ai/schemastery";
-var SOL_DSH_SETTINGS_NAMESPACE = "dsh-sol-pi";
 var FORBIDDEN_KEYS = /* @__PURE__ */ new Set([
   "apikey",
   "api_key",
@@ -373,57 +372,67 @@ var OCC_KEYS = /* @__PURE__ */ new Set([
 ]);
 var positiveInt = (fallback) => Schema.number().step(1).min(1).default(fallback);
 var nonNegativeInt = (fallback) => Schema.number().step(1).min(0).default(fallback);
+var actionFusionSchema = Schema.object({
+  enabled: Schema.boolean().default(true)
+}).default({ enabled: true });
+var observationPackSchema = Schema.object({
+  enabled: Schema.boolean().default(true),
+  mode: Schema.union(["immediate", "delayed"]).default("immediate"),
+  thresholdBytes: positiveInt(10240),
+  fullSends: nonNegativeInt(0),
+  placeholderExcerptBytes: positiveInt(1024)
+}).default({
+  enabled: true,
+  mode: "immediate",
+  thresholdBytes: 10240,
+  fullSends: 0,
+  placeholderExcerptBytes: 1024
+});
+var evidencePreservingReducerSchema = Schema.object({
+  enabled: Schema.boolean().default(true),
+  minBytes: positiveInt(4096),
+  maxChars: positiveInt(6e5),
+  maxOutputTokens: positiveInt(2048),
+  timeoutMs: positiveInt(9e4),
+  reducerProvider: Schema.string().default(""),
+  reducerModel: Schema.string().default("")
+}).default({
+  enabled: true,
+  minBytes: 4096,
+  maxChars: 6e5,
+  maxOutputTokens: 2048,
+  timeoutMs: 9e4,
+  reducerProvider: "",
+  reducerModel: ""
+});
+var onlineContextCompactSchema = Schema.object({
+  enabled: Schema.boolean().default(true),
+  cacheWriteReadRatio: Schema.number().min(0).default(50),
+  keepRecentTokens: nonNegativeInt(0),
+  nativeSummaryTokenEstimate: positiveInt(1e3),
+  windowReserveTokens: positiveInt(16384),
+  firstCompactionRequestScale: Schema.number().min(0).default(2),
+  subsequentCompactionMargin: Schema.number().min(1).default(1.5)
+}).default({
+  enabled: true,
+  cacheWriteReadRatio: 50,
+  keepRecentTokens: 0,
+  nativeSummaryTokenEstimate: 1e3,
+  windowReserveTokens: 16384,
+  firstCompactionRequestScale: 2,
+  subsequentCompactionMargin: 1.5
+});
 var Config = Schema.object({
-  actionFusion: Schema.object({
-    enabled: Schema.boolean().default(true)
-  }).default({ enabled: true }),
-  observationPack: Schema.object({
-    enabled: Schema.boolean().default(true),
-    mode: Schema.union(["immediate", "delayed"]).default("immediate"),
-    thresholdBytes: positiveInt(10240),
-    fullSends: nonNegativeInt(0),
-    placeholderExcerptBytes: positiveInt(1024)
-  }).default({
-    enabled: true,
-    mode: "immediate",
-    thresholdBytes: 10240,
-    fullSends: 0,
-    placeholderExcerptBytes: 1024
-  }),
-  evidencePreservingReducer: Schema.object({
-    enabled: Schema.boolean().default(true),
-    minBytes: positiveInt(4096),
-    maxChars: positiveInt(6e5),
-    maxOutputTokens: positiveInt(2048),
-    timeoutMs: positiveInt(9e4),
-    reducerProvider: Schema.string().default(""),
-    reducerModel: Schema.string().default("")
-  }).default({
-    enabled: true,
-    minBytes: 4096,
-    maxChars: 6e5,
-    maxOutputTokens: 2048,
-    timeoutMs: 9e4,
-    reducerProvider: "",
-    reducerModel: ""
-  }),
-  onlineContextCompact: Schema.object({
-    enabled: Schema.boolean().default(true),
-    cacheWriteReadRatio: Schema.number().min(0).default(50),
-    keepRecentTokens: nonNegativeInt(0),
-    nativeSummaryTokenEstimate: positiveInt(1e3),
-    windowReserveTokens: positiveInt(16384),
-    firstCompactionRequestScale: Schema.number().min(0).default(2),
-    subsequentCompactionMargin: Schema.number().min(1).default(1.5)
-  }).default({
-    enabled: true,
-    cacheWriteReadRatio: 50,
-    keepRecentTokens: 0,
-    nativeSummaryTokenEstimate: 1e3,
-    windowReserveTokens: 16384,
-    firstCompactionRequestScale: 2,
-    subsequentCompactionMargin: 1.5
-  })
+  actionFusion: actionFusionSchema.volatile(),
+  observationPack: observationPackSchema.volatile(),
+  evidencePreservingReducer: evidencePreservingReducerSchema.volatile(),
+  onlineContextCompact: onlineContextCompactSchema.volatile()
+});
+var PlainConfig = Schema.object({
+  actionFusion: actionFusionSchema,
+  observationPack: observationPackSchema,
+  evidencePreservingReducer: evidencePreservingReducerSchema,
+  onlineContextCompact: onlineContextCompactSchema
 });
 function assertPlainObject(value, label) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -459,7 +468,7 @@ function resolveSolDshConfig(raw = {}) {
     assertPlainObject(raw.onlineContextCompact, "onlineContextCompact");
     rejectForbiddenAndUnknown(raw.onlineContextCompact, OCC_KEYS, "onlineContextCompact.");
   }
-  const config = Config(raw);
+  const config = PlainConfig(raw);
   if (config.observationPack.mode === "immediate" && config.observationPack.fullSends > 0) {
     throw new Error("dsh-sol-pi: observationPack.mode immediate requires fullSends = 0");
   }
@@ -1321,47 +1330,34 @@ function registerObservationPack(ctx, configOf) {
 }
 
 // src/sol-dsh/settings.ts
-function installSolDshSettings(ctx, entry, onLive) {
-  let current = entry;
-  let sourceThunk = () => current;
-  onLive(current);
-  const source = () => current;
-  const readLive = () => {
-    try {
-      current = resolveSolDshConfig(sourceThunk());
-    } catch {
-      current = entry;
-    }
-    onLive(current);
-  };
-  const attach = (host) => {
-    if (!host.settings?.installSection) return;
-    host.settings.installSection(host, SOL_DSH_SETTINGS_NAMESPACE, Config, entry, {
-      setSource: (next) => {
-        sourceThunk = next;
-      },
-      onChange: readLive,
-      validate: (value) => {
-        resolveSolDshConfig(value);
+function isVolatileRef(value) {
+  return typeof value === "object" && value !== null && typeof value.get === "function";
+}
+function sectionValue(value) {
+  return isVolatileRef(value) ? value.get() : value;
+}
+function liveSolDshConfig(config = {}) {
+  return () => {
+    if (config && typeof config === "object") {
+      const record = config;
+      if (isVolatileRef(record.actionFusion) || isVolatileRef(record.observationPack) || isVolatileRef(record.evidencePreservingReducer) || isVolatileRef(record.onlineContextCompact)) {
+        return resolveSolDshConfig({
+          actionFusion: sectionValue(record.actionFusion),
+          observationPack: sectionValue(record.observationPack),
+          evidencePreservingReducer: sectionValue(record.evidencePreservingReducer),
+          onlineContextCompact: sectionValue(record.onlineContextCompact)
+        });
       }
-    });
+    }
+    return resolveSolDshConfig(config ?? {});
   };
-  if (typeof ctx.inject === "function") {
-    ctx.inject(["settings"], (child) => attach(child));
-  } else {
-    attach(ctx);
-  }
-  return source;
 }
 
 // src/sol-dsh/index.ts
 var name = "dsh-sol-pi";
 var inject = ["tools", "llm"];
 function apply(ctx, config = {}) {
-  let live = resolveSolDshConfig(config);
-  const source = installSolDshSettings(ctx, live, (next) => {
-    live = next;
-  });
+  const source = liveSolDshConfig(config);
   registerEvidencePreservingReducer(ctx, () => source().evidencePreservingReducer);
   registerObservationPack(ctx, () => source().observationPack);
   registerActionFusion(ctx, () => source().actionFusion.enabled);
