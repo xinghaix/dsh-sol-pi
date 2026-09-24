@@ -219,4 +219,42 @@ describe("DSH client bundle registration invariants", () => {
     expect(artifact.toLowerCase()).not.toContain("cosmokit");
     expect(artifact).not.toContain("modelDirectories");
   });
+
+  it("assigns exports.apply and exports.inject for ModuleLoader/Cordis", () => {
+    // Regression: esbuild CJS emitted module.exports = __toCommonJS(...) (getters +
+    // __esModule) without exports.apply = apply. Cordis then never received apply,
+    // plugins.bundle.config never registered, ledger.bundles lacked dsh-sol-pi,
+    // and PackageDetail hid Settings (configured = ledger.bundles.has(pkg.name)).
+    const artifact = readFileSync(new URL("../dist/sol-dsh/client.js", import.meta.url), "utf8");
+    expect(artifact).toContain("exports.apply = apply");
+    expect(artifact).toContain("exports.inject = inject");
+
+    let loaded: { id: string; factory: (require: (name: string) => unknown) => any } | undefined;
+    const sandbox = {
+      window: { __ModuleLoader__: { load(def: typeof loaded) { loaded = def!; } } },
+      document: {
+        getElementById: () => null,
+        createElement: () => ({ id: "", textContent: "" }),
+        head: { appendChild() {} },
+      },
+      Object, Array, Error, Promise, setTimeout, clearTimeout, JSON, Map, Set, console,
+    };
+    vm.runInNewContext(artifact, sandbox);
+    expect(loaded?.id).toBe("dsh-sol-pi");
+    const mod = loaded!.factory((name: string) => {
+      if (name === "react") return { useState: () => [null, () => {}], useEffect: () => {}, useMemo: (f: () => unknown) => f(), useRef: (v: unknown) => ({ current: v }), createElement: () => null };
+      if (name === "react/jsx-runtime") return { jsx: () => null, jsxs: () => null };
+      if (name === "react-dom" || name === "react-dom/client") return {};
+      if (name.startsWith("@deepseek-ai/")) return {};
+      throw new Error(name);
+    });
+    const applyDesc = Object.getOwnPropertyDescriptor(mod, "apply");
+    const injectDesc = Object.getOwnPropertyDescriptor(mod, "inject");
+    expect(typeof mod.apply).toBe("function");
+    expect(mod.inject).toEqual(["slots", "locale", "configForms"]);
+    // Own data properties — not esbuild getter bag on a replaced module.exports.
+    expect(applyDesc?.value).toBeTypeOf("function");
+    expect(injectDesc?.value).toEqual(["slots", "locale", "configForms"]);
+    expect(mod.__esModule).toBeUndefined();
+  });
 });

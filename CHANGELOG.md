@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 中文版：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
 
+## [0.2.5] - 2026-09-24
+
+### Fixed
+- Plugin detail Settings still missing after 0.2.4: `dist/sol-dsh/client.js` ModuleLoader factory ended with esbuild's `module.exports = __toCommonJS(...)` (getter bag + `__esModule`) and never assigned `exports.apply = apply` / `exports.inject = inject` (unlike working `dsh-web-fetch-allowlist`). Cordis therefore never received `apply`, so `plugins.bundle.config` never registered, `ledger.bundles` lacked `dsh-sol-pi`, and PackageDetail hid Settings (`configured = ledger.bundles.has(pkg.name)`). Client build now re-homes own-property `exports.apply` / `exports.inject` before return; tests and `check-dsh-compat` lock the contract.
+
 ## [0.2.4] - 2026-09-24
 
 ### Fixed

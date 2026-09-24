@@ -1337,5 +1337,8 @@ function apply(ctx) {
   );
 }
 
+exports.apply = apply;
+exports.inject = inject;
+module.exports = exports;
 return module.exports;
 } });

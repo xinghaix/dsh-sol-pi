@@ -86,6 +86,8 @@ must(!clientInject.includes("@deepseek-ai/"), "client fiber inject must not list
 must(read("src/sol-dsh/client/index.ts").includes('ctx.slots.register'), "client must register plugins.bundle.config via ctx.slots.register");
 must(/export\s*\{[^}]*\bname\b/.test(read("dist/sol-dsh/index.js")) && /\binject\b/.test(read("dist/sol-dsh/index.js")) && /\bapply\b/.test(read("dist/sol-dsh/index.js")), "dist/sol-dsh/index.js must export name/inject/apply");
 must(read("dist/sol-dsh/client.js").includes("window.__ModuleLoader__.load"), "dist/sol-dsh/client.js must be the DSH ModuleLoader CJS factory");
+must(read("dist/sol-dsh/client.js").includes("exports.apply = apply"), "dist/sol-dsh/client.js must assign exports.apply (Cordis/ModuleLoader contract; esbuild __toCommonJS alone is not enough)");
+must(read("dist/sol-dsh/client.js").includes("exports.inject = inject"), "dist/sol-dsh/client.js must assign exports.inject (Cordis/ModuleLoader contract)");
 
 if (failures.length > 0) {
 	console.error("check-dsh-compat failed:");

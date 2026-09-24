@@ -7,6 +7,11 @@
 
 English: [CHANGELOG.md](./CHANGELOG.md)
 
+## [0.2.5] - 2026-09-24
+
+### 修复
+- 0.2.4 之后插件详情 Settings 仍缺失：`dist/sol-dsh/client.js` 的 ModuleLoader 工厂以 esbuild 的 `module.exports = __toCommonJS(...)`（getter 包 + `__esModule`）结尾，从未像可用的 `dsh-web-fetch-allowlist` 那样赋值 `exports.apply = apply` / `exports.inject = inject`。Cordis 因此拿不到 `apply`，`plugins.bundle.config` 未注册，`ledger.bundles` 缺少 `dsh-sol-pi`，PackageDetail 隐藏 Settings（`configured = ledger.bundles.has(pkg.name)`）。客户端构建现在在 return 前把 `exports.apply` / `exports.inject` 写成自有属性；测试与 `check-dsh-compat` 锁定该契约。
+
 ## [0.2.4] - 2026-09-24
 
 ### 修复

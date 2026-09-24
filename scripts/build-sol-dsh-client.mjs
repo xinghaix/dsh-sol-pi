@@ -71,9 +71,27 @@ await build({
 });
 
 const artifact = readFileSync(outfile, "utf8");
-const wrapped = `window.__ModuleLoader__.load({ id: "dsh-sol-pi", factory: function (require) {\nconst module = { exports: {} };\nconst exports = module.exports;\n${artifact}\nreturn module.exports;\n} });\n`;
+// DSH ModuleLoader materializes factory(require) → exports, then Cordis looks for
+// own-property apply/inject (see dsh-web-fetch-allowlist). esbuild CJS emits
+// `module.exports = __toCommonJS(...)` (getter bag + __esModule) and never
+// writes `exports.apply = apply` / `exports.inject = inject`, so Cordis never
+// receives apply → plugins.bundle.config never registers → ledger.bundles
+// lacks dsh-sol-pi → Settings stays hidden. Re-home onto the factory exports.
+const wrapped = `window.__ModuleLoader__.load({ id: "dsh-sol-pi", factory: function (require) {
+const module = { exports: {} };
+const exports = module.exports;
+${artifact}
+exports.apply = apply;
+exports.inject = inject;
+module.exports = exports;
+return module.exports;
+} });
+`;
 if (wrapped.includes("import.meta") || /^\s*import\s/m.test(artifact) || /^\s*export\s/m.test(artifact)) {
 	throw new Error("client bundle must not contain ESM import/export or import.meta");
+}
+if (!wrapped.includes("exports.apply = apply") || !wrapped.includes("exports.inject = inject")) {
+	throw new Error("client bundle must assign exports.apply and exports.inject (ModuleLoader/Cordis contract)");
 }
 writeFileSync(outfile, wrapped);
 writeFileSync(join(root, "dist/sol-dsh/client.d.ts"), 'export * from "../../src/sol-dsh/client/index.ts";\n');
