@@ -77,7 +77,10 @@ must(!clientInject.includes('"settingsScope"'), "client inject must not declare 
 must(pkg.dsh?.engines?.dsh === ">=0.1.7-rc.1" || String(pkg.dsh?.engines?.dsh ?? "").includes("0.1.7"), "package.json dsh.engines.dsh must require >=0.1.7-rc.1");
 must(!/\.installSection\s*\(/.test(read("src/sol-dsh/settings.ts")), "settings.ts must not call installSection");
 must(!/installSection\s*\(/.test(read("src/sol-dsh/host.ts")), "host.ts must not type installSection");
-must(read("src/sol-dsh/config.ts").includes(".volatile()"), "Config schema must mark live fields volatile");
+must(read("src/sol-dsh/config-schema.ts").includes(".volatile()"), "Config schema must mark live fields volatile");
+must(!/from "@deepseek-ai\/schemastery"/.test(read("src/sol-dsh/config.ts")), "config.ts must stay Schema-free so the Web client does not bundle Schemastery");
+must(!/schemastery|cosmokit/.test(read("dist/sol-dsh/client.js")), "dist/sol-dsh/client.js must not embed Schemastery/cosmokit (match allowlist-sized client)");
+must(!/modelDirectories/.test(read("src/sol-dsh/client/index.ts")), "client apply must not soft-inject modelDirectories — nested ctx.inject is unnecessary for Settings visibility");
 must(/configForms\.get\s*\(/.test(read("src/sol-dsh/client/index.ts")), "client must use configForms.get");
 must(!clientInject.includes("@deepseek-ai/"), "client fiber inject must not list @deepseek-ai/* package names");
 must(read("src/sol-dsh/client/index.ts").includes('ctx.slots.register'), "client must register plugins.bundle.config via ctx.slots.register");

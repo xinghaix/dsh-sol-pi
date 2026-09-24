@@ -7,6 +7,11 @@
 
 English: [CHANGELOG.md](./CHANGELOG.md)
 
+## [0.2.4] - 2026-09-24
+
+### 修复
+- 在 DSH 0.1.7-rc.1 上，0.2.3 仍不显示插件详情 Settings：Web 客户端经 `config.ts` 打进了 Schemastery/cosmokit，并嵌套 `ctx.inject(["modelDirectories"])`，与可用的 `dsh-web-fetch-allowlist` 客户端不同。将 Cordis `Config` 拆到 `config-schema.ts`，客户端侧 `resolveSolDshConfig` 保持无 Schema，仅以 key `dsh-sol-pi` 注册 `plugins.bundle.config`（不再 soft-inject）。
+
 ## [0.2.3] - 2026-09-24
 
 ### 修复

@@ -195,3 +195,28 @@ describe("DSH plugin manager configuration", () => {
     expect(nodes(page, node => node.type?.name === "SwitchRow").every(node => node.props.disabled)).toBe(true);
   });
 });
+
+describe("DSH client bundle registration invariants", () => {
+  it("registers plugins.bundle.config under the npm package name", () => {
+    const h = harness();
+    h.declare();
+    expect(h.entry().spec.key).toBe("dsh-sol-pi");
+    expect(h.entries.has("dsh-sol-pi")).toBe(true);
+  });
+
+  it("registers Settings without calling ctx.inject", () => {
+    const h = harness();
+    // harness apply has no ctx.inject — registration must still succeed
+    h.declare();
+    expect(h.entry().spec.name).toBe("plugins.bundle.config");
+  });
+
+  it("ships a Schemastery-free client artifact", () => {
+    const artifact = readFileSync(new URL("../dist/sol-dsh/client.js", import.meta.url), "utf8");
+    expect(artifact).toContain("window.__ModuleLoader__.load");
+    expect(artifact).toMatch(/key:\s*(?:SOL_DSH_SETTINGS_NAMESPACE|"dsh-sol-pi")/);
+    expect(artifact.toLowerCase()).not.toContain("schemastery");
+    expect(artifact.toLowerCase()).not.toContain("cosmokit");
+    expect(artifact).not.toContain("modelDirectories");
+  });
+});

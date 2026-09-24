@@ -4,7 +4,8 @@
  */
 
 import { registerActionFusion } from "./action-fusion.ts";
-import { Config, type SolDshConfig } from "./config.ts";
+import type { SolDshConfig } from "./config.ts";
+import { Config } from "./config-schema.ts";
 import { registerEvidencePreservingReducer } from "./epr.ts";
 import type { DshContext } from "./host.ts";
 import { registerOnlineContextCompact } from "./occ.ts";

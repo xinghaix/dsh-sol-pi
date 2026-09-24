@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 中文版：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
 
+## [0.2.4] - 2026-09-24
+
+### Fixed
+- Plugin detail Settings still missing on DSH 0.1.7-rc.1 after 0.2.3: the Web client bundled Schemastery/cosmokit via `config.ts` and nested `ctx.inject(["modelDirectories"])`, unlike the working `dsh-web-fetch-allowlist` client. Split Cordis `Config` into `config-schema.ts`, keep `resolveSolDshConfig` Schema-free for the client, and register `plugins.bundle.config` with key `dsh-sol-pi` only (no soft inject).
+
 ## [0.2.3] - 2026-09-24
 
 ### Fixed

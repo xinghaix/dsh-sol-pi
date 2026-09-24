@@ -33,25 +33,6 @@ type ModelCatalogProvider = {
 	models: { id: string; name: string }[];
 };
 
-type ModelCatalogGroup = {
-	id: string;
-	name?: string;
-	displayName?: string;
-	models: { id: string; name?: string }[];
-};
-
-type ModelDirectories = {
-	/** Host-generation catalog shared by every session (preferred for settings UI). */
-	catalog?: {
-		load(): Promise<{ groups?: ModelCatalogGroup[] }>;
-		store?: { getSnapshot(): { value: { groups?: ModelCatalogGroup[] } | null; status: string } };
-	};
-	directoryFor?(sessionId: string): {
-		load(): Promise<{ groups?: ModelCatalogGroup[] } | { groups?: unknown }>;
-		store?: { getSnapshot(): { groups?: ModelCatalogGroup[] } };
-	};
-};
-
 type ClientContext = {
 	locale: {
 		register(ns: string, dicts: { zh: Record<string, string>; en: Record<string, string> }): void;
@@ -63,7 +44,6 @@ type ClientContext = {
 		register(options: Record<string, unknown>, component: unknown): () => void;
 	};
 	configForms: ConfigFormsService;
-	inject?(deps: string[], callback: (scope: ClientContext & { modelDirectories?: ModelDirectories }) => void): void;
 	effect?(callback: () => void | (() => void), label?: string): void;
 };
 
@@ -120,88 +100,25 @@ function deepEqual(left: unknown, right: unknown): boolean {
 	return JSON.stringify(left) === JSON.stringify(right);
 }
 
-
-function normalizeCatalog(snapshot: unknown): ModelCatalogProvider[] {
-	const groups = (snapshot as { groups?: unknown } | null | undefined)?.groups;
-	if (!Array.isArray(groups)) return [];
-	const out: ModelCatalogProvider[] = [];
-	for (const group of groups) {
-		if (typeof group !== "object" || group === null) continue;
-		const record = group as Record<string, unknown>;
-		const id = typeof record.id === "string" ? record.id : "";
-		if (!id) continue;
-		const name =
-			typeof record.name === "string"
-				? record.name
-				: typeof record.displayName === "string"
-					? record.displayName
-					: id;
-		const modelsRaw = record.models;
-		const models: { id: string; name: string }[] = [];
-		if (Array.isArray(modelsRaw)) {
-			for (const model of modelsRaw) {
-				if (typeof model !== "object" || model === null) continue;
-				const row = model as Record<string, unknown>;
-				const modelId = typeof row.id === "string" ? row.id : "";
-				if (!modelId) continue;
-				models.push({
-					id: modelId,
-					name: typeof row.name === "string" ? row.name : modelId,
-				});
-			}
-		}
-		out.push({ id, name, models });
-	}
-	return out;
-}
-
-async function loadCatalogFromDirectories(directories: ModelDirectories | undefined): Promise<ModelCatalogProvider[]> {
-	if (!directories) return [];
-	try {
-		// Prefer the shared Host catalog — directoryFor() is per-session and needs a live session.
-		if (directories.catalog) {
-			const value = await directories.catalog.load();
-			const fromCatalog = normalizeCatalog(value);
-			if (fromCatalog.length > 0) return fromCatalog;
-			const snap = directories.catalog.store?.getSnapshot();
-			if (snap?.value) {
-				const fromStore = normalizeCatalog(snap.value);
-				if (fromStore.length > 0) return fromStore;
-			}
-		}
-		if (!directories.directoryFor) return [];
-		const directory = directories.directoryFor("");
-		const loaded = await directory.load();
-		const fromLoad = normalizeCatalog(loaded);
-		if (fromLoad.length > 0) return fromLoad;
-		return normalizeCatalog(directory.store?.getSnapshot());
-	} catch {
-		return [];
-	}
-}
-
 /**
  * Sidebar Plugins → dsh-sol-pi bundle configuration.
  * Reads/writes through `ctx.configForms` (DSH 0.1.7+; settingsScope was removed).
+ *
+ * Registration mirrors dsh-web-fetch-allowlist: register `plugins.bundle.config`
+ * with `key === package.json name` (`dsh-sol-pi`) synchronously in `apply`, with
+ * no nested `ctx.inject` and no Schemastery in this module graph.
  */
 export function apply(ctx: ClientContext): void {
 	ctx.effect?.(() => ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales), "dsh-sol-pi: locale dictionaries");
 	if (!ctx.effect) ctx.locale.register(SOL_DSH_LOCALE_NS, solDshLocales);
 
 	const t = translator(ctx);
+	// Cordis Host entry id / plugin `name` export (same string as the npm package).
 	const scope = ctx.configForms.get(SOL_DSH_SETTINGS_NAMESPACE);
 
-	// Register the plugin-manager settings slot first. PackageDetail only shows
-	// the form when ledger.bundles has this package name; that ledger is the
-	// keys of plugins.bundle.config. Soft modelDirectories inject must not run
-	// before this — and must not be a package.json dsh.client.inject hard dep
-	// (immediately + model-selection left this fiber pending on DSH 0.1.7-rc.1).
-	let directories: ModelDirectories | undefined;
-	let resolveDirectories!: (value: ModelDirectories | undefined) => void;
-	const directoriesReady = new Promise<ModelDirectories | undefined>((resolve) => {
-		resolveDirectories = resolve;
-	});
-
+	// PackageDetail shows Settings iff ledger.bundles.has(pkg.name); ledger keys
+	// are plugins.bundle.config entry options.key values. Key MUST be the npm
+	// package name — not a shortened Cordis host alias.
 	ctx.slots.inject("plugins.bundle.config", () =>
 		ctx.slots.register(
 			{
@@ -210,7 +127,8 @@ export function apply(ctx: ClientContext): void {
 				locale: SOL_DSH_LOCALE_NS,
 				inject: () => ({
 					t,
-					loadModelCatalog: async () => loadCatalogFromDirectories(await directoriesReady),
+					// Model catalog is optional chrome; never gate slot registration on it.
+					loadModelCatalog: async () => [] as ModelCatalogProvider[],
 					load: async (): Promise<SolDshSnapshot> => {
 						const snap = await whenSettled(scope);
 						const base = decodeSection(snap.base) ?? DEFAULT_SOL_DSH_CONFIG;
@@ -260,26 +178,4 @@ export function apply(ctx: ClientContext): void {
 			SolDshCard,
 		),
 	);
-
-	// Cordis throws on undeclared ctx.modelDirectories — only touch it inside inject().
-	if (typeof ctx.inject === "function") {
-		let settled = false;
-		const finish = () => {
-			if (settled) return;
-			settled = true;
-			resolveDirectories(directories);
-		};
-		try {
-			ctx.inject(["modelDirectories"], (scope) => {
-				directories = scope.modelDirectories;
-				finish();
-			});
-		} catch {
-			finish();
-			return;
-		}
-		setTimeout(finish, 4_000);
-	} else {
-		resolveDirectories(undefined);
-	}
 }

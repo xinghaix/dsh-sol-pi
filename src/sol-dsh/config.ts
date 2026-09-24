@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import Schema from "@deepseek-ai/schemastery";
-
 export const SOL_DSH_SETTINGS_NAMESPACE = "dsh-sol-pi" as const;
 
 const FORBIDDEN_KEYS = new Set([
@@ -99,81 +97,35 @@ export interface SolDshConfig {
 	readonly onlineContextCompact: OnlineContextCompactConfig;
 }
 
-const positiveInt = (fallback: number) => Schema.number().step(1).min(1).default(fallback);
-const nonNegativeInt = (fallback: number) => Schema.number().step(1).min(0).default(fallback);
-
-const actionFusionSchema = Schema.object({
-	enabled: Schema.boolean().default(true),
-}).default({ enabled: true });
-
-const observationPackSchema = Schema.object({
-	enabled: Schema.boolean().default(true),
-	mode: Schema.union(["immediate", "delayed"] as const).default("immediate"),
-	thresholdBytes: positiveInt(10_240),
-	fullSends: nonNegativeInt(0),
-	placeholderExcerptBytes: positiveInt(1024),
-}).default({
-	enabled: true,
-	mode: "immediate",
-	thresholdBytes: 10_240,
-	fullSends: 0,
-	placeholderExcerptBytes: 1024,
-});
-
-const evidencePreservingReducerSchema = Schema.object({
-	enabled: Schema.boolean().default(true),
-	minBytes: positiveInt(4096),
-	maxChars: positiveInt(600_000),
-	maxOutputTokens: positiveInt(2048),
-	timeoutMs: positiveInt(90_000),
-	reducerProvider: Schema.string().default(""),
-	reducerModel: Schema.string().default(""),
-}).default({
-	enabled: true,
-	minBytes: 4096,
-	maxChars: 600_000,
-	maxOutputTokens: 2048,
-	timeoutMs: 90_000,
-	reducerProvider: "",
-	reducerModel: "",
-});
-
-const onlineContextCompactSchema = Schema.object({
-	enabled: Schema.boolean().default(true),
-	cacheWriteReadRatio: Schema.number().min(0).default(50),
-	keepRecentTokens: nonNegativeInt(0),
-	nativeSummaryTokenEstimate: positiveInt(1000),
-	windowReserveTokens: positiveInt(16_384),
-	firstCompactionRequestScale: Schema.number().min(0).default(2),
-	subsequentCompactionMargin: Schema.number().min(1).default(1.5),
-}).default({
-	enabled: true,
-	cacheWriteReadRatio: 50,
-	keepRecentTokens: 0,
-	nativeSummaryTokenEstimate: 1000,
-	windowReserveTokens: 16_384,
-	firstCompactionRequestScale: 2,
-	subsequentCompactionMargin: 1.5,
-});
-
-/**
- * Cordis Host Config — top-level sections are volatile so Plugins-card edits
- * apply in place (DSH 0.1.7+; `settings.installSection` was removed).
- */
-export const Config = Schema.object({
-	actionFusion: actionFusionSchema.volatile(),
-	observationPack: observationPackSchema.volatile(),
-	evidencePreservingReducer: evidencePreservingReducerSchema.volatile(),
-	onlineContextCompact: onlineContextCompactSchema.volatile(),
-});
-
-/** Plain schema for resolveSolDshConfig / defaults (no volatile refs). */
-const PlainConfig = Schema.object({
-	actionFusion: actionFusionSchema,
-	observationPack: observationPackSchema,
-	evidencePreservingReducer: evidencePreservingReducerSchema,
-	onlineContextCompact: onlineContextCompactSchema,
-});
+/** Best-profile defaults — plain data so the Web client never pulls Schemastery. */
+export const SOL_DSH_DEFAULTS: SolDshConfig = {
+	actionFusion: { enabled: true },
+	observationPack: {
+		enabled: true,
+		mode: "immediate",
+		thresholdBytes: 10_240,
+		fullSends: 0,
+		placeholderExcerptBytes: 1024,
+	},
+	evidencePreservingReducer: {
+		enabled: true,
+		minBytes: 4096,
+		maxChars: 600_000,
+		maxOutputTokens: 2048,
+		timeoutMs: 90_000,
+		reducerProvider: "",
+		reducerModel: "",
+	},
+	onlineContextCompact: {
+		enabled: true,
+		cacheWriteReadRatio: 50,
+		keepRecentTokens: 0,
+		nativeSummaryTokenEstimate: 1000,
+		windowReserveTokens: 16_384,
+		firstCompactionRequestScale: 2,
+		subsequentCompactionMargin: 1.5,
+	},
+};
 
 function assertPlainObject(value: unknown, label: string): asserts value is Record<string, unknown> {
 	if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -192,10 +144,40 @@ function rejectForbiddenAndUnknown(record: Record<string, unknown>, allowed: Rea
 	}
 }
 
+function asBoolean(value: unknown, fallback: boolean): boolean {
+	return typeof value === "boolean" ? value : fallback;
+}
+
+function asNumber(value: unknown, fallback: number): number {
+	return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function asNonNegInt(value: unknown, fallback: number): number {
+	const n = asNumber(value, fallback);
+	return Number.isInteger(n) && n >= 0 ? n : fallback;
+}
+
+function asPosInt(value: unknown, fallback: number): number {
+	const n = asNumber(value, fallback);
+	return Number.isInteger(n) && n >= 1 ? n : fallback;
+}
+
+function asString(value: unknown, fallback: string): string {
+	return typeof value === "string" ? value : fallback;
+}
+
+function asMode(value: unknown, fallback: ObservationPackMode): ObservationPackMode {
+	return value === "delayed" || value === "immediate" ? value : fallback;
+}
+
 /**
  * Validate and fill SoL's DSH best-profile defaults. Unknown and credential-like
  * keys fail load. `immediate` + `fullSends > 0` is rejected. Reducer route must
  * be both empty or both set.
+ *
+ * Schema-free so `dist/sol-dsh/client.js` never bundles Schemastery/cosmokit
+ * (those bloated the Web factory and risked ModuleLoader materialization failures
+ * on Desktop WKWebView while dsh-web-fetch-allowlist's tiny client still worked).
  */
 export function resolveSolDshConfig(raw: unknown = {}): SolDshConfig {
 	assertPlainObject(raw, "configuration");
@@ -217,7 +199,55 @@ export function resolveSolDshConfig(raw: unknown = {}): SolDshConfig {
 		rejectForbiddenAndUnknown(raw.onlineContextCompact, OCC_KEYS, "onlineContextCompact.");
 	}
 
-	const config = PlainConfig(raw) as SolDshConfig;
+	const d = SOL_DSH_DEFAULTS;
+	const actionFusionRaw = (raw.actionFusion ?? {}) as Record<string, unknown>;
+	const observationRaw = (raw.observationPack ?? {}) as Record<string, unknown>;
+	const eprRaw = (raw.evidencePreservingReducer ?? {}) as Record<string, unknown>;
+	const occRaw = (raw.onlineContextCompact ?? {}) as Record<string, unknown>;
+
+	const config: SolDshConfig = {
+		actionFusion: {
+			enabled: asBoolean(actionFusionRaw.enabled, d.actionFusion.enabled),
+		},
+		observationPack: {
+			enabled: asBoolean(observationRaw.enabled, d.observationPack.enabled),
+			mode: asMode(observationRaw.mode, d.observationPack.mode),
+			thresholdBytes: asPosInt(observationRaw.thresholdBytes, d.observationPack.thresholdBytes),
+			fullSends: asNonNegInt(observationRaw.fullSends, d.observationPack.fullSends),
+			placeholderExcerptBytes: asPosInt(
+				observationRaw.placeholderExcerptBytes,
+				d.observationPack.placeholderExcerptBytes,
+			),
+		},
+		evidencePreservingReducer: {
+			enabled: asBoolean(eprRaw.enabled, d.evidencePreservingReducer.enabled),
+			minBytes: asPosInt(eprRaw.minBytes, d.evidencePreservingReducer.minBytes),
+			maxChars: asPosInt(eprRaw.maxChars, d.evidencePreservingReducer.maxChars),
+			maxOutputTokens: asPosInt(eprRaw.maxOutputTokens, d.evidencePreservingReducer.maxOutputTokens),
+			timeoutMs: asPosInt(eprRaw.timeoutMs, d.evidencePreservingReducer.timeoutMs),
+			reducerProvider: asString(eprRaw.reducerProvider, d.evidencePreservingReducer.reducerProvider),
+			reducerModel: asString(eprRaw.reducerModel, d.evidencePreservingReducer.reducerModel),
+		},
+		onlineContextCompact: {
+			enabled: asBoolean(occRaw.enabled, d.onlineContextCompact.enabled),
+			cacheWriteReadRatio: asNumber(occRaw.cacheWriteReadRatio, d.onlineContextCompact.cacheWriteReadRatio),
+			keepRecentTokens: asNonNegInt(occRaw.keepRecentTokens, d.onlineContextCompact.keepRecentTokens),
+			nativeSummaryTokenEstimate: asPosInt(
+				occRaw.nativeSummaryTokenEstimate,
+				d.onlineContextCompact.nativeSummaryTokenEstimate,
+			),
+			windowReserveTokens: asPosInt(occRaw.windowReserveTokens, d.onlineContextCompact.windowReserveTokens),
+			firstCompactionRequestScale: asNumber(
+				occRaw.firstCompactionRequestScale,
+				d.onlineContextCompact.firstCompactionRequestScale,
+			),
+			subsequentCompactionMargin: asNumber(
+				occRaw.subsequentCompactionMargin,
+				d.onlineContextCompact.subsequentCompactionMargin,
+			),
+		},
+	};
+
 	if (config.observationPack.mode === "immediate" && config.observationPack.fullSends > 0) {
 		throw new Error("dsh-sol-pi: observationPack.mode immediate requires fullSends = 0");
 	}
@@ -228,6 +258,9 @@ export function resolveSolDshConfig(raw: unknown = {}): SolDshConfig {
 	}
 	if (!Number.isFinite(config.onlineContextCompact.cacheWriteReadRatio)) {
 		throw new Error("dsh-sol-pi: cacheWriteReadRatio must be finite");
+	}
+	if (!(config.onlineContextCompact.subsequentCompactionMargin >= 1)) {
+		throw new Error("dsh-sol-pi: subsequentCompactionMargin must be >= 1");
 	}
 	return {
 		...config,

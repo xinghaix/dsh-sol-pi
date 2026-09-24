@@ -332,8 +332,10 @@ function registerActionFusion(ctx, enabled = () => true) {
   }
 }
 
-// src/sol-dsh/config.ts
+// src/sol-dsh/config-schema.ts
 import Schema from "@deepseek-ai/schemastery";
+
+// src/sol-dsh/config.ts
 var FORBIDDEN_KEYS = /* @__PURE__ */ new Set([
   "apikey",
   "api_key",
@@ -382,70 +384,34 @@ var OCC_KEYS = /* @__PURE__ */ new Set([
   "firstCompactionRequestScale",
   "subsequentCompactionMargin"
 ]);
-var positiveInt = (fallback) => Schema.number().step(1).min(1).default(fallback);
-var nonNegativeInt = (fallback) => Schema.number().step(1).min(0).default(fallback);
-var actionFusionSchema = Schema.object({
-  enabled: Schema.boolean().default(true)
-}).default({ enabled: true });
-var observationPackSchema = Schema.object({
-  enabled: Schema.boolean().default(true),
-  mode: Schema.union(["immediate", "delayed"]).default("immediate"),
-  thresholdBytes: positiveInt(10240),
-  fullSends: nonNegativeInt(0),
-  placeholderExcerptBytes: positiveInt(1024)
-}).default({
-  enabled: true,
-  mode: "immediate",
-  thresholdBytes: 10240,
-  fullSends: 0,
-  placeholderExcerptBytes: 1024
-});
-var evidencePreservingReducerSchema = Schema.object({
-  enabled: Schema.boolean().default(true),
-  minBytes: positiveInt(4096),
-  maxChars: positiveInt(6e5),
-  maxOutputTokens: positiveInt(2048),
-  timeoutMs: positiveInt(9e4),
-  reducerProvider: Schema.string().default(""),
-  reducerModel: Schema.string().default("")
-}).default({
-  enabled: true,
-  minBytes: 4096,
-  maxChars: 6e5,
-  maxOutputTokens: 2048,
-  timeoutMs: 9e4,
-  reducerProvider: "",
-  reducerModel: ""
-});
-var onlineContextCompactSchema = Schema.object({
-  enabled: Schema.boolean().default(true),
-  cacheWriteReadRatio: Schema.number().min(0).default(50),
-  keepRecentTokens: nonNegativeInt(0),
-  nativeSummaryTokenEstimate: positiveInt(1e3),
-  windowReserveTokens: positiveInt(16384),
-  firstCompactionRequestScale: Schema.number().min(0).default(2),
-  subsequentCompactionMargin: Schema.number().min(1).default(1.5)
-}).default({
-  enabled: true,
-  cacheWriteReadRatio: 50,
-  keepRecentTokens: 0,
-  nativeSummaryTokenEstimate: 1e3,
-  windowReserveTokens: 16384,
-  firstCompactionRequestScale: 2,
-  subsequentCompactionMargin: 1.5
-});
-var Config = Schema.object({
-  actionFusion: actionFusionSchema.volatile(),
-  observationPack: observationPackSchema.volatile(),
-  evidencePreservingReducer: evidencePreservingReducerSchema.volatile(),
-  onlineContextCompact: onlineContextCompactSchema.volatile()
-});
-var PlainConfig = Schema.object({
-  actionFusion: actionFusionSchema,
-  observationPack: observationPackSchema,
-  evidencePreservingReducer: evidencePreservingReducerSchema,
-  onlineContextCompact: onlineContextCompactSchema
-});
+var SOL_DSH_DEFAULTS = {
+  actionFusion: { enabled: true },
+  observationPack: {
+    enabled: true,
+    mode: "immediate",
+    thresholdBytes: 10240,
+    fullSends: 0,
+    placeholderExcerptBytes: 1024
+  },
+  evidencePreservingReducer: {
+    enabled: true,
+    minBytes: 4096,
+    maxChars: 6e5,
+    maxOutputTokens: 2048,
+    timeoutMs: 9e4,
+    reducerProvider: "",
+    reducerModel: ""
+  },
+  onlineContextCompact: {
+    enabled: true,
+    cacheWriteReadRatio: 50,
+    keepRecentTokens: 0,
+    nativeSummaryTokenEstimate: 1e3,
+    windowReserveTokens: 16384,
+    firstCompactionRequestScale: 2,
+    subsequentCompactionMargin: 1.5
+  }
+};
 function assertPlainObject(value, label) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`dsh-sol-pi: ${label} must be a plain object`);
@@ -460,6 +426,26 @@ function rejectForbiddenAndUnknown(record, allowed, label) {
       throw new Error(`dsh-sol-pi: unknown config key "${label}${key}"`);
     }
   }
+}
+function asBoolean(value, fallback) {
+  return typeof value === "boolean" ? value : fallback;
+}
+function asNumber(value, fallback) {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+function asNonNegInt(value, fallback) {
+  const n = asNumber(value, fallback);
+  return Number.isInteger(n) && n >= 0 ? n : fallback;
+}
+function asPosInt(value, fallback) {
+  const n = asNumber(value, fallback);
+  return Number.isInteger(n) && n >= 1 ? n : fallback;
+}
+function asString(value, fallback) {
+  return typeof value === "string" ? value : fallback;
+}
+function asMode(value, fallback) {
+  return value === "delayed" || value === "immediate" ? value : fallback;
 }
 function resolveSolDshConfig(raw = {}) {
   assertPlainObject(raw, "configuration");
@@ -480,7 +466,53 @@ function resolveSolDshConfig(raw = {}) {
     assertPlainObject(raw.onlineContextCompact, "onlineContextCompact");
     rejectForbiddenAndUnknown(raw.onlineContextCompact, OCC_KEYS, "onlineContextCompact.");
   }
-  const config = PlainConfig(raw);
+  const d2 = SOL_DSH_DEFAULTS;
+  const actionFusionRaw = raw.actionFusion ?? {};
+  const observationRaw = raw.observationPack ?? {};
+  const eprRaw = raw.evidencePreservingReducer ?? {};
+  const occRaw = raw.onlineContextCompact ?? {};
+  const config = {
+    actionFusion: {
+      enabled: asBoolean(actionFusionRaw.enabled, d2.actionFusion.enabled)
+    },
+    observationPack: {
+      enabled: asBoolean(observationRaw.enabled, d2.observationPack.enabled),
+      mode: asMode(observationRaw.mode, d2.observationPack.mode),
+      thresholdBytes: asPosInt(observationRaw.thresholdBytes, d2.observationPack.thresholdBytes),
+      fullSends: asNonNegInt(observationRaw.fullSends, d2.observationPack.fullSends),
+      placeholderExcerptBytes: asPosInt(
+        observationRaw.placeholderExcerptBytes,
+        d2.observationPack.placeholderExcerptBytes
+      )
+    },
+    evidencePreservingReducer: {
+      enabled: asBoolean(eprRaw.enabled, d2.evidencePreservingReducer.enabled),
+      minBytes: asPosInt(eprRaw.minBytes, d2.evidencePreservingReducer.minBytes),
+      maxChars: asPosInt(eprRaw.maxChars, d2.evidencePreservingReducer.maxChars),
+      maxOutputTokens: asPosInt(eprRaw.maxOutputTokens, d2.evidencePreservingReducer.maxOutputTokens),
+      timeoutMs: asPosInt(eprRaw.timeoutMs, d2.evidencePreservingReducer.timeoutMs),
+      reducerProvider: asString(eprRaw.reducerProvider, d2.evidencePreservingReducer.reducerProvider),
+      reducerModel: asString(eprRaw.reducerModel, d2.evidencePreservingReducer.reducerModel)
+    },
+    onlineContextCompact: {
+      enabled: asBoolean(occRaw.enabled, d2.onlineContextCompact.enabled),
+      cacheWriteReadRatio: asNumber(occRaw.cacheWriteReadRatio, d2.onlineContextCompact.cacheWriteReadRatio),
+      keepRecentTokens: asNonNegInt(occRaw.keepRecentTokens, d2.onlineContextCompact.keepRecentTokens),
+      nativeSummaryTokenEstimate: asPosInt(
+        occRaw.nativeSummaryTokenEstimate,
+        d2.onlineContextCompact.nativeSummaryTokenEstimate
+      ),
+      windowReserveTokens: asPosInt(occRaw.windowReserveTokens, d2.onlineContextCompact.windowReserveTokens),
+      firstCompactionRequestScale: asNumber(
+        occRaw.firstCompactionRequestScale,
+        d2.onlineContextCompact.firstCompactionRequestScale
+      ),
+      subsequentCompactionMargin: asNumber(
+        occRaw.subsequentCompactionMargin,
+        d2.onlineContextCompact.subsequentCompactionMargin
+      )
+    }
+  };
   if (config.observationPack.mode === "immediate" && config.observationPack.fullSends > 0) {
     throw new Error("dsh-sol-pi: observationPack.mode immediate requires fullSends = 0");
   }
@@ -492,6 +524,9 @@ function resolveSolDshConfig(raw = {}) {
   if (!Number.isFinite(config.onlineContextCompact.cacheWriteReadRatio)) {
     throw new Error("dsh-sol-pi: cacheWriteReadRatio must be finite");
   }
+  if (!(config.onlineContextCompact.subsequentCompactionMargin >= 1)) {
+    throw new Error("dsh-sol-pi: subsequentCompactionMargin must be >= 1");
+  }
   return {
     ...config,
     evidencePreservingReducer: {
@@ -502,6 +537,45 @@ function resolveSolDshConfig(raw = {}) {
   };
 }
 var DEFAULT_SOL_DSH_CONFIG = resolveSolDshConfig({});
+
+// src/sol-dsh/config-schema.ts
+var d = SOL_DSH_DEFAULTS;
+var positiveInt = (fallback) => Schema.number().step(1).min(1).default(fallback);
+var nonNegativeInt = (fallback) => Schema.number().step(1).min(0).default(fallback);
+var actionFusionSchema = Schema.object({
+  enabled: Schema.boolean().default(d.actionFusion.enabled)
+}).default({ enabled: d.actionFusion.enabled });
+var observationPackSchema = Schema.object({
+  enabled: Schema.boolean().default(d.observationPack.enabled),
+  mode: Schema.union(["immediate", "delayed"]).default(d.observationPack.mode),
+  thresholdBytes: positiveInt(d.observationPack.thresholdBytes),
+  fullSends: nonNegativeInt(d.observationPack.fullSends),
+  placeholderExcerptBytes: positiveInt(d.observationPack.placeholderExcerptBytes)
+}).default({ ...d.observationPack });
+var evidencePreservingReducerSchema = Schema.object({
+  enabled: Schema.boolean().default(d.evidencePreservingReducer.enabled),
+  minBytes: positiveInt(d.evidencePreservingReducer.minBytes),
+  maxChars: positiveInt(d.evidencePreservingReducer.maxChars),
+  maxOutputTokens: positiveInt(d.evidencePreservingReducer.maxOutputTokens),
+  timeoutMs: positiveInt(d.evidencePreservingReducer.timeoutMs),
+  reducerProvider: Schema.string().default(d.evidencePreservingReducer.reducerProvider),
+  reducerModel: Schema.string().default(d.evidencePreservingReducer.reducerModel)
+}).default({ ...d.evidencePreservingReducer });
+var onlineContextCompactSchema = Schema.object({
+  enabled: Schema.boolean().default(d.onlineContextCompact.enabled),
+  cacheWriteReadRatio: Schema.number().min(0).default(d.onlineContextCompact.cacheWriteReadRatio),
+  keepRecentTokens: nonNegativeInt(d.onlineContextCompact.keepRecentTokens),
+  nativeSummaryTokenEstimate: positiveInt(d.onlineContextCompact.nativeSummaryTokenEstimate),
+  windowReserveTokens: positiveInt(d.onlineContextCompact.windowReserveTokens),
+  firstCompactionRequestScale: Schema.number().min(0).default(d.onlineContextCompact.firstCompactionRequestScale),
+  subsequentCompactionMargin: Schema.number().min(1).default(d.onlineContextCompact.subsequentCompactionMargin)
+}).default({ ...d.onlineContextCompact });
+var Config = Schema.object({
+  actionFusion: actionFusionSchema.volatile(),
+  observationPack: observationPackSchema.volatile(),
+  evidencePreservingReducer: evidencePreservingReducerSchema.volatile(),
+  onlineContextCompact: onlineContextCompactSchema.volatile()
+});
 
 // src/sol-core/evidence-preserving-reducer/archive.ts
 import { mkdir, readFile, writeFile } from "node:fs/promises";
