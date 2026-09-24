@@ -9,6 +9,7 @@
 # dsh-sol-pi
 
 <p align="center">
+  <a href="https://arxiv.org/abs/2609.20519"><img src="https://img.shields.io/badge/arXiv-2609.20519-B31B1B?logo=arxiv&logoColor=white" alt="arXiv: 2609.20519" /></a>
   <a href="#install"><img src="https://img.shields.io/badge/Install-dsh%20plugin-76B900" alt="Install" /></a>
   <a href="docs/dsh-configuration.md"><img src="https://img.shields.io/badge/Docs-DSH%20config-555555" alt="DSH configuration" /></a>
   <a href="https://nvlabs.github.io/SoL-Pi/"><img src="https://img.shields.io/badge/Blog-SoL--Pi-76B900" alt="SoL-Pi Blog" /></a>
@@ -18,9 +19,16 @@
 > [!NOTE]
 > **`dsh-sol-pi`** is a **native [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Cordis plugin**. It packages the four SoL efficiency mechanisms for DSH Web / TUI / headless. Algorithms live in `src/sol-core/`; the DSH adapter is `src/sol-dsh/`. This is not an official DeepSeek or NVIDIA distribution. Upstream research and the original Pi extension live at [NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi); this repo also keeps a Pi adapter for that path.
 
+**Paper:** [SoL-Pi: Recursively Scaling Auto-Research Loops for Efficient Agent Harness](https://arxiv.org/abs/2609.20519) (arXiv:2609.20519).
 
 <details>
 <summary>Changelog</summary>
+
+### [0.2.2] — 2026-09-24
+
+- Synced Action Fusion Unicode-space + Windows shell path normalization from upstream into `sol-core`.
+- arXiv paper link in READMEs.
+- Pi `stringConfigValue` / preflight now trim reducer route identifiers.
 
 ### [0.2.1] — 2026-09-24
 
@@ -30,7 +38,6 @@
 
 - **Breaking (DSH 0.1.7-rc.1):** Client inject `settingsScope` → `configForms`; Host drops `settings.installSection` for Schemastery `.volatile()` live config.
 - Peers/engines: `dsh.engines.dsh >=0.1.7-rc.1`, `@deepseek-ai/schemastery ^3.18.4`.
-- Fixes boot pending on `waiting for service: settingsScope`. Custom `SolDshCard` UX kept on `plugins.bundle.config`.
 
 Full history: [CHANGELOG.md](./CHANGELOG.md) · 中文：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
 

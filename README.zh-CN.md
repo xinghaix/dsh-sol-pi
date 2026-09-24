@@ -9,6 +9,7 @@
 # dsh-sol-pi
 
 <p align="center">
+  <a href="https://arxiv.org/abs/2609.20519"><img src="https://img.shields.io/badge/arXiv-2609.20519-B31B1B?logo=arxiv&logoColor=white" alt="arXiv: 2609.20519" /></a>
   <a href="#安装"><img src="https://img.shields.io/badge/安装-dsh%20plugin-76B900" alt="安装" /></a>
   <a href="docs/dsh-configuration.md"><img src="https://img.shields.io/badge/文档-DSH%20配置-555555" alt="DSH 配置" /></a>
   <a href="https://nvlabs.github.io/SoL-Pi/"><img src="https://img.shields.io/badge/Blog-SoL--Pi-76B900" alt="SoL-Pi Blog" /></a>
@@ -18,9 +19,16 @@
 > [!NOTE]
 > **`dsh-sol-pi`** 是面向 **[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)** 的 **原生 Cordis 插件**。它把四套 SoL 效率机制接到 DSH Web / TUI / headless。算法在 `src/sol-core/`，DSH 适配在 `src/sol-dsh/`。这不是 DeepSeek 或 NVIDIA 的官方发行版。上游研究与原始 Pi 扩展见 [NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi)；本仓库仍保留 Pi 适配路径。
 
+**论文：** [SoL-Pi: Recursively Scaling Auto-Research Loops for Efficient Agent Harness](https://arxiv.org/abs/2609.20519)（arXiv:2609.20519）。
 
 <details>
 <summary>更新日志</summary>
+
+### [0.2.2] — 2026-09-24
+
+- 从上游同步 Action Fusion 的 Unicode 空格与 Windows shell 路径归一化到 `sol-core`。
+- README 增加 arXiv 论文链接。
+- Pi 侧 `stringConfigValue` / 预检对归约路由标识做 trim。
 
 ### [0.2.1] — 2026-09-24
 
@@ -30,7 +38,6 @@
 
 - **破坏性（DSH 0.1.7-rc.1）：** 客户端 inject 由 `settingsScope` 改为 `configForms`；Host 去掉 `settings.installSection`，改用 Schemastery `.volatile()` 实时配置。
 - peers/engines：`dsh.engines.dsh >=0.1.7-rc.1`，`@deepseek-ai/schemastery ^3.18.4`。
-- 修复启动卡在 `waiting for service: settingsScope`。自定义 `SolDshCard` 仍挂在 `plugins.bundle.config`。
 
 完整历史：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md) · English：[CHANGELOG.md](./CHANGELOG.md)
 

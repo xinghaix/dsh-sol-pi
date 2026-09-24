@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 中文版：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
 
+## [0.2.2] - 2026-09-24
+
+### Fixed
+
+- Synced Action Fusion Unicode-space and Windows shell path normalization from upstream into shared `sol-core` (`resolveToolPath` / `normalizeWindowsShellPath`).
+- Pi `stringConfigValue` (and config preflight) now trim EPR reducer route identifiers.
+
+### Added
+
+- arXiv paper link badge and short Paper line in `README.md` / `README.zh-CN.md` ([arXiv:2609.20519](https://arxiv.org/abs/2609.20519)).
+
 ## [0.2.1] - 2026-09-24
 
 ### Added
@@ -37,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Earlier history (Pi dual-host port, native DSH seams, ObservationPack / EPR / OCC / Action Fusion) lives in git history starting from the `sol-dsh` / `dsh-sol-pi` rebrand commits. Notable themes: native Cordis plugin, Web settings card on the plugin-manager slot, and DSH 0.1.5–0.1.6-era `settingsScope` + `installSection` (superseded in 0.2.0).
 
+[0.2.2]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.2
 [0.2.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.1
 [0.2.0]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.0
 [0.1.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.1.1

@@ -7,6 +7,17 @@
 
 English: [CHANGELOG.md](./CHANGELOG.md)
 
+## [0.2.2] - 2026-09-24
+
+### 修复
+
+- 从上游同步 Action Fusion 的 Unicode 空格与 Windows shell 路径归一化到共享的 `sol-core`（`resolveToolPath` / `normalizeWindowsShellPath`）。
+- Pi 侧 `stringConfigValue`（及配置预检）对 EPR 归约路由标识做 trim。
+
+### 新增
+
+- 在 `README.md` / `README.zh-CN.md` 增加 arXiv 论文徽章与简短「论文」行（[arXiv:2609.20519](https://arxiv.org/abs/2609.20519)）。
+
 ## [0.2.1] - 2026-09-24
 
 ### 新增
@@ -37,6 +48,7 @@ English: [CHANGELOG.md](./CHANGELOG.md)
 
 更早的历史（Pi 双宿主移植、原生 DSH 接缝、ObservationPack / EPR / OCC / Action Fusion）见 git 记录，自 `sol-dsh` / `dsh-sol-pi` 品牌化提交起。主要主题：原生 Cordis 插件、plugin-manager 槽位上的 Web 设置卡，以及 DSH 0.1.5–0.1.6 时代的 `settingsScope` + `installSection`（已在 0.2.0 取代）。
 
+[0.2.2]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.2
 [0.2.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.1
 [0.2.0]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.0
 [0.1.1]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.1.1

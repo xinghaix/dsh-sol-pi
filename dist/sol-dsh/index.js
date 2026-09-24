@@ -4,14 +4,26 @@ import { homedir } from "node:os";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 var queueTails = /* @__PURE__ */ new Map();
-function stripToolPathPrefix(filePath) {
-  return filePath.startsWith("@") ? filePath.slice(1) : filePath;
+var UNICODE_SPACES = /[\u00A0\u2000-\u200A\u202F\u205F\u3000]/gu;
+var WINDOWS_SHELL_DRIVE = /^\/(?:mnt\/|cygdrive\/)?([a-z])(?:\/(.*))?$/i;
+function normalizeToolPath(filePath) {
+  const normalized = filePath.replace(UNICODE_SPACES, " ");
+  return normalized.startsWith("@") ? normalized.slice(1) : normalized;
+}
+function normalizeWindowsShellPath(filePath) {
+  if (process.platform !== "win32") return filePath;
+  if (!filePath.startsWith("/") || filePath.startsWith("//") || filePath.includes("\\")) return filePath;
+  const match = WINDOWS_SHELL_DRIVE.exec(filePath);
+  if (!match?.[1]) return filePath;
+  return `${match[1].toUpperCase()}:\\${match[2]?.replaceAll("/", "\\") ?? ""}`;
 }
 function resolveToolPath(cwd, filePath) {
-  const stripped = stripToolPathPrefix(filePath);
+  const stripped = normalizeWindowsShellPath(normalizeToolPath(filePath));
   const expanded = stripped.startsWith("file://") ? fileURLToPath(stripped) : stripped;
   if (expanded === "~") return homedir();
-  if (expanded.startsWith("~/")) return resolve(homedir(), expanded.slice(2));
+  if (expanded.startsWith("~/") || process.platform === "win32" && expanded.startsWith("~\\")) {
+    return resolve(homedir(), expanded.slice(2));
+  }
   return resolve(cwd, expanded);
 }
 function isMissingPathError(error) {
