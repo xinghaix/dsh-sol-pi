@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 中文版：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md)
 
+## [0.2.8] - 2026-09-29
+
+### Changed
+- **DSH 0.2.0-rc.1 Compatibility:** DSH 0.2.0-rc.1 replaces silent/pending plugin load failures with strict startup and installation preflight checks using `semver.satisfies(runtimeVersion, requirement, { includePrerelease: true })`. Updated `package.json` peerDependencies `@deepseek-ai/dsh-settings` from `^0.1.7-rc.1` to `^0.2.0-rc.1` (resolving rejection caused by `^0.1.7-rc.1` bounding `<0.2.0-0`) and updated `dsh.engines.dsh` to `>=0.2.0-rc.1`.
+- Added contract check in `scripts/check-dsh-compat.mjs` and regression test in `tests/package.test.ts` for DSH 0.2.0-rc.1 peerDependencies preflight validation.
+
 ## [0.2.7] - 2026-09-24
 
 ### Fixed
@@ -75,6 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Earlier history (Pi dual-host port, native DSH seams, ObservationPack / EPR / OCC / Action Fusion) lives in git history starting from the `sol-dsh` / `dsh-sol-pi` rebrand commits. Notable themes: native Cordis plugin, Web settings card on the plugin-manager slot, and DSH 0.1.5–0.1.6-era `settingsScope` + `installSection` (superseded in 0.2.0).
 
+[0.2.8]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.8
+[0.2.7]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.7
 [0.2.6]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.6
 [0.2.3]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.3
 [0.2.2]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.2

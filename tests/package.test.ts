@@ -12,7 +12,7 @@ interface PackReport {
 }
 
 function packedFiles(): string[] {
-	const result = spawnSync("npm", ["pack", "--dry-run", "--json"], {
+	const result = spawnSync("npm", ["pack", "--dry-run", "--json", "--cache=/tmp/npm-cache"], {
 		cwd: process.cwd(),
 		encoding: "utf8",
 	});
@@ -53,5 +53,22 @@ describe("published package", () => {
 		expect(files).toContain("agents-install.md");
 		expect(files).not.toContain("AGENTS.md");
 		expect(files).not.toContain("CLAUDE.md");
+	});
+
+	it("satisfies DSH 0.2.0-rc.1 peerDependencies preflight checks", async () => {
+		const pkg = JSON.parse(readFileSync("package.json", "utf8")) as Record<string, any>;
+		// @ts-expect-error optional dev dependency types
+		const semver = (await import("semver")).default as {
+			satisfies: (version: string, range: string, options?: { includePrerelease?: boolean }) => boolean;
+		};
+		const dshSettingsPeer = pkg.peerDependencies?.["@deepseek-ai/dsh-settings"];
+		expect(dshSettingsPeer).toBe("^0.2.0-rc.1");
+		expect(pkg.dsh?.engines?.dsh).toBe(">=0.2.0-rc.1");
+
+		// DSH 0.2.0-rc.1 preflight rule: semver.satisfies(runtimeVersion, requirement, { includePrerelease: true })
+		expect(semver.satisfies("0.2.0-rc.1", dshSettingsPeer, { includePrerelease: true })).toBe(true);
+
+		// Verify old range ^0.1.7-rc.1 fails on 0.2.0-rc.1 due to caret bounding (<0.2.0-0)
+		expect(semver.satisfies("0.2.0-rc.1", "^0.1.7-rc.1", { includePrerelease: true })).toBe(false);
 	});
 });

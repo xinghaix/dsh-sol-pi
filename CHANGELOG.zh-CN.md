@@ -7,6 +7,12 @@
 
 English: [CHANGELOG.md](./CHANGELOG.md)
 
+## [0.2.8] - 2026-09-29
+
+### 变更
+- **DSH 0.2.0-rc.1 兼容性：** DSH 0.2.0-rc.1 引入更严格的启动与安装预检机制，使用 `semver.satisfies(runtimeVersion, requirement, { includePrerelease: true })` 校验插件声明的 peerDependencies 是否与当前宿主版本匹配。将 `package.json` 中 peerDependencies 的 `@deepseek-ai/dsh-settings` 从 `^0.1.7-rc.1` 更新为 `^0.2.0-rc.1`（解决原 `^0.1.7-rc.1` 被限定在 `<0.2.0-0` 导致被判定为不兼容的问题），并将 `dsh.engines.dsh` 提升为 `>=0.2.0-rc.1`。
+- 在 `scripts/check-dsh-compat.mjs` 中增加 peerDependencies 校验，并在 `tests/package.test.ts` 中增加 DSH 0.2.0-rc.1 预检规则的回归测试。
+
 ## [0.2.7] - 2026-09-24
 
 ### Fixed
@@ -75,6 +81,8 @@ English: [CHANGELOG.md](./CHANGELOG.md)
 
 更早的历史（Pi 双宿主移植、原生 DSH 接缝、ObservationPack / EPR / OCC / Action Fusion）见 git 记录，自 `sol-dsh` / `dsh-sol-pi` 品牌化提交起。主要主题：原生 Cordis 插件、plugin-manager 槽位上的 Web 设置卡，以及 DSH 0.1.5–0.1.6 时代的 `settingsScope` + `installSection`（已在 0.2.0 取代）。
 
+[0.2.8]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.8
+[0.2.7]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.7
 [0.2.6]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.6
 [0.2.3]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.3
 [0.2.2]: https://github.com/xinghaix/dsh-sol-pi/releases/tag/v0.2.2

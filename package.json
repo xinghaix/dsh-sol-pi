@@ -1,6 +1,6 @@
 {
   "name": "dsh-sol-pi",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Native DeepSeek Harness plugin for SoL context and tool-efficiency mechanisms (Pi adapter included)",
   "type": "module",
   "private": true,
@@ -34,7 +34,7 @@
     "check:dsh": "node scripts/check-dsh-compat.mjs",
     "build:dsh": "node scripts/build-sol-dsh.mjs && node scripts/build-sol-dsh-client.mjs",
     "prepack": "npm run build:dsh",
-    "check": "npm run typecheck && npm test && npm run check:dsh && npm pack --dry-run"
+    "check": "npm run typecheck && npm test && npm run check:dsh && npm pack --dry-run --cache=/tmp/npm-cache"
   },
   "main": "./dist/sol-dsh/index.js",
   "exports": {
@@ -56,7 +56,7 @@
       "platform": "web"
     },
     "engines": {
-      "dsh": ">=0.1.7-rc.1"
+      "dsh": ">=0.2.0-rc.1"
     }
   },
   "keywords": [
@@ -72,12 +72,32 @@
     ]
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-settings": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-settings": "^0.2.0-rc.1",
     "@earendil-works/pi-agent-core": "*",
     "@earendil-works/pi-ai": "*",
     "@earendil-works/pi-coding-agent": "*",
     "@earendil-works/pi-tui": "*",
     "typebox": "*"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-settings": {
+      "optional": true
+    },
+    "@earendil-works/pi-agent-core": {
+      "optional": true
+    },
+    "@earendil-works/pi-ai": {
+      "optional": true
+    },
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "@earendil-works/pi-tui": {
+      "optional": true
+    },
+    "typebox": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@earendil-works/pi-agent-core": "0.84.2",

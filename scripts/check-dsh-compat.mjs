@@ -74,7 +74,8 @@ must(!/setLocale/.test(read("src/sol-dsh/client/index.ts")), "SoL must not write
 const clientInject = read("src/sol-dsh/client/index.ts").match(/export const inject = \[[\s\S]*?\]/)?.[0] ?? "";
 must(clientInject.includes('"slots"') && clientInject.includes('"locale"') && clientInject.includes('"configForms"'), "client inject must declare slots, locale, and configForms");
 must(!clientInject.includes('"settingsScope"'), "client inject must not declare removed settingsScope");
-must(pkg.dsh?.engines?.dsh === ">=0.1.7-rc.1" || String(pkg.dsh?.engines?.dsh ?? "").includes("0.1.7"), "package.json dsh.engines.dsh must require >=0.1.7-rc.1");
+must(pkg.dsh?.engines?.dsh === ">=0.2.0-rc.1" || String(pkg.dsh?.engines?.dsh ?? "").includes("0.2.0"), "package.json dsh.engines.dsh must require >=0.2.0-rc.1");
+must(pkg.peerDependencies?.["@deepseek-ai/dsh-settings"] === "^0.2.0-rc.1" || String(pkg.peerDependencies?.["@deepseek-ai/dsh-settings"] ?? "").includes("0.2.0"), "package.json peerDependencies.@deepseek-ai/dsh-settings must require ^0.2.0-rc.1");
 must(!/\.installSection\s*\(/.test(read("src/sol-dsh/settings.ts")), "settings.ts must not call installSection");
 must(!/installSection\s*\(/.test(read("src/sol-dsh/host.ts")), "host.ts must not type installSection");
 must(read("src/sol-dsh/config-schema.ts").includes(".volatile()"), "Config schema must mark live fields volatile");

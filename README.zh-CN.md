@@ -38,6 +38,10 @@
 - README 增加 arXiv 论文链接。
 - Pi 侧 `stringConfigValue` / 预检对归约路由标识做 trim。
 
+### [0.2.8] — 2026-09-29
+
+- **兼容性（DSH 0.2.0-rc.1）：** 更新 peerDependencies `@deepseek-ai/dsh-settings` 为 `^0.2.0-rc.1`，`dsh.engines.dsh` 为 `>=0.2.0-rc.1`，通过 DSH 0.2.0-rc.1 的启动与安装预检机制。
+
 ### [0.2.1] — 2026-09-24
 
 - 插件管理器 `icon.svg`（动作融合 / ObservationPack / OCC / EPR 造型；官方 DSH 配色）。
@@ -45,7 +49,7 @@
 ### [0.2.0] — 2026-09-24
 
 - **破坏性（DSH 0.1.7-rc.1）：** 客户端 inject 由 `settingsScope` 改为 `configForms`；Host 去掉 `settings.installSection`，改用 Schemastery `.volatile()` 实时配置。
-- peers/engines：`dsh.engines.dsh >=0.1.7-rc.1`，`@deepseek-ai/schemastery ^3.18.4`。
+- peers/engines：`dsh.engines.dsh >=0.2.0-rc.1`，`@deepseek-ai/dsh-settings ^0.2.0-rc.1`，`@deepseek-ai/schemastery ^3.18.4`。
 
 完整历史：[CHANGELOG.zh-CN.md](./CHANGELOG.zh-CN.md) · English：[CHANGELOG.md](./CHANGELOG.md)
 
@@ -85,7 +89,7 @@ DSH 上的共同约定：
 
 ## 安装
 
-要求：Node.js 22.19+、可用的 `dsh` CLI、`web` profile（或其它加载了 `dsh-base` 的 profile）。已在 DSH **0.1.7-rc.1** 验证。
+要求：Node.js 22.19+、可用的 `dsh` CLI、`web` profile（或其它加载了 `dsh-base` 的 profile）。已在 DSH **0.2.0-rc.1** 验证。
 
 ### 从 GitHub 安装（常用）
 
@@ -193,7 +197,7 @@ npm run build:dsh      # dist/sol-dsh/{index,client}.js
 
 ## 项目状态
 
-- **DSH：** Cordis 插件 `dsh-sol-pi`，带 Web 设置卡，已在 **0.1.7-rc.1** 验证。
+- **DSH：** Cordis 插件 `dsh-sol-pi`，带 Web 设置卡，已在 **0.2.0-rc.1** 验证。
 - **Pi：** 通过 `sol-pi.json` opt-in，默认全关，已在 **0.84.2** 验证。
 - DSH 已知限制：ObservationPack 的 `delayed` 只做归档（无静默投影钩子）；OCC 用 `todo_write` 边界，而不是 Pi 的 `update_plan`。
 
